@@ -1,6 +1,6 @@
 from PySide2 import QtCore, QtWidgets, QtGui
 from dcc.userinterface import qproxywindow
-from ezalign.tabs import qaligntab
+from ezalign.tabs import qaligntab, qmatrixtab
 
 import logging
 logging.basicConfig()
@@ -13,9 +13,9 @@ class QEzAlign(qproxywindow.QProxyWindow):
     Overload of QProxyWindow used to align node transforms.
     """
 
+    # region Dunderscores
     __title__ = 'EzAlign'
 
-    # region Dunderscores
     def __init__(self, *args, **kwargs):
         """
         Overloaded method called after a new instance has been created.
@@ -28,11 +28,6 @@ class QEzAlign(qproxywindow.QProxyWindow):
         # Call parent method
         #
         super(QEzAlign, self).__init__(*args, **kwargs)
-
-        # Declare class variables
-        #
-        self._preserveChildren = False
-        self._freezeTransform = False
 
     def __build__(self, **kwargs):
         """
@@ -55,44 +50,40 @@ class QEzAlign(qproxywindow.QProxyWindow):
         #
         self.tabControl = QtWidgets.QTabWidget()
         self.tabControl.addTab(qaligntab.QAlignTab(), 'Align')
+        self.tabControl.addTab(qmatrixtab.QMatrixTab(), 'Matrix')
 
         self.centralWidget().layout().addWidget(self.tabControl)
 
         # Define main buttons
         #
-        self.applyButton = QtWidgets.QPushButton('Apply')
-        self.applyButton.pressed.connect(self.apply)
+        self.applyButton = QtWidgets.QToolButton()
+        self.applyButton.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
+        self.applyButton.setArrowType(QtCore.Qt.DownArrow)
+        self.applyButton.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
+        self.applyButton.setText('Apply')
+        self.applyButton.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.applyButton.clicked.connect(self.applyButton_clicked)
 
-        self.applyOptionsButton = QtWidgets.QPushButton()
-        self.applyOptionsButton.setFixedWidth(18)
-        self.applyOptionsButton.setLayoutDirection(QtCore.Qt.RightToLeft)
-
-        self.applyLayout = QtWidgets.QHBoxLayout()
-        self.applyLayout.setSpacing(2)
-        self.applyLayout.addWidget(self.applyButton)
-        self.applyLayout.addWidget(self.applyOptionsButton)
-
-        self.preserveChildrenAction = QtCore.QAction('&Preserve Children')
+        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children')
         self.preserveChildrenAction.setCheckable(True)
-        self.preserveChildrenAction.triggered.connect(self.preserveChildrenTriggered)
+        self.preserveChildrenAction.triggered.connect(self.preserveChildrenAction_triggered)
 
-        self.freezeTransformAction = QtCore.QAction('&Freeze Transform')
+        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform')
         self.freezeTransformAction.setCheckable(True)
-        self.freezeTransformAction.triggered.connect(self.freezeTransformTriggered)
+        self.freezeTransformAction.triggered.connect(self.freezeTransformAction_triggered)
 
-        self.applyMenu = QtWidgets.QMenu(self.applyOptionsButton)
+        self.applyMenu = QtWidgets.QMenu(self.applyButton)
         self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
-
-        self.applyOptionsButton.setMenu(self.applyMenu)
+        self.applyButton.setMenu(self.applyMenu)
 
         self.okayButton = QtWidgets.QPushButton('OK')
-        self.okayButton.pressed.connect(self.okay)
+        self.okayButton.clicked.connect(self.okayButton_clicked)
 
         self.cancelButton = QtWidgets.QPushButton('Cancel')
-        self.cancelButton.pressed.connect(self.cancel)
+        self.cancelButton.clicked.connect(self.cancelButton_clicked)
 
         self.buttonLayout = QtWidgets.QHBoxLayout()
-        self.buttonLayout.addLayout(self.applyLayout)
+        self.buttonLayout.addWidget(self.applyButton)
         self.buttonLayout.addWidget(self.okayButton)
         self.buttonLayout.addWidget(self.cancelButton)
 
@@ -108,7 +99,7 @@ class QEzAlign(qproxywindow.QProxyWindow):
         :rtype: bool
         """
 
-        return self._preserveChildren
+        return self.preserveChildrenAction.isChecked()
 
     @preserveChildren.setter
     def preserveChildren(self, preserveChildren):
@@ -129,7 +120,7 @@ class QEzAlign(qproxywindow.QProxyWindow):
         :rtype: bool
         """
 
-        return self._preserveChildren
+        return self.freezeTransformAction.isChecked()
 
     @freezeTransform.setter
     def freezeTransform(self, freezeTransform):
@@ -157,8 +148,13 @@ class QEzAlign(qproxywindow.QProxyWindow):
 
         # Load user preferences
         #
+        self.tabControl.setCurrentIndex(self.settings.value('editor/currentTabIndex', defaultValue=0, type=int))
         self.preserveChildren = self.settings.value('editor/preserveChildren', defaultValue=False, type=bool)
         self.freezeTransform = self.settings.value('editor/freezeTransform', defaultValue=False, type=bool)
+
+        for tab in self.iterTabs():
+
+            tab.loadSettings(self.settings)
 
     def saveSettings(self):
         """
@@ -173,68 +169,96 @@ class QEzAlign(qproxywindow.QProxyWindow):
 
         # Save user preferences
         #
+        self.settings.setValue('editor/currentTabIndex', self.currentTabIndex())
         self.settings.setValue('editor/preserveChildren', self.preserveChildren)
         self.settings.setValue('editor/freezeTransform', self.freezeTransform)
 
+        for tab in self.iterTabs():
+
+            tab.saveSettings(self.settings)
+
     def currentTab(self):
         """
-        Returns the tab that is currently being displayed.
+        Returns the tab widget that is currently open.
 
         :rtype: QAbstractTab
         """
 
         return self.tabControl.currentWidget()
+
+    def currentTabIndex(self):
+        """
+        Returns the tab index that currently open.
+
+        :rtype: int
+        """
+
+        return self.tabControl.currentIndex()
+
+    def iterTabs(self):
+        """
+        Returns a generator that yields tab widgets.
+
+        :rtype: iter
+        """
+
+        for i in range(self.tabControl.count()):
+
+            yield self.tabControl.widget(i)
+
     # endregion
 
     # region Slots
-    def apply(self, *args, **kwargs):
+    def applyButton_clicked(self, checked=False):
         """
-        Slot method called whenever the user clicks the apply button.
-        This method will apply a transform matrix to the active selection.
-        This functionality changes based on the selected tab index.
+        Clicked slot method responsible for applying the selected operation.
 
+        :type checked: bool
         :rtype: None
         """
 
         currentTab = self.currentTab()
 
         if currentTab is not None:
+
             currentTab.apply(preserveChildren=self.preserveChildren, freezeTransform=self.freezeTransform)
 
-    def okay(self, *args, **kwargs):
+    def okayButton_clicked(self, checked=False):
         """
-        Slot method called whenever the user clicks the okay button.
-        This method will close the UI after applying the selected operation.
+        Clicked slot method responsible for applying the selected operation the closing the user interface.
 
+        :type checked: bool
         :rtype: None
         """
 
-        self.apply()
+        self.applyButton.click()
         self.close()
 
-    def cancel(self, *args, **kwargs):
+    def cancelButton_clicked(self, checked=False):
         """
-        Slot method called whenever the user clicks the cancel button.
-        This method will close the UI.
+        Clicked slot method responsible for closing the user interface.
 
+        :type checked: bool
         :rtype: None
         """
 
         self.close()
-        
-    def preserveChildrenTriggered(self, *args, **kwargs):
-        """
-        Slot method called whenever the user triggers the preserve children check box.
 
+    def preserveChildrenAction_triggered(self, checked=False):
+        """
+        Triggered slot method responsible for updating the preserve children flag.
+
+        :type checked: bool
         :rtype: None
         """
 
         self._preserveChildren = self.sender().isChecked()
 
-    def freezeTransformTriggered(self, *args, **kwargs):
+    def freezeTransformAction_triggered(self, checked=False):
         """
-        Slot method called whenever the user triggers the freeze transform check box.
+        Triggered slot method responsible for updating the freeze transform flag.
 
+        :type checked: bool
         :rtype: None
         """
 

@@ -1,9 +1,11 @@
 import numpy
+import json
 
 from PySide2 import QtCore, QtWidgets, QtGui
+from copy import deepcopy
 from dcc import fntransform
 from dcc.math import matrixmath
-from quickalign.abstract import qabstracttab
+from ezalign.abstract import qabstracttab
 
 import logging
 logging.basicConfig()
@@ -16,18 +18,30 @@ class QAlignTab(qabstracttab.QAbstractTab):
     Overload of QAbstractTab used to align two transforms.
     """
 
+    # region Dunderscores
     def __init__(self, *args, **kwargs):
         """
-        Overloaded method called after a new instance has been created.
+        Private method called after a new instance has been created.
 
-        :keyword parent: QtWidgets.QWidget
-        :keyword f: int
+        :type parent: QtWidgets.QWidget
+        :type f: int
         :rtype: None
         """
 
         # Call parent method
         #
         super(QAlignTab, self).__init__(*args, **kwargs)
+
+    def __build__(self, *args, **kwargs):
+        """
+        Private method used to build the user interface.
+
+        :rtype: None
+        """
+
+        # Call parent method
+        #
+        super(QAlignTab, self).__build__(*args, **kwargs)
 
         # Assign vertical layout
         #
@@ -43,6 +57,12 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.translateXCheckBox = QtWidgets.QCheckBox('X-Axis')
         self.translateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
         self.translateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
+
+        self.translateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self)
+        self.translateCheckBoxGroup.setExclusive(False)
+        self.translateCheckBoxGroup.addButton(self.translateXCheckBox, id=0)
+        self.translateCheckBoxGroup.addButton(self.translateYCheckBox, id=1)
+        self.translateCheckBoxGroup.addButton(self.translateZCheckBox, id=2)
 
         self.translateLayout.addWidget(self.translateXCheckBox)
         self.translateLayout.addWidget(self.translateYCheckBox)
@@ -69,7 +89,11 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.sourceMaxRadioButton = QtWidgets.QRadioButton('Maximum')
         self.sourceMaxRadioButton.setToolTip("Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.")
 
-        self.sourceRadioButtons = (self.sourceMinRadioButton, self.sourceCenterRadioButton, self.sourcePivotRadioButton, self.sourceMaxRadioButton)
+        self.sourceRadioButtonGroup = QtWidgets.QButtonGroup(parent=self)
+        self.sourceRadioButtonGroup.addButton(self.sourceMinRadioButton, id=0)
+        self.sourceRadioButtonGroup.addButton(self.sourceCenterRadioButton, id=1)
+        self.sourceRadioButtonGroup.addButton(self.sourcePivotRadioButton, id=2)
+        self.sourceRadioButtonGroup.addButton(self.sourceMaxRadioButton, id=3)
 
         self.sourceLayout.addWidget(self.sourceMinRadioButton)
         self.sourceLayout.addWidget(self.sourceCenterRadioButton)
@@ -95,7 +119,11 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.targetMaxRadioButton = QtWidgets.QRadioButton('Maximum')
         self.targetMaxRadioButton.setToolTip("Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.")
 
-        self.targetRadioButtons = (self.targetMinRadioButton, self.targetCenterRadioButton, self.targetPivotRadioButton, self.targetMaxRadioButton)
+        self.targetRadioButtonGroup = QtWidgets.QButtonGroup(parent=self)
+        self.targetRadioButtonGroup.addButton(self.targetMinRadioButton, id=0)
+        self.targetRadioButtonGroup.addButton(self.targetCenterRadioButton, id=1)
+        self.targetRadioButtonGroup.addButton(self.targetPivotRadioButton, id=2)
+        self.targetRadioButtonGroup.addButton(self.targetMaxRadioButton, id=3)
 
         self.targetLayout.addWidget(self.targetMinRadioButton)
         self.targetLayout.addWidget(self.targetCenterRadioButton)
@@ -122,6 +150,12 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.rotateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
         self.rotateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
 
+        self.rotateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self)
+        self.rotateCheckBoxGroup.setExclusive(False)
+        self.rotateCheckBoxGroup.addButton(self.rotateXCheckBox, id=0)
+        self.rotateCheckBoxGroup.addButton(self.rotateYCheckBox, id=1)
+        self.rotateCheckBoxGroup.addButton(self.rotateZCheckBox, id=2)
+
         self.rotationLayout.addWidget(self.rotateXCheckBox)
         self.rotationLayout.addWidget(self.rotateYCheckBox)
         self.rotationLayout.addWidget(self.rotateZCheckBox)
@@ -139,131 +173,163 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.scaleYCheckBox = QtWidgets.QCheckBox('Y-Axis')
         self.scaleZCheckBox = QtWidgets.QCheckBox('Z-Axis')
 
+        self.scaleCheckBoxGroup = QtWidgets.QButtonGroup(parent=self)
+        self.scaleCheckBoxGroup.setExclusive(False)
+        self.scaleCheckBoxGroup.addButton(self.scaleXCheckBox, id=0)
+        self.scaleCheckBoxGroup.addButton(self.scaleYCheckBox, id=1)
+        self.scaleCheckBoxGroup.addButton(self.scaleZCheckBox, id=2)
+
         self.scaleLayout.addWidget(self.scaleXCheckBox)
         self.scaleLayout.addWidget(self.scaleYCheckBox)
         self.scaleLayout.addWidget(self.scaleZCheckBox)
 
         self.layout().addWidget(self.scaleGroupBox)
+    # endregion
 
-        # Set startup defaults
-        #
-        self.sourcePivotRadioButton.setChecked(True)
-        self.targetPivotRadioButton.setChecked(True)
-
-        self.translateXCheckBox.setChecked(True)
-        self.translateYCheckBox.setChecked(True)
-        self.translateZCheckBox.setChecked(True)
-
-        self.rotateXCheckBox.setChecked(True)
-        self.rotateYCheckBox.setChecked(True)
-        self.rotateZCheckBox.setChecked(True)
-
+    # region Properties
     @property
-    def skipTranslateX(self):
+    def sourceType(self):
         """
-        Getter method used to check if translateX should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.translateXCheckBox.isChecked()
-
-    @property
-    def skipTranslateY(self):
-        """
-        Getter method used to check if translateY should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.translateYCheckBox.isChecked()
-
-    @property
-    def skipTranslateZ(self):
-        """
-        Getter method used to check if translateZ should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.translateZCheckBox.isChecked()
-
-    @property
-    def skipRotateX(self):
-        """
-        Getter method used to check if rotateX should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.rotateXCheckBox.isChecked()
-
-    @property
-    def skipRotateY(self):
-        """
-        Getter method used to check if rotateY should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.rotateYCheckBox.isChecked()
-
-    @property
-    def skipRotateZ(self):
-        """
-        Getter method used to check if rotateZ should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.rotateZCheckBox.isChecked()
-
-    @property
-    def skipScaleX(self):
-        """
-        Getter method used to check if the scaleX value should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.scaleXCheckBox.isChecked()
-
-    @property
-    def skipScaleY(self):
-        """
-        Getter method used to check if the scaleY value should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.scaleYCheckBox.isChecked()
-
-    @property
-    def skipScaleZ(self):
-        """
-        Getter method used to check if the scaleZ value should be skipped.
-
-        :rtype: bool
-        """
-
-        return not self.scaleZCheckBox.isChecked()
-
-    def getSourceType(self):
-        """
-        Returns the selected source type.
+        Getter methods that returns the source type.
 
         :rtype: int
         """
 
-        return [x.isChecked() for x in self.sourceRadioButtons].index(True)
+        return self.sourceRadioButtonGroup.checkedId()
 
-    def getSourceObject(self):
+    @sourceType.setter
+    def sourceType(self, sourceType):
         """
-        Evaluates the active selection to return the data related to the source object.
-        This includes a dag path, and offset matrix.
-        Please note that bounding boxes are returned in world space!
+        Setter method that updates the source type.
 
-        :rtype: fntransform.FnTransform, om.MMatrix
+        :type sourceType: int
+        :rtype: None
+        """
+
+        self.sourceRadioButtonGroup.buttons()[sourceType].setChecked(True)
+
+    @property
+    def targetType(self):
+        """
+        Getter methods that returns the target type.
+
+        :rtype: int
+        """
+
+        return self.targetRadioButtonGroup.checkedId()
+
+    @targetType.setter
+    def targetType(self, targetType):
+        """
+        Setter method that updates the target type.
+
+        :type targetType: int
+        :rtype: None
+        """
+
+        self.targetRadioButtonGroup.buttons()[targetType].setChecked(True)
+    # endregion
+
+    # region Methods
+    def loadSettings(self, settings):
+        """
+        Loads the user settings.
+
+        :type settings: QtCore.QSettings
+        :rtype: None
+        """
+
+        self.sourceType = settings.value('tabs/align/sourceType', defaultValue=2, type=int)
+        self.targetType = settings.value('tabs/align/targetType', defaultValue=2, type=int)
+
+        self.setMatchTranslate(json.loads(settings.value('tabs/align/matchTranslate', defaultValue='[true, true, true]', type=str)))
+        self.setMatchRotate(json.loads(settings.value('tabs/align/matchRotate', defaultValue='[true, true, true]', type=str)))
+        self.setMatchScale(json.loads(settings.value('tabs/align/matchScale', defaultValue='[false, false, false]', type=str)))
+
+    def saveSettings(self, settings):
+        """
+        Saves the user settings.
+
+        :type settings: QtCore.QSettings
+        :rtype: None
+        """
+
+        settings.setValue('tabs/align/sourceType', self.sourceType)
+        settings.setValue('tabs/align/targetType', self.targetType)
+
+        settings.setValue('tabs/align/matchTranslate', json.dumps(self.matchTranslate()))
+        settings.setValue('tabs/align/matchRotate', json.dumps(self.matchRotate()))
+        settings.setValue('tabs/align/matchScale', json.dumps(self.matchScale()))
+
+    def matchTranslate(self):
+        """
+        Returns the match translation flags.
+
+        :rtype: list[bool, bool, bool]
+        """
+
+        return [x.isChecked() for x in self.translateCheckBoxGroup.buttons()]
+
+    def setMatchTranslate(self, matchTranslate):
+        """
+        Updates the match translation flags.
+
+        :type matchTranslate: list[bool, bool, bool]
+        :rtype: None
+        """
+
+        for (index, match) in enumerate(matchTranslate):
+
+            self.translateCheckBoxGroup.button(index).setChecked(match)
+
+    def matchRotate(self):
+        """
+        Returns the match rotation flags.
+
+        :rtype: list[bool, bool, bool]
+        """
+
+        return [x.isChecked() for x in self.rotateCheckBoxGroup.buttons()]
+
+    def setMatchRotate(self, matchRotate):
+        """
+        Updates the match rotation flags.
+
+        :type matchRotate: list[bool, bool, bool]
+        :rtype: None
+        """
+
+        for (index, match) in enumerate(matchRotate):
+
+            self.rotateCheckBoxGroup.button(index).setChecked(match)
+
+    def matchScale(self):
+        """
+        Returns the match scale flags.
+
+        :rtype: list[bool, bool, bool]
+        """
+
+        return [x.isChecked() for x in self.scaleCheckBoxGroup.buttons()]
+
+    def setMatchScale(self, matchScale):
+        """
+        Updates the match scale flags.
+
+        :type matchScale: list[bool, bool, bool]
+        :rtype: None
+        """
+
+        for (index, match) in enumerate(matchScale):
+
+            self.scaleCheckBoxGroup.button(index).setChecked(match)
+
+    def evaluateSource(self):
+        """
+        Evaluates the active selection to return the source input.
+        Please be aware that bounding boxes are returned in world space!
+
+        :rtype: fntransform.FnTransform, numpy.matrix
         """
 
         # Get selection list
@@ -275,7 +341,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         if selectionCount != 2:
 
-            raise TypeError('getSourceObject() expects to 2 selected nodes!')
+            raise TypeError('evaluateSource() expects to 2 selected nodes!')
 
         # Attach source object to function set
         #
@@ -284,42 +350,40 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         if not success:
 
-            raise TypeError('getSourceObject() expects a transform node!')
+            raise TypeError('evaluateSource() expects a transform node!')
 
         # Evaluate source type for offset matrix
         #
         worldMatrix = fnTransform.worldMatrix()
-        offsetMatrix = matrixmath.IDENTITY_MATRIX
+        offsetMatrix = deepcopy(matrixmath.IDENTITY_MATRIX)
 
-        sourceType = self.getSourceType()
-
-        if sourceType == 0:  # Minimum
+        if self.sourceType == 0:  # Minimum
 
             boundingBox = fnTransform.boundingBox()
-            minPoint = numpy.array([boundingBox[0], boundingBox[2], boundingBox[4]])
-            boundingMatrix = matrixmath.createTranslateMatrix(minPoint)
+            minPoint = numpy.array(boundingBox[0])
+            translateMatrix = matrixmath.createTranslateMatrix(minPoint)
 
-            offsetMatrix = (matrixmath.decomposeMatrix(worldMatrix)[1] * boundingMatrix) * worldMatrix.I
+            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
 
-        elif sourceType == 1:  # Center
+        elif self.sourceType == 1:  # Center
 
             boundingBox = fnTransform.boundingBox()
-            centerPoint = (numpy.array([boundingBox[0], boundingBox[2], boundingBox[4]]) * 0.5) + (numpy.array([boundingBox[1], boundingBox[3], boundingBox[5]]) * 0.5)
-            boundingMatrix = matrixmath.createTranslateMatrix(centerPoint)
+            centerPoint = (numpy.array(boundingBox[0]) * 0.5) + (numpy.array(boundingBox[1]) * 0.5)
+            translateMatrix = matrixmath.createTranslateMatrix(centerPoint)
 
-            offsetMatrix = (matrixmath.decomposeMatrix(worldMatrix)[1] * boundingMatrix) * worldMatrix.I
+            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
 
-        elif sourceType == 2:  # Pivot Point
+        elif self.sourceType == 2:  # Pivot Point
 
             pass
 
-        elif sourceType == 3:  # Maximum
+        elif self.sourceType == 3:  # Maximum
 
             boundingBox = fnTransform.boundingBox()
-            maxPoint = numpy.array([boundingBox[1], boundingBox[3], boundingBox[5]])
-            boundingMatrix = matrixmath.createTranslateMatrix(maxPoint)
+            maxPoint = numpy.array(boundingBox[1])
+            translateMatrix = matrixmath.createTranslateMatrix(maxPoint)
 
-            offsetMatrix = (matrixmath.decomposeMatrix(worldMatrix)[1] * boundingMatrix) * worldMatrix.I
+            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
 
         else:
 
@@ -327,24 +391,14 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         # Return results
         #
-        return source, offsetMatrix
+        return fnTransform, offsetMatrix
 
-    def getTargetType(self):
+    def evaluateTarget(self):
         """
-        Returns the selected target type.
+        Evaluates the active selection to return the target input.
+        Please be aware that bounding boxes are returned in world space!
 
-        :rtype: int
-        """
-
-        return [x.isChecked() for x in self.targetRadioButtons].index(True)
-
-    def getTargetObject(self):
-        """
-        Evaluates the active selection to return the data related to the target object.
-        This includes a dag path and offset matrix.
-        Please note that bounding boxes are returned in world space!
-
-        :rtype: fntransform.FnTransform, om.MMatrix
+        :rtype: fntransform.FnTransform, numpy.matrix
         """
 
         # Get selection list
@@ -356,7 +410,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         if selectionCount != 2:
 
-            raise TypeError('getTargetObject() expects to 2 selected nodes!')
+            raise TypeError('evaluateTarget() expects to 2 selected nodes!')
 
         # Attach source object to function set
         #
@@ -365,42 +419,40 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         if not success:
 
-            raise TypeError('getTargetObject() expects a transform node!')
+            raise TypeError('evaluateTarget() expects a transform node!')
 
         # Evaluate source type for offset matrix
         #
         worldMatrix = fnTransform.worldMatrix()
-        offsetMatrix = matrixmath.IDENTITY_MATRIX
+        offsetMatrix = deepcopy(matrixmath.IDENTITY_MATRIX)
 
-        sourceType = self.getTargetType()
-
-        if sourceType == 0:  # Minimum
+        if self.targetType == 0:  # Minimum
 
             boundingBox = fnTransform.boundingBox()
-            minPoint = numpy.array([boundingBox[0], boundingBox[2], boundingBox[4]])
-            boundingMatrix = matrixmath.createTranslateMatrix(minPoint)
+            minPoint = numpy.array(boundingBox[0])
+            translateMatrix = matrixmath.createTranslateMatrix(minPoint)
 
-            offsetMatrix = (matrixmath.decomposeMatrix(worldMatrix)[1] * boundingMatrix) * worldMatrix.I
+            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
 
-        elif sourceType == 1:  # Center
+        elif self.targetType == 1:  # Center
 
             boundingBox = fnTransform.boundingBox()
-            centerPoint = (numpy.array([boundingBox[0], boundingBox[2], boundingBox[4]]) * 0.5) + (numpy.array([boundingBox[1], boundingBox[3], boundingBox[5]]) * 0.5)
-            boundingMatrix = matrixmath.createTranslateMatrix(centerPoint)
+            centerPoint = (numpy.array(boundingBox[0]) * 0.5) + (numpy.array(boundingBox[1]) * 0.5)
+            translateMatrix = matrixmath.createTranslateMatrix(centerPoint)
 
-            offsetMatrix = (matrixmath.decomposeMatrix(worldMatrix)[1] * boundingMatrix) * worldMatrix.I
+            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
 
-        elif sourceType == 2:  # Pivot Point
+        elif self.targetType == 2:  # Pivot Point
 
             pass
 
-        elif sourceType == 3:  # Maximum
+        elif self.targetType == 3:  # Maximum
 
             boundingBox = fnTransform.boundingBox()
-            maxPoint = numpy.array([boundingBox[1], boundingBox[3], boundingBox[5]])
-            boundingMatrix = matrixmath.createTranslateMatrix(maxPoint)
+            maxPoint = numpy.array(boundingBox[1])
+            translateMatrix = matrixmath.createTranslateMatrix(maxPoint)
 
-            offsetMatrix = (matrixmath.decomposeMatrix(worldMatrix)[1] * boundingMatrix) * worldMatrix.I
+            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
 
         else:
 
@@ -408,16 +460,15 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         # Return results
         #
-        return target, offsetMatrix
+        return fnTransform, offsetMatrix
 
-    def apply(self, preserveChildren=False):
+    def apply(self, preserveChildren=False, freezeTransform=False):
         """
         Aligns the active selection.
-        The expected selection order consists of two nodes:
-            [0] Source - The transform to copy from.
-            [1] Target - The transform to copy to.
+        The selection order consisting of the source to copy from followed by the target to copy to.
 
         :type preserveChildren: bool
+        :type freezeTransform: bool
         :rtype: None
         """
 
@@ -427,8 +478,10 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
             # Get source and target objects
             #
-            fnSource, sourceOffsetMatrix = self.getSourceObject()
-            fnTarget, targetOffsetMatrix = self.getTargetObject()
+            fnSource, sourceOffsetMatrix = self.evaluateSource()
+            fnTarget, targetOffsetMatrix = self.evaluateTarget()
+
+            log.info('Copying from: %s, pasting to %s' % (fnSource.name(), fnTarget.name()))
 
             # Calculate source transform in target parent space
             # Don't forget to include the offset matrices!
@@ -436,19 +489,36 @@ class QAlignTab(qabstracttab.QAbstractTab):
             sourceWorldMatrix = fnSource.worldMatrix()
             targetParentInverseMatrix = fnTarget.parentInverseMatrix()
 
-            targetMatrix = targetOffsetMatrix.I * ((sourceOffsetMatrix * sourceWorldMatrix) * targetParentInverseMatrix)
+            targetMatrix = targetOffsetMatrix * ((sourceOffsetMatrix * sourceWorldMatrix) * targetParentInverseMatrix)
 
             # Copy transform matrix
             #
+            skipTranslateX, skipTranslateY, skipTranslateZ = (not x for x in self.matchTranslate())
+            skipRotateX, skipRotateY, skipRotateZ = (not x for x in self.matchRotate())
+            skipScaleX, skipScaleY, skipScaleZ = (not x for x in self.matchScale())
+            snapshot = fnTarget.snapshot()
+
             fnTarget.setMatrix(
                 targetMatrix,
-                skipTranslateX=self.skipTranslateX, skipTranslateY=self.skipTranslateY, skipTranslateZ=self.skipTranslateZ,
-                skipRotateX=self.skipRotateX, skipRotateY=self.skipRotateY, skipRotateZ=self.skipRotateZ,
-                skipScaleX=self.skipScaleX, skipScaleY=self.skipScaleY, skipScaleZ=self.skipScaleZ,
-                preserveChildren=preserveChildren
+                skipTranslateX=skipTranslateX, skipTranslateY=skipTranslateY, skipTranslateZ=skipTranslateZ,
+                skipRotateX=skipRotateX, skipRotateY=skipRotateY, skipRotateZ=skipRotateZ,
+                skipScaleX=skipScaleX, skipScaleY=skipScaleY, skipScaleZ=skipScaleZ
             )
+
+            # Check if transform should be frozen
+            #
+            if freezeTransform:
+
+                fnTarget.freezeTransform()
+
+            # Check if children should be preserved
+            #
+            if preserveChildren:
+
+                fnTarget.assumeSnapshot(snapshot)
 
         except TypeError as exception:
 
             log.warning(exception)
             return
+    # endregion

@@ -1,6 +1,5 @@
 from PySide2 import QtCore, QtWidgets, QtGui
 from abc import abstractmethod
-from dcc.math import vectormath
 
 import logging
 logging.basicConfig()
@@ -13,14 +12,10 @@ class QAbstractTab(QtWidgets.QWidget):
     Overload of QWidget used to outline the structure for alignment tabs.
     """
 
-    FLOAT_PRECISION = 3
-    SIGN = 1.0, -1.0
-    ORIGIN = vectormath.ORIGIN
-    AXIS_VECTORS = vectormath.X_AXIS_VECTOR, vectormath.Y_AXIS_VECTOR, vectormath.Z_AXIS_VECTOR
-
-    def __init__(self, parent=None, f=QtCore.Qt.WindowFlags()):
+    # region Dunderscores
+    def __init__(self, *args, **kwargs):
         """
-        Overloaded method called after a new instance has been created.
+        Private method called after a new instance has been created.
 
         :type parent: QtWidgets.QWidget
         :type f: int
@@ -29,19 +24,56 @@ class QAbstractTab(QtWidgets.QWidget):
 
         # Call parent method
         #
+        parent = kwargs.get('parent', None)
+        f = kwargs.get('f', QtCore.Qt.WindowFlags())
+
         super(QAbstractTab, self).__init__(parent=parent, f=f)
 
-    def __build__(self):
-
-        pass
+        # Initialize user interface
+        #
+        self.__build__(*args, **kwargs)
 
     @abstractmethod
-    def apply(self, preserveChildren=False):
+    def __build__(self, *args, **kwargs):
         """
-        Abstract method intended to be overloaded to define the custom alignment operation.
+        Private method used to build the user interface.
 
-        :type preserveChildren: bool
         :rtype: None
         """
 
         pass
+    # endregion
+
+    # region Methods
+    def loadSettings(self, settings):
+        """
+        Loads the user settings.
+
+        :type settings: QtCore.QSettings
+        :rtype: None
+        """
+
+        pass
+
+    def saveSettings(self, settings):
+        """
+        Saves the user settings.
+
+        :type settings: QtCore.QSettings
+        :rtype: None
+        """
+
+        pass
+
+    @abstractmethod
+    def apply(self, preserveChildren=False, freezeTransform=False):
+        """
+        Abstract method intended to be overloaded to define the custom alignment operation.
+
+        :type preserveChildren: bool
+        :type freezeTransform: bool
+        :rtype: None
+        """
+
+        pass
+    # endregion
