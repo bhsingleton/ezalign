@@ -485,8 +485,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
             parentInverseMatrix = fnTransform.parentInverseMatrix()
             worldMatrix = self.matrixEdit.matrix()
             matrix = worldMatrix * parentInverseMatrix
-            snapshot = fnTransform.snapshot()
 
+            fnTransform.snapshot()
             fnTransform.setMatrix(matrix, preserveChildren=preserveChildren)
 
             # Check if transform should be frozen
@@ -499,7 +499,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
             #
             if preserveChildren:
 
-                fnTransform.assumeSnapshot(snapshot)
+                fnTransform.assumeSnapshot()
     # endregion
 
     # region Slots

@@ -496,8 +496,8 @@ class QAlignTab(qabstracttab.QAbstractTab):
             skipTranslateX, skipTranslateY, skipTranslateZ = (not x for x in self.matchTranslate())
             skipRotateX, skipRotateY, skipRotateZ = (not x for x in self.matchRotate())
             skipScaleX, skipScaleY, skipScaleZ = (not x for x in self.matchScale())
-            snapshot = fnTarget.snapshot()
 
+            fnTarget.snapshot()
             fnTarget.setMatrix(
                 targetMatrix,
                 skipTranslateX=skipTranslateX, skipTranslateY=skipTranslateY, skipTranslateZ=skipTranslateZ,
@@ -515,7 +515,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
             #
             if preserveChildren:
 
-                fnTarget.assumeSnapshot(snapshot)
+                fnTarget.assumeSnapshot()
 
         except TypeError as exception:
 
