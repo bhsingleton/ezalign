@@ -612,7 +612,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             else:
 
-                self.upVector = vectormath.normalizeVector(self.getCenterPosition() - self.point)
+                self.upVector = vectormath.normalizeVector(self.getCenterPosition() - self.origin)
 
         else:
 
