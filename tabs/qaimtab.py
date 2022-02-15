@@ -641,11 +641,12 @@ class QAimTab(qabstracttab.QAbstractTab):
 
             # Get dag paths to nodes
             #
-            fnTransform.setObject(selection[i])
+            start, end = selection[i], selection[i+1]
+            fnTransform.setObject(start)
 
             origin = numpy.array(fnTransform.translation(worldSpace=True))
-            forwardVector = self.forwardVector(selection[i], selection[i+1], normalize=True)
-            upVector = self.upVector(selection[i], selection[i+1], normalize=True)
+            forwardVector = self.forwardVector(start, end, normalize=True)
+            upVector = self.upVector(start, end, normalize=True)
 
             # Compose aim matrix in parent space
             #
