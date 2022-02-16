@@ -1,6 +1,5 @@
 import numpy
 import json
-import sys
 
 from PySide2 import QtCore, QtWidgets, QtGui
 from copy import deepcopy
@@ -292,8 +291,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
 
         self.origin = json.loads(settings.value('tabs/matrix/origin', defaultValue='[0.0, 0.0, 0.0]', type=str))
+
         self.forwardAxis = settings.value('tabs/matrix/forwardAxis', defaultValue=0, type=int)
         self.forwardVector = json.loads(settings.value('tabs/matrix/forwardVector', defaultValue='[1.0, 0.0, 0.0]', type=str))
+
         self.upAxis = settings.value('tabs/matrix/upAxis', defaultValue=1, type=int)
         self.upVector = json.loads(settings.value('tabs/matrix/upVector', defaultValue='[0.0, 1.0, 0.0]', type=str))
         
@@ -306,8 +307,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
 
         settings.setValue('tabs/matrix/origin', json.dumps(self.origin.tolist()))
+
         settings.setValue('tabs/matrix/forwardAxis', self.forwardAxis)
         settings.setValue('tabs/matrix/forwardVector', json.dumps(self.forwardVector.tolist()))
+
         settings.setValue('tabs/matrix/upAxis', self.upAxis)
         settings.setValue('tabs/matrix/upVector', json.dumps(self.upVector.tolist()))
 
