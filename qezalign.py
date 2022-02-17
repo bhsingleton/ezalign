@@ -1,6 +1,6 @@
 from PySide2 import QtCore, QtWidgets, QtGui
 from dcc.userinterface import qproxywindow
-from ezalign.tabs import qaligntab, qaimtab, qmatrixtab
+from ezalign.tabs import qaligntab, qaimtab, qmatrixtab, qtimetab
 
 import logging
 logging.basicConfig()
@@ -52,6 +52,7 @@ class QEzAlign(qproxywindow.QProxyWindow):
         self.tabControl.addTab(qaligntab.QAlignTab(), 'Align')
         self.tabControl.addTab(qaimtab.QAimTab(), 'Aim')
         self.tabControl.addTab(qmatrixtab.QMatrixTab(), 'Matrix')
+        self.tabControl.addTab(qtimetab.QTimeTab(), 'Time')
 
         self.centralWidget().layout().addWidget(self.tabControl)
 
