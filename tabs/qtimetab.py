@@ -263,15 +263,15 @@ class QAlignRollout(qrollout.QRollout):
         # Create maintain offset widgets
         #
         self.maintainOffsetLabel = QtWidgets.QLabel('Maintain Offset:')
-        self.maintainTranslateOffset = QtWidgets.QCheckBox('Position')
-        self.maintainRotateOffset = QtWidgets.QCheckBox('Rotation')
-        self.maintainScaleOffset = QtWidgets.QCheckBox('Scale')
+        self.maintainTranslateCheckBox = QtWidgets.QCheckBox('Position')
+        self.maintainRotateCheckBox = QtWidgets.QCheckBox('Rotation')
+        self.maintainScaleCheckBox = QtWidgets.QCheckBox('Scale')
 
         self.maintainOffsetLayout = QtWidgets.QHBoxLayout()
         self.maintainOffsetLayout.addWidget(self.maintainOffsetLabel)
-        self.maintainOffsetLayout.addWidget(self.maintainTranslateOffset)
-        self.maintainOffsetLayout.addWidget(self.maintainRotateOffset)
-        self.maintainOffsetLayout.addWidget(self.maintainScaleOffset)
+        self.maintainOffsetLayout.addWidget(self.maintainTranslateCheckBox)
+        self.maintainOffsetLayout.addWidget(self.maintainRotateCheckBox)
+        self.maintainOffsetLayout.addWidget(self.maintainScaleCheckBox)
 
         self.centralLayout.addLayout(self.maintainOffsetLayout)
 
@@ -304,9 +304,12 @@ class QAlignRollout(qrollout.QRollout):
             'startTime': self.startTime,
             'endTime': self.endTime,
             'step': self.step,
-            'matchTranslate': self.matchTranslate(),
-            'matchRotate': self.matchRotate(),
-            'matchScale': self.matchScale()
+            'matchTranslate': self.matchTranslate,
+            'matchRotate': self.matchRotate,
+            'matchScale': self.matchScale,
+            'maintainTranslate': self.maintainTranslate,
+            'maintainRotate': self.maintainRotate,
+            'maintainScale': self.maintainScale
         }
 
     def __setstate__(self, state):
@@ -324,9 +327,12 @@ class QAlignRollout(qrollout.QRollout):
         self.startTime = state.get('startTime', 0)
         self.endTime = state.get('endTime', 1)
         self.step = state.get('step', 1)
-        self.setMatchTranslate(state.get('matchTranslate', [True, True, True]))
-        self.setMatchRotate(state.get('matchRotate', [True, True, True]))
-        self.setMatchScale(state.get('matchScale', [False, False, False]))
+        self.matchTranslate = state.get('matchTranslate', [True, True, True])
+        self.matchRotate = state.get('matchRotate', [True, True, True])
+        self.matchScale = state.get('matchScale', [False, False, False])
+        self.maintainTranslate = (state.get('maintainTranslate', False))
+        self.maintainRotate = (state.get('maintainRotate', False))
+        self.maintainScale = (state.get('maintainScale', False))
     # endregion
 
     # region Properties
@@ -436,66 +442,129 @@ class QAlignRollout(qrollout.QRollout):
         """
 
         self.stepSpinBox.setValue(step)
-    # endregion
 
-    # region Methods
+    @property
     def matchTranslate(self):
         """
-        Returns the match translate flags.
+        Getter method that returns the match translate flag.
 
         :rtype: list[bool, bool, bool]
         """
 
         return self.matchTranslateXYZWidget.matches()
 
-    def setMatchTranslate(self, matchTranslate):
+    @matchTranslate.setter
+    def matchTranslate(self, matchTranslate):
         """
-        Updates the match translate flags.
+        Setter method that updates the match translate flag.
 
-        :type matchTranslate: list[bool, bool, bool]
-        :rtype: None
+        :rtype: list[bool, bool, bool]
         """
 
         self.matchTranslateXYZWidget.setMatches(matchTranslate)
 
+    @property
     def matchRotate(self):
         """
-        Returns the match rotate flags.
+        Getter method that returns the match rotate flag.
 
         :rtype: list[bool, bool, bool]
         """
 
         return self.matchRotateXYZWidget.matches()
 
-    def setMatchRotate(self, matchRotate):
+    @matchRotate.setter
+    def matchRotate(self, matchRotate):
         """
-        Updates the match rotate flags.
+        Setter method that updates the match rotate flag.
 
-        :type matchRotate: list[bool, bool, bool]
-        :rtype: None
+        :rtype: list[bool, bool, bool]
         """
 
         self.matchRotateXYZWidget.setMatches(matchRotate)
 
+    @property
     def matchScale(self):
         """
-        Returns the match scale flags.
+        Getter method that returns the match scale flag.
 
         :rtype: list[bool, bool, bool]
         """
 
         return self.matchScaleXYZWidget.matches()
 
-    def setMatchScale(self, matchScale):
+    @matchScale.setter
+    def matchScale(self, matchScale):
         """
-        Updates the match scale flags.
+        Setter method that updates the match scale flag.
 
-        :type matchScale: list[bool, bool, bool]
-        :rtype: None
+        :rtype: list[bool, bool, bool]
         """
 
         self.matchScaleXYZWidget.setMatches(matchScale)
+    
+    @property
+    def maintainTranslate(self):
+        """
+        Getter method that returns the maintain translate flag.
+        
+        :rtype: bool
+        """
+        
+        return self.maintainTranslateCheckBox.isChecked()
+    
+    @maintainTranslate.setter
+    def maintainTranslate(self, maintainTranslate):
+        """
+        Setter method that updates the maintain translate flag.
 
+        :rtype: bool
+        """
+        
+        self.maintainTranslateCheckBox.setChecked(maintainTranslate)
+    
+    @property
+    def maintainRotate(self):
+        """
+        Getter method that returns the maintain rotate flag.
+
+        :rtype: bool
+        """
+
+        return self.maintainRotateCheckBox.isChecked()
+
+    @maintainRotate.setter
+    def maintainRotate(self, maintainRotate):
+        """
+        Setter method that updates the maintain rotate flag.
+
+        :rtype: bool
+        """
+
+        self.maintainRotateCheckBox.setChecked(maintainRotate)
+
+    @property
+    def maintainScale(self):
+        """
+        Getter method that returns the maintain scale flag.
+
+        :rtype: bool
+        """
+
+        return self.maintainScaleCheckBox.isChecked()
+
+    @maintainScale.setter
+    def maintainScale(self, maintainScale):
+        """
+        Setter method that updates the maintain scale flag.
+
+        :rtype: bool
+        """
+
+        self.maintainScaleCheckBox.setChecked(maintainScale)
+    # endregion
+
+    # region Methods
     def invalidate(self):
         """
         Re-concatenates the title of this rollout.
@@ -532,20 +601,32 @@ class QAlignRollout(qrollout.QRollout):
             log.warning('Unable to locate child node: %s!' % self.sourceName)
             return
 
+        # Collect skip flags
+        #
+        skipTranslateX, skipTranslateY, skipTranslateZ = (not x for x in self.matchTranslate)
+        skipRotateX, skipRotateY, skipRotateZ = (not x for x in self.matchRotate)
+        skipScaleX, skipScaleY, skipScaleZ = (not x for x in self.matchScale)
+
+        # Calculate offset matrix
+        #
+        offsetMatrix = fnTarget.offsetMatrix(
+            fnSource.object(),
+            maintainTranslate=self.maintainTranslate,
+            maintainRotate=self.maintainRotate,
+            maintainScale=self.maintainScale
+        )
+
         # Iterate through time range
         #
-        skipTranslateX, skipTranslateY, skipTranslateZ = (not x for x in self.matchTranslate())
-        skipRotateX, skipRotateY, skipRotateZ = (not x for x in self.matchRotate())
-        skipScaleX, skipScaleY, skipScaleZ = (not x for x in self.matchScale())
-
         fnScene = fnscene.FnScene()
         fnScene.enableAutoKey()
 
         for i in range(self.startTime, self.endTime, self.step):
 
             fnScene.setTime(i)
-            fnTarget.copy(
+            fnTarget.copyTransform(
                 fnSource.object(),
+                offsetMatrix=offsetMatrix,
                 skipTranslateX=skipTranslateX, skipTranslateY=skipTranslateY, skipTranslateZ=skipTranslateZ,
                 skipRotateX=skipRotateX, skipRotateY=skipRotateY, skipRotateZ=skipRotateZ,
                 skipScaleX=skipScaleX, skipScaleY=skipScaleY, skipScaleZ=skipScaleZ
