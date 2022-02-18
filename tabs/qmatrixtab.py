@@ -92,6 +92,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self.originButton.clicked.connect(self.originButton_clicked)
 
         self.labelLayout = QtWidgets.QVBoxLayout()
+        self.labelLayout.setSpacing(8)
         self.labelLayout.addWidget(self.xAxisLabel)
         self.labelLayout.addWidget(self.yAxisLabel)
         self.labelLayout.addWidget(self.zAxisLabel)
@@ -184,7 +185,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
 
         self._origin = numpy.copy(point)
-        self.invalidateMatrix()
+        self.invalidate()
         
     @property
     def forwardAxis(self):
@@ -209,7 +210,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             self._forwardAxis = forwardAxis
             self.forwardAxisButtonGroup.buttons()[forwardAxis].setChecked(True)
-            self.invalidateMatrix()
+            self.invalidate()
 
     @property
     def forwardVector(self):
@@ -231,7 +232,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
 
         self._forwardVector = numpy.copy(forwardVector)
-        self.invalidateMatrix()
+        self.invalidate()
 
     @property
     def upAxis(self):
@@ -256,7 +257,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             self._upAxis = upAxis
             self.upAxisButtonGroup.buttons()[upAxis].setChecked(True)
-            self.invalidateMatrix()
+            self.invalidate()
 
     @property
     def upVector(self):
@@ -278,7 +279,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
 
         self._upVector = numpy.copy(upVector)
-        self.invalidateMatrix()
+        self.invalidate()
     # endregion
 
     # region Methods
@@ -323,7 +324,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         return [x for x in [0, 1, 2] if x not in (self.forwardAxis, self.upAxis)][0]
 
-    def invalidateMatrix(self):
+    def invalidate(self):
         """
         Invalidates the transformation matrix.
 

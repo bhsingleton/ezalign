@@ -5,7 +5,7 @@ from PySide2 import QtCore, QtWidgets, QtGui
 from copy import deepcopy
 from dcc import fntransform, fnscene
 from dcc.math import vectormath, matrixmath
-from dcc.userinterface import qlineeditgroup
+from dcc.userinterface import qvectoredit
 from ezalign.abstract import qabstracttab
 
 import logging
@@ -43,7 +43,6 @@ class QAimTab(qabstracttab.QAbstractTab):
         #
         self._forwardAxis = 0
         self._upAxis = 1
-        self._worldUpVector = numpy.array([1.0, 0.0, 0.0])
         self._worldUpObject = fntransform.FnTransform()
 
     def __build__(self, *args, **kwargs):
@@ -126,6 +125,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         # Create world up group box
         #
         self.worldUpLayout = QtWidgets.QGridLayout()
+        self.worldUpLayout.setSpacing(8)
 
         self.worldUpGroupBox = QtWidgets.QGroupBox('World Up:')
         self.worldUpGroupBox.setLayout(self.worldUpLayout)
@@ -146,35 +146,13 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         # Create world up vector items
         #
-        self.validator = QtGui.QDoubleValidator(-1.0, 1.0, self.__decimals__, self)
-        self.validator.setNotation(QtGui.QDoubleValidator.StandardNotation)
-
         self.worldUpVectorLabel = QtWidgets.QLabel('Vector:')
         self.worldUpVectorLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
 
-        self.worldUpVectorXLineEdit = QtWidgets.QLineEdit('1.0')
-        self.worldUpVectorXLineEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.worldUpVectorXLineEdit.setFixedHeight(24)
-        self.worldUpVectorXLineEdit.setValidator(self.validator)
-        self.worldUpVectorXLineEdit.setAlignment(QtCore.Qt.AlignCenter)
-
-        self.worldUpVectorYLineEdit = QtWidgets.QLineEdit('0.0')
-        self.worldUpVectorYLineEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.worldUpVectorYLineEdit.setFixedHeight(24)
-        self.worldUpVectorYLineEdit.setValidator(self.validator)
-        self.worldUpVectorYLineEdit.setAlignment(QtCore.Qt.AlignCenter)
-
-        self.worldUpVectorZLineEdit = QtWidgets.QLineEdit('0.0')
-        self.worldUpVectorZLineEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.worldUpVectorZLineEdit.setFixedHeight(24)
-        self.worldUpVectorZLineEdit.setValidator(self.validator)
-        self.worldUpVectorZLineEdit.setAlignment(QtCore.Qt.AlignCenter)
-
-        self.worldUpVectorLineEditGroup = qlineeditgroup.QLineEditGroup(parent=self)
-        self.worldUpVectorLineEditGroup.addLineEdit(self.worldUpVectorXLineEdit, id=0)
-        self.worldUpVectorLineEditGroup.addLineEdit(self.worldUpVectorYLineEdit, id=1)
-        self.worldUpVectorLineEditGroup.addLineEdit(self.worldUpVectorZLineEdit, id=2)
-        self.worldUpVectorLineEditGroup.idTextChanged.connect(self.worldUpVectorLineEditGroup_idTextChanged)
+        self.worldUpVectorEdit = qvectoredit.QVectorEdit()
+        self.worldUpVectorEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.worldUpVectorEdit.setFixedHeight(24)
+        self.worldUpVectorEdit.setVector(numpy.array([1.0, 0.0, 0.0]))
 
         self.worldUpVectorButton = QtWidgets.QPushButton('Pick')
         self.worldUpVectorButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -182,9 +160,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         self.worldUpVectorButton.clicked.connect(self.worldUpVectorButton_clicked)
 
         self.worldUpVectorLayout = QtWidgets.QHBoxLayout()
-        self.worldUpVectorLayout.addWidget(self.worldUpVectorXLineEdit)
-        self.worldUpVectorLayout.addWidget(self.worldUpVectorYLineEdit)
-        self.worldUpVectorLayout.addWidget(self.worldUpVectorZLineEdit)
+        self.worldUpVectorLayout.addWidget(self.worldUpVectorEdit)
         self.worldUpVectorLayout.addWidget(self.worldUpVectorButton)
 
         self.worldUpLayout.addWidget(self.worldUpVectorLabel, 1, 0)
@@ -333,7 +309,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         :rtype: numpy.array
         """
 
-        return self._worldUpVector
+        return self.worldUpVectorEdit.vector()
 
     @worldUpVector.setter
     def worldUpVector(self, worldUpVector):
@@ -344,11 +320,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        if not numpy.array_equal(self._worldUpVector, worldUpVector):
-
-            self.worldUpVectorXLineEdit.setText(str(self._worldUpVector[0]))
-            self.worldUpVectorYLineEdit.setText(str(self._worldUpVector[1]))
-            self.worldUpVectorZLineEdit.setText(str(self._worldUpVector[2]))
+        self.worldUpVectorEdit.setVector(worldUpVector)
 
     @property
     def worldUpObject(self):
@@ -711,19 +683,6 @@ class QAimTab(qabstracttab.QAbstractTab):
         else:
 
             self.sender().buttons()[self.upAxis].setChecked(True)
-
-    def worldUpVectorLineEditGroup_idTextChanged(self, index):
-        """
-        ID text changed slot method responsible for updating the world up vector.
-
-        :type index: int
-        :rtype: None
-        """
-
-        group = self.sender()
-        lineEdit = group[index]
-
-        self.worldUpVector[index] = float(lineEdit.text())
 
     def worldUpVectorButton_clicked(self, checked=False):
         """
