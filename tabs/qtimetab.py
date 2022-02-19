@@ -388,7 +388,13 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: int
         """
 
-        return self.startSpinBox.value()
+        if self.startCheckBox.isChecked():
+
+            return self.startSpinBox.value()
+
+        else:
+
+            return fnscene.FnScene().getStartTime()
 
     @startTime.setter
     def startTime(self, startTime):
@@ -409,7 +415,13 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: int
         """
 
-        return self.endSpinBox.value()
+        if self.endCheckBox.isChecked():
+
+            return self.endSpinBox.value()
+
+        else:
+
+            return fnscene.FnScene().getEndTime()
 
     @endTime.setter
     def endTime(self, endTime):
