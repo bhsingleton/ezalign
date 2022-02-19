@@ -248,14 +248,14 @@ class QAlignRollout(qrollout.QRollout):
 
         # Create match transform widgets
         #
-        self.matchTranslateXYZWidget = QMatchXYZWidget('Pos')
-        self.matchRotateXYZWidget = QMatchXYZWidget('Rot')
-        self.matchScaleXYZWidget = QMatchXYZWidget('Scale')
+        self.matchTranslateWidget = QMatchXYZWidget('Pos')
+        self.matchRotateWidget = QMatchXYZWidget('Rot')
+        self.matchScaleWidget = QMatchXYZWidget('Scale')
 
         self.matchLayout = QtWidgets.QHBoxLayout()
-        self.matchLayout.addWidget(self.matchTranslateXYZWidget)
-        self.matchLayout.addWidget(self.matchRotateXYZWidget)
-        self.matchLayout.addWidget(self.matchScaleXYZWidget)
+        self.matchLayout.addWidget(self.matchTranslateWidget)
+        self.matchLayout.addWidget(self.matchRotateWidget)
+        self.matchLayout.addWidget(self.matchScaleWidget)
 
         self.centralLayout.addLayout(self.matchLayout)
         self.centralLayout.addWidget(qdivider.QDivider(QtCore.Qt.Horizontal))
@@ -451,7 +451,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: list[bool, bool, bool]
         """
 
-        return self.matchTranslateXYZWidget.matches()
+        return self.matchTranslateWidget.matches()
 
     @matchTranslate.setter
     def matchTranslate(self, matchTranslate):
@@ -461,7 +461,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: list[bool, bool, bool]
         """
 
-        self.matchTranslateXYZWidget.setMatches(matchTranslate)
+        self.matchTranslateWidget.setMatches(matchTranslate)
 
     @property
     def matchRotate(self):
@@ -471,7 +471,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: list[bool, bool, bool]
         """
 
-        return self.matchRotateXYZWidget.matches()
+        return self.matchRotateWidget.matches()
 
     @matchRotate.setter
     def matchRotate(self, matchRotate):
@@ -481,7 +481,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: list[bool, bool, bool]
         """
 
-        self.matchRotateXYZWidget.setMatches(matchRotate)
+        self.matchRotateWidget.setMatches(matchRotate)
 
     @property
     def matchScale(self):
@@ -491,7 +491,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: list[bool, bool, bool]
         """
 
-        return self.matchScaleXYZWidget.matches()
+        return self.matchScaleWidget.matches()
 
     @matchScale.setter
     def matchScale(self, matchScale):
@@ -501,7 +501,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: list[bool, bool, bool]
         """
 
-        self.matchScaleXYZWidget.setMatches(matchScale)
+        self.matchScaleWidget.setMatches(matchScale)
     
     @property
     def maintainTranslate(self):

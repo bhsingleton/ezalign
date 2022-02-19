@@ -62,6 +62,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         # Create matrix group box
         #
         self.matrixLayout = QtWidgets.QHBoxLayout()
+        self.matrixLayout.setSpacing(8)
+        self.matrixLayout.setContentsMargins(0, 0, 0, 0)
 
         self.matrixGroupBox = QtWidgets.QGroupBox('4x4 Matrix:')
         self.matrixGroupBox.setLayout(self.matrixLayout)
@@ -93,6 +95,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         self.labelLayout = QtWidgets.QVBoxLayout()
         self.labelLayout.setSpacing(8)
+        self.labelLayout.setContentsMargins(0, 0, 0, 0)
         self.labelLayout.addWidget(self.xAxisLabel)
         self.labelLayout.addWidget(self.yAxisLabel)
         self.labelLayout.addWidget(self.zAxisLabel)
@@ -206,9 +209,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        if self._forwardAxis != forwardAxis:
+        if self._forwardAxis != forwardAxis and self._forwardAxis != self._upAxis:
 
             self._forwardAxis = forwardAxis
+
             self.forwardAxisButtonGroup.buttons()[forwardAxis].setChecked(True)
             self.invalidate()
 
@@ -253,9 +257,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        if self._upAxis != upAxis:
+        if self._upAxis != upAxis and self._upAxis != self._forwardAxis:
 
             self._upAxis = upAxis
+
             self.upAxisButtonGroup.buttons()[upAxis].setChecked(True)
             self.invalidate()
 
@@ -519,7 +524,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         #
         if forwardAxis != self.upAxis:
 
-            self.forwardAxis = forwardAxis
+            self._forwardAxis = forwardAxis
 
         else:
 
@@ -537,7 +542,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         #
         if upAxis != self.forwardAxis:
 
-            self.upAxis = upAxis
+            self._upAxis = upAxis
 
         else:
 

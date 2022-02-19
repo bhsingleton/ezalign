@@ -126,6 +126,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         #
         self.worldUpLayout = QtWidgets.QGridLayout()
         self.worldUpLayout.setSpacing(8)
+        self.worldUpLayout.setContentsMargins(0, 0, 0, 0)
 
         self.worldUpGroupBox = QtWidgets.QGroupBox('World Up:')
         self.worldUpGroupBox.setLayout(self.worldUpLayout)
@@ -152,7 +153,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         self.worldUpVectorEdit = qvectoredit.QVectorEdit()
         self.worldUpVectorEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.worldUpVectorEdit.setFixedHeight(24)
-        self.worldUpVectorEdit.setVector(numpy.array([1.0, 0.0, 0.0]))
+        self.worldUpVectorEdit.setVector(numpy.array([0.0, 0.0, 1.0]))
 
         self.worldUpVectorButton = QtWidgets.QPushButton('Pick')
         self.worldUpVectorButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -209,7 +210,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        if self._forwardAxis != forwardAxis:
+        if self._forwardAxis != forwardAxis and self._forwardAxis != self._upAxis:
 
             self._forwardAxis = forwardAxis
             self.forwardAxisButtonGroup.buttons()[forwardAxis].setChecked(True)
@@ -254,7 +255,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        if self._upAxis != upAxis:
+        if self._upAxis != upAxis and self._upAxis != self._forwardAxis:
 
             self._upAxis = upAxis
             self.upAxisButtonGroup.buttons()[upAxis].setChecked(True)
@@ -349,7 +350,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         self.upAxisSign = settings.value('tabs/aim/upAxisSign', defaultValue=0, type=int)
 
         self.worldUpType = settings.value('tabs/aim/worldUpType', defaultValue=0, type=int)
-        self.worldUpVector = json.loads(settings.value('tabs/aim/worldUpVector', defaultValue='[1.0, 0.0, 0.0]', type=str))
+        self.worldUpVector = json.loads(settings.value('tabs/aim/worldUpVector', defaultValue='[0.0, 0.0, 1.0]', type=str))
 
     def saveSettings(self, settings):
         """
@@ -662,7 +663,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         if index != self.upAxis:
 
-            self.forwardAxis = index
+            self._forwardAxis = index
 
         else:
 
@@ -678,7 +679,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         if index != self.forwardAxis:
 
-            self.upAxis = index
+            self._upAxis = index
 
         else:
 
