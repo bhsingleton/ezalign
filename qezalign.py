@@ -14,8 +14,6 @@ class QEzAlign(qproxywindow.QProxyWindow):
     """
 
     # region Dunderscores
-    __title__ = 'EzAlign'
-
     def __init__(self, *args, **kwargs):
         """
         Overloaded method called after a new instance has been created.
@@ -42,6 +40,7 @@ class QEzAlign(qproxywindow.QProxyWindow):
 
         # Create central widget
         #
+        self.setWindowTitle('Ez Align')
         self.setMinimumSize(QtCore.QSize(315, 375))
         self.setCentralWidget(QtWidgets.QWidget())
         self.centralWidget().setLayout(QtWidgets.QVBoxLayout())
