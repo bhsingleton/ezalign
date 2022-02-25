@@ -1,5 +1,5 @@
 from PySide2 import QtCore, QtWidgets, QtGui
-from dcc.userinterface import qproxywindow
+from dcc.userinterface import quicwindow, qmatrixedit, qvectoredit
 from ezalign.tabs import qaligntab, qaimtab, qmatrixtab, qtimetab
 
 import logging
@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class QEzAlign(qproxywindow.QProxyWindow):
+class QEzAlign(quicwindow.QUicWindow):
     """
     Overload of QProxyWindow used to align node transforms.
     """
@@ -16,7 +16,7 @@ class QEzAlign(qproxywindow.QProxyWindow):
     # region Dunderscores
     def __init__(self, *args, **kwargs):
         """
-        Overloaded method called after a new instance has been created.
+        Private method called after a new instance has been created.
 
         :keyword parent: QtWidgets.QWidget
         :keyword flags: QtCore.Qt.WindowFlags
@@ -26,69 +26,6 @@ class QEzAlign(qproxywindow.QProxyWindow):
         # Call parent method
         #
         super(QEzAlign, self).__init__(*args, **kwargs)
-
-    def __build__(self, **kwargs):
-        """
-        Private method used to build the user interface.
-
-        :rtype: None
-        """
-
-        # Call parent method
-        #
-        super(QEzAlign, self).__build__(**kwargs)
-
-        # Create central widget
-        #
-        self.setWindowTitle('Ez Align')
-        self.setMinimumSize(QtCore.QSize(315, 375))
-        self.setCentralWidget(QtWidgets.QWidget())
-        self.centralWidget().setLayout(QtWidgets.QVBoxLayout())
-
-        # Define tab layout
-        #
-        self.tabControl = QtWidgets.QTabWidget()
-        self.tabControl.addTab(qaligntab.QAlignTab(), 'Align')
-        self.tabControl.addTab(qaimtab.QAimTab(), 'Aim')
-        self.tabControl.addTab(qmatrixtab.QMatrixTab(), 'Matrix')
-        self.tabControl.addTab(qtimetab.QTimeTab(), 'Time')
-
-        self.centralWidget().layout().addWidget(self.tabControl)
-
-        # Define main buttons
-        #
-        self.applyButton = QtWidgets.QToolButton()
-        self.applyButton.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
-        self.applyButton.setArrowType(QtCore.Qt.DownArrow)
-        self.applyButton.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
-        self.applyButton.setText('Apply')
-        self.applyButton.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.applyButton.clicked.connect(self.applyButton_clicked)
-
-        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children')
-        self.preserveChildrenAction.setCheckable(True)
-        self.preserveChildrenAction.triggered.connect(self.preserveChildrenAction_triggered)
-
-        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform')
-        self.freezeTransformAction.setCheckable(True)
-        self.freezeTransformAction.triggered.connect(self.freezeTransformAction_triggered)
-
-        self.applyMenu = QtWidgets.QMenu(self.applyButton)
-        self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
-        self.applyButton.setMenu(self.applyMenu)
-
-        self.okayButton = QtWidgets.QPushButton('OK')
-        self.okayButton.clicked.connect(self.okayButton_clicked)
-
-        self.cancelButton = QtWidgets.QPushButton('Cancel')
-        self.cancelButton.clicked.connect(self.cancelButton_clicked)
-
-        self.buttonLayout = QtWidgets.QHBoxLayout()
-        self.buttonLayout.addWidget(self.applyButton)
-        self.buttonLayout.addWidget(self.okayButton)
-        self.buttonLayout.addWidget(self.cancelButton)
-
-        self.centralWidget().layout().addLayout(self.buttonLayout)
     # endregion
 
     # region Properties
@@ -136,6 +73,38 @@ class QEzAlign(qproxywindow.QProxyWindow):
     # endregion
 
     # region Methods
+    @classmethod
+    def customWidgets(cls):
+        """
+        Returns a dictionary of custom widgets used by this class.
+
+        :rtype: dict[str:type]
+        """
+
+        customWidgets = super(QEzAlign, cls).customWidgets()
+        customWidgets['QAlignTab'] = qaligntab.QAlignTab
+        customWidgets['QAimTab'] = qaimtab.QAimTab
+        customWidgets['QMatrixTab'] = qmatrixtab.QMatrixTab
+        customWidgets['QTimeTab'] = qtimetab.QTimeTab
+
+        return customWidgets
+
+    def postLoad(self):
+
+        # Assign tool button menu
+        #
+        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children')
+        self.preserveChildrenAction.setCheckable(True)
+        self.preserveChildrenAction.triggered.connect(self.preserveChildrenAction_triggered)
+
+        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform')
+        self.freezeTransformAction.setCheckable(True)
+        self.freezeTransformAction.triggered.connect(self.freezeTransformAction_triggered)
+
+        self.applyMenu = QtWidgets.QMenu(self.applyToolButton)
+        self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
+        self.applyToolButton.setMenu(self.applyMenu)
+
     def loadSettings(self):
         """
         Loads the user settings.

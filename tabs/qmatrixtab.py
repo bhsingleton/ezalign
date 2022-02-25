@@ -28,7 +28,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         Overloaded method called after a new instance has been created.
 
         :keyword parent: QtWidgets.QWidget
-        :keyword f: int
+        :keyword f: QtCore.Qt.WindowFlags
         :rtype: None
         """
 
@@ -43,128 +43,6 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self._forwardVector = numpy.array([1.0, 0.0, 0.0])
         self._upAxis = 1
         self._upVector = numpy.array([0.0, 1.0, 0.0])
-        
-    def __build__(self, *args, **kwargs):
-        """
-        Private method used to build the user interface.
-
-        :rtype: None
-        """
-
-        # Call parent method
-        #
-        super(QMatrixTab, self).__build__(*args, **kwargs)
-
-        # Assign vertical layout
-        #
-        self.setLayout(QtWidgets.QVBoxLayout())
-
-        # Create matrix group box
-        #
-        self.matrixLayout = QtWidgets.QHBoxLayout()
-        self.matrixLayout.setSpacing(8)
-        self.matrixLayout.setContentsMargins(0, 0, 0, 0)
-
-        self.matrixGroupBox = QtWidgets.QGroupBox('4x4 Matrix:')
-        self.matrixGroupBox.setLayout(self.matrixLayout)
-
-        self.layout().addWidget(self.matrixGroupBox)
-
-        # Create matrix labels
-        #
-        self.xAxisLabel = QtWidgets.QLabel('X-Axis:')
-        self.xAxisLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        self.xAxisLabel.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.xAxisLabel.setFixedSize(QtCore.QSize(60, 24))
-
-        self.yAxisLabel = QtWidgets.QLabel('Y-Axis:')
-        self.yAxisLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        self.yAxisLabel.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.yAxisLabel.setFixedSize(QtCore.QSize(60, 24))
-
-        self.zAxisLabel = QtWidgets.QLabel('Z-Axis:')
-        self.zAxisLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        self.zAxisLabel.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.zAxisLabel.setFixedSize(QtCore.QSize(60, 24))
-
-        self.originButton = QtWidgets.QPushButton('Origin:')
-        self.originButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.originButton.setFixedSize(QtCore.QSize(60, 24))
-        self.originButton.setToolTip('LMB averages the center positions.')
-        self.originButton.clicked.connect(self.originButton_clicked)
-
-        self.labelLayout = QtWidgets.QVBoxLayout()
-        self.labelLayout.setSpacing(8)
-        self.labelLayout.setContentsMargins(0, 0, 0, 0)
-        self.labelLayout.addWidget(self.xAxisLabel)
-        self.labelLayout.addWidget(self.yAxisLabel)
-        self.labelLayout.addWidget(self.zAxisLabel)
-        self.labelLayout.addWidget(self.originButton)
-
-        # Create matrix widget
-        #
-        self.matrixEdit = qmatrixedit.QMatrixEdit(4, 4, parent=self)
-
-        self.matrixLayout.addLayout(self.labelLayout)
-        self.matrixLayout.addWidget(self.matrixEdit)
-
-        # Create forward axis group box
-        #
-        self.forwardAxisLayout = QtWidgets.QHBoxLayout()
-
-        self.forwardAxisGroupBox = QtWidgets.QGroupBox('Forward Axis:')
-        self.forwardAxisGroupBox.setLayout(self.forwardAxisLayout)
-
-        self.forwardAxisButton = QtWidgets.QPushButton('Pick')
-        self.forwardAxisButton.setToolTip('LMB averages the center positions. Ctrl+LMB gets the axis vector. Alt+LMB averages the vertex normals.')
-        self.forwardAxisButton.clicked.connect(self.forwardAxisButton_clicked)
-
-        self.forwardXRadioButton = QtWidgets.QRadioButton('X')
-        self.forwardYRadioButton = QtWidgets.QRadioButton('Y')
-        self.forwardZRadioButton = QtWidgets.QRadioButton('Z')
-
-        self.forwardAxisButtonGroup = QtWidgets.QButtonGroup(parent=self)
-        self.forwardAxisButtonGroup.addButton(self.forwardXRadioButton, id=0)
-        self.forwardAxisButtonGroup.addButton(self.forwardYRadioButton, id=1)
-        self.forwardAxisButtonGroup.addButton(self.forwardZRadioButton, id=2)
-        self.forwardAxisButtonGroup.buttons()[0].setChecked(True)
-        self.forwardAxisButtonGroup.idClicked.connect(self.forwardAxisButtonGroup_idClicked)
-
-        self.forwardAxisLayout.addWidget(self.forwardAxisButton)
-        self.forwardAxisLayout.addWidget(self.forwardXRadioButton)
-        self.forwardAxisLayout.addWidget(self.forwardYRadioButton)
-        self.forwardAxisLayout.addWidget(self.forwardZRadioButton)
-
-        self.layout().addWidget(self.forwardAxisGroupBox)
-
-        # Create up axis group box
-        #
-        self.upAxisLayout = QtWidgets.QHBoxLayout()
-
-        self.upAxisGroupBox = QtWidgets.QGroupBox('Up Axis:')
-        self.upAxisGroupBox.setLayout(self.upAxisLayout)
-
-        self.upAxisButton = QtWidgets.QPushButton('Pick')
-        self.upAxisButton.setToolTip('LMB averages the center positions. Ctrl+LMB gets the axis vector. Alt+LMB averages the vertex normals.')
-        self.upAxisButton.clicked.connect(self.upAxisButton_clicked)
-
-        self.upXRadioButton = QtWidgets.QRadioButton('X')
-        self.upYRadioButton = QtWidgets.QRadioButton('Y')
-        self.upZRadioButton = QtWidgets.QRadioButton('Z')
-
-        self.upAxisButtonGroup = QtWidgets.QButtonGroup(parent=self)
-        self.upAxisButtonGroup.addButton(self.upXRadioButton, id=0)
-        self.upAxisButtonGroup.addButton(self.upYRadioButton, id=1)
-        self.upAxisButtonGroup.addButton(self.upZRadioButton, id=2)
-        self.upAxisButtonGroup.buttons()[1].setChecked(True)
-        self.upAxisButtonGroup.idClicked.connect(self.upAxisButtonGroup_idClicked)
-
-        self.upAxisLayout.addWidget(self.upAxisButton)
-        self.upAxisLayout.addWidget(self.upXRadioButton)
-        self.upAxisLayout.addWidget(self.upYRadioButton)
-        self.upAxisLayout.addWidget(self.upZRadioButton)
-
-        self.layout().addWidget(self.upAxisGroupBox)
     # endregion
 
     # region Properties
@@ -288,6 +166,21 @@ class QMatrixTab(qabstracttab.QAbstractTab):
     # endregion
 
     # region Methods
+    def postLoad(self):
+        """
+        Called after the user interface has been loaded.
+
+        :rtype: None
+        """
+
+        self.forwardAxisButtonGroup.setId(self.forwardXRadioButton, 0)
+        self.forwardAxisButtonGroup.setId(self.forwardYRadioButton, 1)
+        self.forwardAxisButtonGroup.setId(self.forwardZRadioButton, 2)
+
+        self.upAxisButtonGroup.setId(self.upXRadioButton, 0)
+        self.upAxisButtonGroup.setId(self.upYRadioButton, 1)
+        self.upAxisButtonGroup.setId(self.upZRadioButton, 2)
+
     def loadSettings(self, settings):
         """
         Loads the user settings.
@@ -512,7 +405,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
     # endregion
 
     # region Slots
-    def forwardAxisButtonGroup_idClicked(self, forwardAxis):
+    @QtCore.Slot(int)
+    def on_forwardAxisButtonGroup_idClicked(self, forwardAxis):
         """
         ID clicked slot method responsible for updating the forward axis flag.
 
@@ -530,7 +424,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             self.sender().buttons()[self.forwardAxis].setChecked(True)
 
-    def upAxisButtonGroup_idClicked(self, upAxis):
+    @QtCore.Slot(int)
+    def on_upAxisButtonGroup_idClicked(self, upAxis):
         """
         ID clicked slot method responsible for updating the up axis flag.
 
@@ -548,18 +443,21 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             self.sender().buttons()[self.upAxis].setChecked(True)
 
-    def originButton_clicked(self, *args, **kwargs):
+    @QtCore.Slot(bool)
+    def on_originPushButton_clicked(self, checked=False):
         """
-        Slot method called whenever the user clicks the position button.
+        Clicked slot method responsible for updating the internal point of origin.
 
+        :type checked: bool
         :rtype: None
         """
 
         self.origin = self.getCenterPosition()
 
-    def forwardAxisButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_forwardAxisPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the forward vector.
+        Clicked slot method responsible for updating the internal forward vector.
 
         :type checked: bool
         :rtype: None
@@ -592,9 +490,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             self.forwardVector = self.__axis__[self.forwardAxis]
 
-    def upAxisButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_upAxisPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the up vector.
+        Clicked slot method responsible for updating the internal up vector.
 
         :type checked: bool
         :rtype: None

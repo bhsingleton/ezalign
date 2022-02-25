@@ -24,166 +24,13 @@ class QAlignTab(qabstracttab.QAbstractTab):
         Private method called after a new instance has been created.
 
         :type parent: QtWidgets.QWidget
-        :type f: int
+        :type f: QtCore.Qt.WindowFlags
         :rtype: None
         """
 
         # Call parent method
         #
         super(QAlignTab, self).__init__(*args, **kwargs)
-
-    def __build__(self, *args, **kwargs):
-        """
-        Private method used to build the user interface.
-
-        :rtype: None
-        """
-
-        # Call parent method
-        #
-        super(QAlignTab, self).__build__(*args, **kwargs)
-
-        # Assign vertical layout
-        #
-        self.setLayout(QtWidgets.QVBoxLayout())
-
-        # Create position group box
-        #
-        self.translateLayout = QtWidgets.QHBoxLayout()
-
-        self.translateGroupBox = QtWidgets.QGroupBox('Align Translation:')
-        self.translateGroupBox.setLayout(self.translateLayout)
-
-        self.translateXCheckBox = QtWidgets.QCheckBox('X-Axis')
-        self.translateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
-        self.translateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
-
-        self.translateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self)
-        self.translateCheckBoxGroup.setExclusive(False)
-        self.translateCheckBoxGroup.addButton(self.translateXCheckBox, id=0)
-        self.translateCheckBoxGroup.addButton(self.translateYCheckBox, id=1)
-        self.translateCheckBoxGroup.addButton(self.translateZCheckBox, id=2)
-
-        self.translateLayout.addWidget(self.translateXCheckBox)
-        self.translateLayout.addWidget(self.translateYCheckBox)
-        self.translateLayout.addWidget(self.translateZCheckBox)
-
-        self.layout().addWidget(self.translateGroupBox)
-
-        # Create the source object properties
-        #
-        self.sourceLayout = QtWidgets.QVBoxLayout()
-
-        self.sourceGroupBox = QtWidgets.QGroupBox('Source Object:')
-        self.sourceGroupBox.setLayout(self.sourceLayout)
-
-        self.sourceMinRadioButton = QtWidgets.QRadioButton('Minimum')
-        self.sourceMinRadioButton.setToolTip("Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.")
-
-        self.sourceCenterRadioButton = QtWidgets.QRadioButton('Center')
-        self.sourceCenterRadioButton.setToolTip("Aligns the center of the object's bounding box with the chosen point on the other object.")
-
-        self.sourcePivotRadioButton = QtWidgets.QRadioButton('Pivot Point')
-        self.sourcePivotRadioButton.setToolTip("Aligns the object's pivot point with the chosen point on the other object.")
-
-        self.sourceMaxRadioButton = QtWidgets.QRadioButton('Maximum')
-        self.sourceMaxRadioButton.setToolTip("Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.")
-
-        self.sourceRadioButtonGroup = QtWidgets.QButtonGroup(parent=self)
-        self.sourceRadioButtonGroup.addButton(self.sourceMinRadioButton, id=0)
-        self.sourceRadioButtonGroup.addButton(self.sourceCenterRadioButton, id=1)
-        self.sourceRadioButtonGroup.addButton(self.sourcePivotRadioButton, id=2)
-        self.sourceRadioButtonGroup.addButton(self.sourceMaxRadioButton, id=3)
-
-        self.sourceLayout.addWidget(self.sourceMinRadioButton)
-        self.sourceLayout.addWidget(self.sourceCenterRadioButton)
-        self.sourceLayout.addWidget(self.sourcePivotRadioButton)
-        self.sourceLayout.addWidget(self.sourceMaxRadioButton)
-
-        # Create target properties
-        #
-        self.targetLayout = QtWidgets.QVBoxLayout()
-
-        self.targetGroupBox = QtWidgets.QGroupBox('Target Object:')
-        self.targetGroupBox.setLayout(self.targetLayout)
-
-        self.targetMinRadioButton = QtWidgets.QRadioButton('Minimum')
-        self.targetMinRadioButton.setToolTip("Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.")
-
-        self.targetCenterRadioButton = QtWidgets.QRadioButton('Center')
-        self.targetCenterRadioButton.setToolTip("Aligns the center of the object's bounding box with the chosen point on the other object.")
-
-        self.targetPivotRadioButton = QtWidgets.QRadioButton('Pivot Point')
-        self.targetPivotRadioButton.setToolTip("Aligns the object's pivot point with the chosen point on the other object.")
-
-        self.targetMaxRadioButton = QtWidgets.QRadioButton('Maximum')
-        self.targetMaxRadioButton.setToolTip("Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.")
-
-        self.targetRadioButtonGroup = QtWidgets.QButtonGroup(parent=self)
-        self.targetRadioButtonGroup.addButton(self.targetMinRadioButton, id=0)
-        self.targetRadioButtonGroup.addButton(self.targetCenterRadioButton, id=1)
-        self.targetRadioButtonGroup.addButton(self.targetPivotRadioButton, id=2)
-        self.targetRadioButtonGroup.addButton(self.targetMaxRadioButton, id=3)
-
-        self.targetLayout.addWidget(self.targetMinRadioButton)
-        self.targetLayout.addWidget(self.targetCenterRadioButton)
-        self.targetLayout.addWidget(self.targetPivotRadioButton)
-        self.targetLayout.addWidget(self.targetMaxRadioButton)
-
-        # Create the object layout
-        #
-        self.objectLayout = QtWidgets.QHBoxLayout()
-
-        self.objectLayout.addWidget(self.sourceGroupBox)
-        self.objectLayout.addWidget(self.targetGroupBox)
-
-        self.layout().addLayout(self.objectLayout)
-
-        # Create the rotation group box
-        #
-        self.rotationLayout = QtWidgets.QHBoxLayout()
-
-        self.rotationGroupBox = QtWidgets.QGroupBox('Align Rotation:')
-        self.rotationGroupBox.setLayout(self.rotationLayout)
-
-        self.rotateXCheckBox = QtWidgets.QCheckBox('X-Axis')
-        self.rotateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
-        self.rotateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
-
-        self.rotateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self)
-        self.rotateCheckBoxGroup.setExclusive(False)
-        self.rotateCheckBoxGroup.addButton(self.rotateXCheckBox, id=0)
-        self.rotateCheckBoxGroup.addButton(self.rotateYCheckBox, id=1)
-        self.rotateCheckBoxGroup.addButton(self.rotateZCheckBox, id=2)
-
-        self.rotationLayout.addWidget(self.rotateXCheckBox)
-        self.rotationLayout.addWidget(self.rotateYCheckBox)
-        self.rotationLayout.addWidget(self.rotateZCheckBox)
-
-        self.layout().addWidget(self.rotationGroupBox)
-
-        # Create the scale group box
-        #
-        self.scaleLayout = QtWidgets.QHBoxLayout()
-
-        self.scaleGroupBox = QtWidgets.QGroupBox('Match Scale:')
-        self.scaleGroupBox.setLayout(self.scaleLayout)
-
-        self.scaleXCheckBox = QtWidgets.QCheckBox('X-Axis')
-        self.scaleYCheckBox = QtWidgets.QCheckBox('Y-Axis')
-        self.scaleZCheckBox = QtWidgets.QCheckBox('Z-Axis')
-
-        self.scaleCheckBoxGroup = QtWidgets.QButtonGroup(parent=self)
-        self.scaleCheckBoxGroup.setExclusive(False)
-        self.scaleCheckBoxGroup.addButton(self.scaleXCheckBox, id=0)
-        self.scaleCheckBoxGroup.addButton(self.scaleYCheckBox, id=1)
-        self.scaleCheckBoxGroup.addButton(self.scaleZCheckBox, id=2)
-
-        self.scaleLayout.addWidget(self.scaleXCheckBox)
-        self.scaleLayout.addWidget(self.scaleYCheckBox)
-        self.scaleLayout.addWidget(self.scaleZCheckBox)
-
-        self.layout().addWidget(self.scaleGroupBox)
     # endregion
 
     # region Properties
@@ -231,6 +78,35 @@ class QAlignTab(qabstracttab.QAbstractTab):
     # endregion
 
     # region Methods
+    def postLoad(self):
+        """
+        Called after the user interface has been loaded.
+
+        :rtype: None
+        """
+
+        self.translateCheckBoxGroup.setId(self.translateXCheckBox, 0)
+        self.translateCheckBoxGroup.setId(self.translateYCheckBox, 1)
+        self.translateCheckBoxGroup.setId(self.translateZCheckBox, 2)
+
+        self.sourceRadioButtonGroup.setId(self.sourceMinRadioButton, 0)
+        self.sourceRadioButtonGroup.setId(self.sourceCenterRadioButton, 1)
+        self.sourceRadioButtonGroup.setId(self.sourcePivotRadioButton, 2)
+        self.sourceRadioButtonGroup.setId(self.sourceMaxRadioButton, 3)
+
+        self.targetRadioButtonGroup.setId(self.targetMinRadioButton, 0)
+        self.targetRadioButtonGroup.setId(self.targetCenterRadioButton, 1)
+        self.targetRadioButtonGroup.setId(self.targetPivotRadioButton, 2)
+        self.targetRadioButtonGroup.setId(self.targetMaxRadioButton, 3)
+
+        self.rotateCheckBoxGroup.setId(self.rotateXCheckBox, 0)
+        self.rotateCheckBoxGroup.setId(self.rotateYCheckBox, 1)
+        self.rotateCheckBoxGroup.setId(self.rotateZCheckBox, 2)
+
+        self.scaleCheckBoxGroup.setId(self.scaleXCheckBox, 0)
+        self.scaleCheckBoxGroup.setId(self.scaleYCheckBox, 1)
+        self.scaleCheckBoxGroup.setId(self.scaleZCheckBox, 2)
+
     def loadSettings(self, settings):
         """
         Loads the user settings.

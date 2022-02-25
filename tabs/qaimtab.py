@@ -31,163 +31,19 @@ class QAimTab(qabstracttab.QAbstractTab):
         Overloaded method called after a new instance has been created.
 
         :keyword parent: QtWidgets.QWidget
-        :keyword f: int
+        :keyword f: QtCore.Qt.WindowFlags
         :rtype: None
         """
 
-        # Call parent method
-        #
-        super(QAimTab, self).__init__(*args, **kwargs)
-
-        # Declare class variables
+        # Declare private variables
         #
         self._forwardAxis = 0
         self._upAxis = 1
         self._worldUpObject = fntransform.FnTransform()
 
-    def __build__(self, *args, **kwargs):
-        """
-        Private method used to build the user interface.
-
-        :rtype: None
-        """
-
         # Call parent method
         #
-        super(QAimTab, self).__build__(*args, **kwargs)
-
-        # Assign vertical layout
-        #
-        self.setLayout(QtWidgets.QVBoxLayout())
-
-        # Create forward axis group box
-        #
-        self.forwardAxisLayout = QtWidgets.QHBoxLayout()
-
-        self.forwardAxisGroupBox = QtWidgets.QGroupBox('Forward Axis:')
-        self.forwardAxisGroupBox.setLayout(self.forwardAxisLayout)
-
-        self.forwardXRadioButton = QtWidgets.QRadioButton('X')
-        self.forwardYRadioButton = QtWidgets.QRadioButton('Y')
-        self.forwardZRadioButton = QtWidgets.QRadioButton('Z')
-
-        self.forwardAxisButtonGroup = QtWidgets.QButtonGroup(parent=self)
-        self.forwardAxisButtonGroup.addButton(self.forwardXRadioButton, id=0)
-        self.forwardAxisButtonGroup.addButton(self.forwardYRadioButton, id=1)
-        self.forwardAxisButtonGroup.addButton(self.forwardZRadioButton, id=2)
-        self.forwardAxisButtonGroup.buttons()[0].setChecked(True)
-        self.forwardAxisButtonGroup.idClicked.connect(self.forwardAxisButtonGroup_idClicked)
-
-        self.forwardAxisSignComboBox = QtWidgets.QComboBox()
-        self.forwardAxisSignComboBox.addItems(['+', '-'])
-        self.forwardAxisSignComboBox.setEditable(False)
-        self.forwardAxisSignComboBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.forwardAxisSignComboBox.setFixedSize(QtCore.QSize(48, 24))
-
-        self.forwardAxisLayout.addWidget(self.forwardXRadioButton)
-        self.forwardAxisLayout.addWidget(self.forwardYRadioButton)
-        self.forwardAxisLayout.addWidget(self.forwardZRadioButton)
-        self.forwardAxisLayout.addWidget(self.forwardAxisSignComboBox)
-
-        self.layout().addWidget(self.forwardAxisGroupBox)
-
-        # Create up axis group box
-        #
-        self.upAxisLayout = QtWidgets.QHBoxLayout()
-
-        self.upAxisGroupBox = QtWidgets.QGroupBox('Up Axis:')
-        self.upAxisGroupBox.setLayout(self.upAxisLayout)
-
-        self.upXRadioButton = QtWidgets.QRadioButton('X')
-        self.upYRadioButton = QtWidgets.QRadioButton('Y')
-        self.upZRadioButton = QtWidgets.QRadioButton('Z')
-
-        self.upAxisButtonGroup = QtWidgets.QButtonGroup(parent=self)
-        self.upAxisButtonGroup.addButton(self.upXRadioButton, id=0)
-        self.upAxisButtonGroup.addButton(self.upYRadioButton, id=1)
-        self.upAxisButtonGroup.addButton(self.upZRadioButton, id=2)
-        self.upAxisButtonGroup.buttons()[1].setChecked(True)
-        self.upAxisButtonGroup.idClicked.connect(self.upAxisButtonGroup_idClicked)
-
-        self.upAxisSignComboBox = QtWidgets.QComboBox()
-        self.upAxisSignComboBox.addItems(['+', '-'])
-        self.upAxisSignComboBox.setEditable(False)
-        self.upAxisSignComboBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.upAxisSignComboBox.setFixedSize(QtCore.QSize(48, 24))
-
-        self.upAxisLayout.addWidget(self.upXRadioButton)
-        self.upAxisLayout.addWidget(self.upYRadioButton)
-        self.upAxisLayout.addWidget(self.upZRadioButton)
-        self.upAxisLayout.addWidget(self.upAxisSignComboBox)
-
-        self.layout().addWidget(self.upAxisGroupBox)
-
-        # Create world up group box
-        #
-        self.worldUpLayout = QtWidgets.QGridLayout()
-        self.worldUpLayout.setSpacing(8)
-        self.worldUpLayout.setContentsMargins(0, 0, 0, 0)
-
-        self.worldUpGroupBox = QtWidgets.QGroupBox('World Up:')
-        self.worldUpGroupBox.setLayout(self.worldUpLayout)
-
-        self.layout().addWidget(self.worldUpGroupBox)
-
-        # Create world up type items
-        #
-        self.worldUpTypeLabel = QtWidgets.QLabel('Type:')
-        self.worldUpTypeLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-
-        self.worldUpTypeComboBox = QtWidgets.QComboBox()
-        self.worldUpTypeComboBox.addItems(['Scene Up', 'Object Up', 'Object Rotation Up', 'Vector'])
-        self.worldUpTypeComboBox.setEditable(False)
-
-        self.worldUpLayout.addWidget(self.worldUpTypeLabel, 0, 0)
-        self.worldUpLayout.addWidget(self.worldUpTypeComboBox, 0, 1)
-
-        # Create world up vector items
-        #
-        self.worldUpVectorLabel = QtWidgets.QLabel('Vector:')
-        self.worldUpVectorLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-
-        self.worldUpVectorEdit = qvectoredit.QVectorEdit()
-        self.worldUpVectorEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.worldUpVectorEdit.setFixedHeight(24)
-        self.worldUpVectorEdit.setVector(numpy.array([0.0, 0.0, 1.0]))
-
-        self.worldUpVectorButton = QtWidgets.QPushButton('Pick')
-        self.worldUpVectorButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.worldUpVectorButton.setFixedSize(QtCore.QSize(48, 24))
-        self.worldUpVectorButton.clicked.connect(self.worldUpVectorButton_clicked)
-
-        self.worldUpVectorLayout = QtWidgets.QHBoxLayout()
-        self.worldUpVectorLayout.addWidget(self.worldUpVectorEdit)
-        self.worldUpVectorLayout.addWidget(self.worldUpVectorButton)
-
-        self.worldUpLayout.addWidget(self.worldUpVectorLabel, 1, 0)
-        self.worldUpLayout.addLayout(self.worldUpVectorLayout, 1, 1)
-
-        # Create world up object items
-        #
-        self.worldUpObjectLabel = QtWidgets.QLabel('Object:')
-        self.worldUpObjectLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-
-        self.worldUpObjectLineEdit = QtWidgets.QLineEdit('')
-        self.worldUpObjectLineEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.worldUpObjectLineEdit.setFixedHeight(24)
-        self.worldUpObjectLineEdit.setReadOnly(True)
-
-        self.worldUpObjectButton = QtWidgets.QPushButton('Pick')
-        self.worldUpObjectButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.worldUpObjectButton.setFixedSize(QtCore.QSize(48, 24))
-        self.worldUpObjectButton.clicked.connect(self.worldUpObjectButton_clicked)
-
-        self.worldUpObjectLayout = QtWidgets.QHBoxLayout()
-        self.worldUpObjectLayout.addWidget(self.worldUpObjectLineEdit)
-        self.worldUpObjectLayout.addWidget(self.worldUpObjectButton)
-
-        self.worldUpLayout.addWidget(self.worldUpObjectLabel, 2, 0)
-        self.worldUpLayout.addLayout(self.worldUpObjectLayout, 2, 1)
+        super(QAimTab, self).__init__(*args, **kwargs)
     # endregion
 
     # region Properties
@@ -335,6 +191,21 @@ class QAimTab(qabstracttab.QAbstractTab):
     # endregion
 
     # region Methods
+    def postLoad(self):
+        """
+        Called after the user interface has been loaded.
+
+        :rtype: None
+        """
+
+        self.forwardAxisButtonGroup.setId(self.forwardXRadioButton, 0)
+        self.forwardAxisButtonGroup.setId(self.forwardYRadioButton, 1)
+        self.forwardAxisButtonGroup.setId(self.forwardZRadioButton, 2)
+
+        self.upAxisButtonGroup.setId(self.upXRadioButton, 0)
+        self.upAxisButtonGroup.setId(self.upYRadioButton, 1)
+        self.upAxisButtonGroup.setId(self.upZRadioButton, 2)
+
     def loadSettings(self, settings):
         """
         Loads the user settings.
@@ -653,7 +524,8 @@ class QAimTab(qabstracttab.QAbstractTab):
     # endregion
 
     # region Slots
-    def forwardAxisButtonGroup_idClicked(self, index):
+    @QtCore.Slot(int)
+    def on_forwardAxisButtonGroup_idClicked(self, index):
         """
         Id clicked slot method responsible for updating the forward axis.
 
@@ -669,7 +541,8 @@ class QAimTab(qabstracttab.QAbstractTab):
 
             self.sender().buttons()[self.forwardAxis].setChecked(True)
 
-    def upAxisButtonGroup_idClicked(self, index):
+    @QtCore.Slot(int)
+    def on_upAxisButtonGroup_idClicked(self, index):
         """
         Id clicked slot method responsible for updating the up axis.
 
@@ -685,7 +558,8 @@ class QAimTab(qabstracttab.QAbstractTab):
 
             self.sender().buttons()[self.upAxis].setChecked(True)
 
-    def worldUpVectorButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_worldUpVectorButton_clicked(self, checked=False):
         """
         Clicked slot method responsible for updating the world up vector.
 
@@ -727,7 +601,8 @@ class QAimTab(qabstracttab.QAbstractTab):
         self.worldUpVectorYLineEdit.setText(str(worldUpVector[1]))
         self.worldUpVectorZLineEdit.setText(str(worldUpVector[2]))
 
-    def worldUpObjectButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_worldUpObjectButton_clicked(self, checked=False):
         """
         Clicked slot method responsible for updating the world up object.
 

@@ -2,7 +2,7 @@ import json
 
 from PySide2 import QtCore, QtWidgets, QtGui
 from dcc import fnscene, fntransform
-from dcc.userinterface import qrollout, qiconlibrary, qdivider, qtimespinbox, qseparator
+from dcc.userinterface import qrollout, qiconlibrary, qdivider, qtimespinbox, qxyzwidget, qseparator
 from ezalign.abstract import qabstracttab
 
 import logging
@@ -11,159 +11,32 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class QMatchXYZWidget(QtWidgets.QWidget):
-    """
-    Overload of QWidget used to edit match flags for XYZ transform components.
-    """
-
-    # region Dunderscores
-    def __init__(self, title, parent=None):
-        """
-        Private method called after a new instance has been created.
-
-        :type title: str
-        :type parent: QtWidgets.QWidget
-        :rtype: None
-        """
-
-        # Call parent method
-        #
-        super(QMatchXYZWidget, self).__init__(parent=parent)
-
-        # Assign horizontal layout
-        #
-        self.setLayout(QtWidgets.QHBoxLayout())
-        self.layout().setSpacing(0)
-
-        # Create push buttons
-        #
-        self.matchPushButton = QtWidgets.QPushButton(title)
-        self.matchPushButton.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
-        self.matchPushButton.setFixedHeight(24)
-        self.matchPushButton.setMinimumWidth(24)
-        self.matchPushButton.setCheckable(True)
-        self.matchPushButton.toggled.connect(self.matchPushButton_toggled)
-
-        self.matchXPushButton = QtWidgets.QPushButton('X')
-        self.matchXPushButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.matchXPushButton.setFixedSize(QtCore.QSize(15, 24))
-        self.matchXPushButton.setCheckable(True)
-
-        self.matchYPushButton = QtWidgets.QPushButton('Y')
-        self.matchYPushButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.matchYPushButton.setFixedSize(QtCore.QSize(15, 24))
-        self.matchYPushButton.setCheckable(True)
-
-        self.matchZPushButton = QtWidgets.QPushButton('Z')
-        self.matchZPushButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.matchZPushButton.setFixedSize(QtCore.QSize(15, 24))
-        self.matchZPushButton.setCheckable(True)
-
-        self.layout().addWidget(self.matchPushButton)
-        self.layout().addWidget(self.matchXPushButton)
-        self.layout().addWidget(self.matchYPushButton)
-        self.layout().addWidget(self.matchZPushButton)
-
-        self.matchButtonGroup = QtWidgets.QButtonGroup(parent=self)
-        self.matchButtonGroup.setExclusive(False)
-        self.matchButtonGroup.addButton(self.matchXPushButton, id=0)
-        self.matchButtonGroup.addButton(self.matchYPushButton, id=1)
-        self.matchButtonGroup.addButton(self.matchZPushButton, id=2)
-        self.matchButtonGroup.idToggled.connect(self.matchButtonGroup_idToggled)
-    # endregion
-
-    # region Methods
-    def matches(self):
-        """
-        Returns a list of state values for each button.
-
-        :rtype: list[bool, bool, bool]
-        """
-
-        return [x.isChecked() for x in self.matchButtonGroup.buttons()]
-
-    def setMatches(self, matches):
-        """
-        Updates the match state for each button.
-
-        :type matches: list[bool, bool, bool]
-        :rtype: None
-        """
-
-        for (index, match) in enumerate(matches):
-
-            self.matchButtonGroup.button(index).setChecked(match)
-    # endregion
-
-    # region Slots
-    def matchPushButton_toggled(self, state):
-        """
-        Toggled slot method responsible for overriding the button group state.
-
-        :type state: bool
-        :rtype: None
-        """
-
-        for button in self.matchButtonGroup.buttons():
-
-            button.setChecked(state)
-
-    def matchButtonGroup_idToggled(self, id):
-        """
-        Id toggled slot method responsible for syncing the master button with the button group.
-
-        :type id: int
-        :rtype: None
-        """
-
-        isChecked = self.matchPushButton.isChecked()
-        matches = self.matches()
-
-        if isChecked and not all(matches):
-
-            self.matchPushButton.setChecked(False)
-            self.setMatches(matches)
-
-        elif not isChecked and all(matches):
-
-            self.matchPushButton.setChecked(True)
-
-        else:
-
-            pass
-    # endregion
-
-
 class QAlignRollout(qrollout.QRollout):
     """
     Overload of QRollout used to align transforms over time.
     """
 
     # region Dunderscores
-    def __init__(self, title, parent=None, f=QtCore.Qt.WindowFlags()):
+    def __init__(self, title, **kwargs):
         """
         Private method called after a new instance has been created.
 
         :type parent: QtWidgets.QWidget
-        :type f: int
+        :type f: QtCore.Qt.WindowFlags
         :rtype: None
         """
 
         # Call parent method
         #
-        super(QAlignRollout, self).__init__(title, parent=parent, f=f)
+        super(QAlignRollout, self).__init__(title, **kwargs)
 
         # Assign vertical layout
         #
         self.centralLayout = QtWidgets.QVBoxLayout()
-        self.centralLayout.setObjectName('CentralLayout')
+        self.centralLayout.setObjectName('centralLayout')
         self.centralLayout.setSpacing(4)
 
-        self.centralWidget = QtWidgets.QWidget()
-        self.centralWidget.setObjectName('CentralWidget')
-        self.centralWidget.setLayout(self.centralLayout)
-
-        self.layout().addWidget(self.centralWidget)
+        self.setLayout(self.centralLayout)
 
         # Create node widgets
         #
@@ -248,9 +121,9 @@ class QAlignRollout(qrollout.QRollout):
 
         # Create match transform widgets
         #
-        self.matchTranslateWidget = QMatchXYZWidget('Pos')
-        self.matchRotateWidget = QMatchXYZWidget('Rot')
-        self.matchScaleWidget = QMatchXYZWidget('Scale')
+        self.matchTranslateWidget = qxyzwidget.QXyzWidget('Pos')
+        self.matchRotateWidget = qxyzwidget.QXyzWidget('Rot')
+        self.matchScaleWidget = qxyzwidget.QXyzWidget('Scale')
 
         self.matchLayout = QtWidgets.QHBoxLayout()
         self.matchLayout.addWidget(self.matchTranslateWidget)
@@ -718,7 +591,7 @@ class QTimeTab(qabstracttab.QAbstractTab):
     # region Dunderscores
     def __init__(self, *args, **kwargs):
         """
-        Overloaded method called after a new instance has been created.
+        Private method called after a new instance has been created.
 
         :keyword parent: QtWidgets.QWidget
         :keyword f: int
@@ -728,41 +601,22 @@ class QTimeTab(qabstracttab.QAbstractTab):
         # Call parent method
         #
         super(QTimeTab, self).__init__(*args, **kwargs)
+    # endregion
 
-    def __build__(self, *args, **kwargs):
+    # region Methods
+    def postLoad(self):
         """
-        Private method used to build the user interface.
+        Called after the user interface has been loaded.
 
         :rtype: None
         """
 
-        # Call parent method
-        #
-        super(QTimeTab, self).__build__(*args, **kwargs)
+        layout = QtWidgets.QVBoxLayout()
+        layout.setAlignment(QtCore.Qt.AlignTop)
+        layout.setSpacing(4)
 
-        # Assign vertical layout
-        #
-        self.setLayout(QtWidgets.QVBoxLayout())
+        self.scrollAreaContents.setLayout(layout)
 
-        # Create sequence scroll area
-        #
-        self.containerLayout = QtWidgets.QVBoxLayout()
-        self.containerLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.containerLayout.setSpacing(4)
-
-        self.containerWidget = QtWidgets.QWidget()
-        self.containerWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        self.containerWidget.setLayout(self.containerLayout)
-
-        self.alignScrollArea = QtWidgets.QScrollArea()
-        self.alignScrollArea.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        self.alignScrollArea.setWidget(self.containerWidget)
-        self.alignScrollArea.setWidgetResizable(True)
-
-        self.layout().addWidget(self.alignScrollArea)
-    # endregion
-
-    # region Methods
     def loadSettings(self, settings):
         """
         Loads the user settings.
@@ -809,7 +663,7 @@ class QTimeTab(qabstracttab.QAbstractTab):
         :rtype: int
         """
 
-        return self.containerLayout.count()
+        return self.scrollAreaContents.layout().count()
 
     def evaluateNumAlignments(self):
         """
@@ -830,9 +684,11 @@ class QTimeTab(qabstracttab.QAbstractTab):
 
         # Iterate through layout items
         #
+        layout = self.scrollAreaContents.layout()
+
         for i in range(self.numAlignments()):
 
-            alignment = self.containerLayout.itemAt(i).widget()
+            alignment = layout.itemAt(i).widget()
 
             if skipUnchecked and not alignment.isChecked():
 
@@ -863,10 +719,10 @@ class QTimeTab(qabstracttab.QAbstractTab):
         rollout.setCheckable(True)
         rollout.showCheckBox()
         rollout.showGripper()
-        rollout.addAlignmentAction.triggered.connect(self.addAlignmentAction_triggered)
-        rollout.removeAlignmentAction.triggered.connect(self.removeAlignmentAction_triggered)
+        rollout.addAlignmentAction.triggered.connect(self.on_addAlignmentAction_triggered)
+        rollout.removeAlignmentAction.triggered.connect(self.on_removeAlignmentAction_triggered)
 
-        self.containerLayout.addWidget(rollout)
+        self.scrollAreaContents.layout().addWidget(rollout)
 
         return rollout
 
@@ -904,7 +760,8 @@ class QTimeTab(qabstracttab.QAbstractTab):
     # endregion
 
     # region Slots
-    def addAlignmentAction_triggered(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_addAlignmentAction_triggered(self, checked=False):
         """
         Triggered slot method responsible for adding a new alignment.
 
@@ -914,7 +771,8 @@ class QTimeTab(qabstracttab.QAbstractTab):
 
         self.addAlignment()
 
-    def removeAlignmentAction_triggered(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_removeAlignmentAction_triggered(self, checked=False):
         """
         Triggered slot method responsible for removing the associated rollout.
 

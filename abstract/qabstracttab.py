@@ -1,5 +1,10 @@
+import os
+import inspect
+import shiboken2
+
 from PySide2 import QtCore, QtWidgets, QtGui
 from abc import abstractmethod
+from dcc.userinterface import quicinterface, qmatrixedit, qvectoredit
 
 import logging
 logging.basicConfig()
@@ -7,7 +12,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class QAbstractTab(QtWidgets.QWidget):
+class QAbstractTab(quicinterface.QUicInterface, QtWidgets.QWidget):
     """
     Overload of QWidget used to outline the structure for alignment tabs.
     """
@@ -17,34 +22,38 @@ class QAbstractTab(QtWidgets.QWidget):
         """
         Private method called after a new instance has been created.
 
-        :type parent: QtWidgets.QWidget
-        :type f: int
+        :keyword parent: QtWidgets.QWidget
+        :keyword f: QtCore.Qt.WindowFlags
         :rtype: None
         """
 
         # Call parent method
         #
-        parent = kwargs.get('parent', None)
-        f = kwargs.get('f', QtCore.Qt.WindowFlags())
+        super(QAbstractTab, self).__init__(*args, **kwargs)
 
-        super(QAbstractTab, self).__init__(parent=parent, f=f)
-
-        # Initialize user interface
+        # Load user interface
         #
-        self.__build__(*args, **kwargs)
-
-    @abstractmethod
-    def __build__(self, *args, **kwargs):
-        """
-        Private method used to build the user interface.
-
-        :rtype: None
-        """
-
-        pass
+        self.preLoad()
+        self.__load__(*args, **kwargs)
+        self.postLoad()
     # endregion
 
     # region Methods
+    @classmethod
+    def customWidgets(cls):
+        """
+        Returns a dictionary of custom widgets used by this class.
+        Overload this method to extend this dictionary!
+
+        :rtype: dict[str:type]
+        """
+
+        customWidgets = super(QAbstractTab, cls).customWidgets()
+        customWidgets['QMatrixEdit'] = qmatrixedit.QMatrixEdit
+        customWidgets['QVectorEdit'] = qvectoredit.QVectorEdit
+
+        return customWidgets
+
     def loadSettings(self, settings):
         """
         Loads the user settings.
