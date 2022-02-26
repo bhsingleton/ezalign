@@ -90,6 +90,11 @@ class QEzAlign(quicwindow.QUicWindow):
         return customWidgets
 
     def postLoad(self):
+        """
+        Called after the user interface has been loaded.
+
+        :rtype: None
+        """
 
         # Assign tool button menu
         #
