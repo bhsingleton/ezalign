@@ -1,5 +1,5 @@
 from PySide2 import QtCore, QtWidgets, QtGui
-from dcc.userinterface import quicwindow, qmatrixedit, qvectoredit
+from dcc.ui import quicwindow, qmatrixedit, qvectoredit
 from ezalign.tabs import qaligntab, qaimtab, qmatrixtab, qtimetab
 
 import logging

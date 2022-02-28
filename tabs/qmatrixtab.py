@@ -2,10 +2,8 @@ import numpy
 import json
 
 from PySide2 import QtCore, QtWidgets, QtGui
-from copy import deepcopy
 from dcc import fnnode, fntransform, fnmesh
 from dcc.math import matrixmath, vectormath
-from dcc.userinterface import qmatrixedit
 from ezalign.abstract import qabstracttab
 
 import logging

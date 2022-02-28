@@ -5,7 +5,6 @@ from PySide2 import QtCore, QtWidgets, QtGui
 from copy import deepcopy
 from dcc import fntransform, fnscene
 from dcc.math import vectormath, matrixmath
-from dcc.userinterface import qvectoredit
 from ezalign.abstract import qabstracttab
 
 import logging

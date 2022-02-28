@@ -1,10 +1,6 @@
-import os
-import inspect
-import shiboken2
-
 from PySide2 import QtCore, QtWidgets, QtGui
 from abc import abstractmethod
-from dcc.userinterface import quicinterface, qmatrixedit, qvectoredit
+from dcc.ui import quicinterface, qmatrixedit, qvectoredit
 
 import logging
 logging.basicConfig()

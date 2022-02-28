@@ -2,7 +2,7 @@ import json
 
 from PySide2 import QtCore, QtWidgets, QtGui
 from dcc import fnscene, fntransform
-from dcc.userinterface import qrollout, qiconlibrary, qdivider, qtimespinbox, qxyzwidget, qseparator
+from dcc.ui import qrollout, qiconlibrary, qdivider, qtimespinbox, qxyzwidget, qseparator
 from ezalign.abstract import qabstracttab
 
 import logging
