@@ -593,8 +593,8 @@ class QTimeTab(qabstracttab.QAbstractTab):
         """
         Private method called after a new instance has been created.
 
-        :keyword parent: QtWidgets.QWidget
-        :keyword f: int
+        :key parent: QtWidgets.QWidget
+        :key f: int
         :rtype: None
         """
 

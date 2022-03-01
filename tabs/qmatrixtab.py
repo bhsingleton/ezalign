@@ -25,8 +25,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
         Overloaded method called after a new instance has been created.
 
-        :keyword parent: QtWidgets.QWidget
-        :keyword f: QtCore.Qt.WindowFlags
+        :key parent: QtWidgets.QWidget
+        :key f: QtCore.Qt.WindowFlags
         :rtype: None
         """
 
