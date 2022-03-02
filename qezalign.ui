@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>EzAlign</string>
+   <string>|| Ez Align</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="centralLayout">
