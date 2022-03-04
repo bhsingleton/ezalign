@@ -40,29 +40,33 @@ class QAlignRollout(qrollout.QRollout):
 
         # Create node widgets
         #
-        self.sourceButton = QtWidgets.QPushButton('Parent')
-        self.sourceButton.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
-        self.sourceButton.setFixedHeight(24)
-        self.sourceButton.setMinimumWidth(48)
-        self.sourceButton.setToolTip('Picks the node to align to.')
-        self.sourceButton.clicked.connect(self.button_clicked)
+        self.sourcePushButton = QtWidgets.QPushButton('Parent')
+        self.sourcePushButton.setObjectName('sourcePushButton')
+        self.sourcePushButton.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        self.sourcePushButton.setFixedHeight(24)
+        self.sourcePushButton.setMinimumWidth(48)
+        self.sourcePushButton.setToolTip('Picks the node to align to.')
+        self.sourcePushButton.clicked.connect(self.pushButton_clicked)
 
-        self.switchButton = QtWidgets.QPushButton(qiconlibrary.getIconByName('switch'), '')
-        self.switchButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.switchButton.setFixedSize(QtCore.QSize(24, 24))
-        self.switchButton.clicked.connect(self.switchButton_clicked)
+        self.switchPushButton = QtWidgets.QPushButton(qiconlibrary.getIconByName('switch'), '')
+        self.switchPushButton.setObjectName('switchButton')
+        self.switchPushButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.switchPushButton.setFixedSize(QtCore.QSize(24, 24))
+        self.switchPushButton.clicked.connect(self.switchPushButton_clicked)
 
-        self.targetButton = QtWidgets.QPushButton('Child')
-        self.targetButton.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
-        self.targetButton.setFixedHeight(24)
-        self.targetButton.setMinimumWidth(48)
-        self.targetButton.setToolTip('Picks the node to be aligned.')
-        self.targetButton.clicked.connect(self.button_clicked)
+        self.targetPushButton = QtWidgets.QPushButton('Child')
+        self.targetPushButton.setObjectName('targetButton')
+        self.targetPushButton.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        self.targetPushButton.setFixedHeight(24)
+        self.targetPushButton.setMinimumWidth(48)
+        self.targetPushButton.setToolTip('Picks the node to be aligned.')
+        self.targetPushButton.clicked.connect(self.pushButton_clicked)
 
         self.buttonLayout = QtWidgets.QHBoxLayout()
-        self.buttonLayout.addWidget(self.sourceButton)
-        self.buttonLayout.addWidget(self.switchButton)
-        self.buttonLayout.addWidget(self.targetButton)
+        self.buttonLayout.setObjectName('buttonLayout')
+        self.buttonLayout.addWidget(self.sourcePushButton)
+        self.buttonLayout.addWidget(self.switchPushButton)
+        self.buttonLayout.addWidget(self.targetPushButton)
 
         self.centralLayout.addLayout(self.buttonLayout)
         self.centralLayout.addWidget(qdivider.QDivider(QtCore.Qt.Horizontal))
@@ -70,12 +74,14 @@ class QAlignRollout(qrollout.QRollout):
         # Create time range widgets
         #
         self.startCheckBox = QtWidgets.QCheckBox('Start:')
+        self.startCheckBox.setObjectName('startCheckBox')
         self.startCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.startCheckBox.setFixedSize(QtCore.QSize(48, 24))
         self.startCheckBox.setChecked(True)
         self.startCheckBox.stateChanged.connect(self.startCheckBox_stateChanged)
 
         self.startSpinBox = qtimespinbox.QTimeSpinBox()
+        self.startSpinBox.setObjectName('startSpinBox')
         self.startSpinBox.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         self.startSpinBox.setFixedHeight(24)
         self.startSpinBox.setMinimumWidth(24)
@@ -83,12 +89,14 @@ class QAlignRollout(qrollout.QRollout):
         self.startSpinBox.setValue(0)
 
         self.endCheckBox = QtWidgets.QCheckBox('End:')
+        self.endCheckBox.setObjectName('endCheckBox')
         self.endCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.endCheckBox.setFixedSize(QtCore.QSize(48, 24))
         self.endCheckBox.setChecked(True)
         self.endCheckBox.stateChanged.connect(self.endCheckBox_stateChanged)
 
         self.endSpinBox = qtimespinbox.QTimeSpinBox()
+        self.endSpinBox.setObjectName('endSpinBox')
         self.endSpinBox.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         self.endSpinBox.setFixedHeight(24)
         self.endSpinBox.setMinimumWidth(24)
@@ -96,12 +104,14 @@ class QAlignRollout(qrollout.QRollout):
         self.endSpinBox.setValue(1)
 
         self.stepCheckBox = QtWidgets.QCheckBox('Step:')
+        self.stepCheckBox.setObjectName('stepCheckBox')
         self.stepCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.stepCheckBox.setFixedSize(QtCore.QSize(48, 24))
         self.stepCheckBox.setChecked(True)
         self.stepCheckBox.stateChanged.connect(self.stepCheckBox_stateChanged)
 
         self.stepSpinBox = QtWidgets.QSpinBox()
+        self.stepSpinBox.setObjectName('stepSpinBox')
         self.stepSpinBox.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         self.stepSpinBox.setFixedHeight(24)
         self.stepSpinBox.setMinimumWidth(24)
@@ -109,6 +119,7 @@ class QAlignRollout(qrollout.QRollout):
         self.stepSpinBox.setValue(1)
 
         self.timeRangeLayout = QtWidgets.QHBoxLayout()
+        self.timeRangeLayout.setObjectName('timeRangeLayout')
         self.timeRangeLayout.addWidget(self.startCheckBox)
         self.timeRangeLayout.addWidget(self.startSpinBox)
         self.timeRangeLayout.addWidget(self.endCheckBox)
@@ -122,10 +133,22 @@ class QAlignRollout(qrollout.QRollout):
         # Create match transform widgets
         #
         self.matchTranslateWidget = qxyzwidget.QXyzWidget('Pos')
+        self.matchTranslateWidget.setObjectName('matchTranslateWidget')
+        self.matchTranslateWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.matchTranslateWidget.setFixedHeight(24)
+
         self.matchRotateWidget = qxyzwidget.QXyzWidget('Rot')
+        self.matchRotateWidget.setObjectName('matchRotateWidget')
+        self.matchRotateWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.matchRotateWidget.setFixedHeight(24)
+
         self.matchScaleWidget = qxyzwidget.QXyzWidget('Scale')
+        self.matchScaleWidget.setObjectName('matchScaleWidget')
+        self.matchScaleWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.matchScaleWidget.setFixedHeight(24)
 
         self.matchLayout = QtWidgets.QHBoxLayout()
+        self.matchLayout.setObjectName('matchLayout')
         self.matchLayout.addWidget(self.matchTranslateWidget)
         self.matchLayout.addWidget(self.matchRotateWidget)
         self.matchLayout.addWidget(self.matchScaleWidget)
@@ -136,11 +159,27 @@ class QAlignRollout(qrollout.QRollout):
         # Create maintain offset widgets
         #
         self.maintainOffsetLabel = QtWidgets.QLabel('Maintain Offset:')
+        self.maintainOffsetLabel.setObjectName('maintainOffsetLabel')
+        self.maintainOffsetLabel.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.maintainOffsetLabel.setFixedHeight(24)
+
         self.maintainTranslateCheckBox = QtWidgets.QCheckBox('Position')
+        self.maintainTranslateCheckBox.setObjectName('maintainTranslateCheckBox')
+        self.maintainTranslateCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.maintainTranslateCheckBox.setFixedHeight(24)
+
         self.maintainRotateCheckBox = QtWidgets.QCheckBox('Rotation')
+        self.maintainRotateCheckBox.setObjectName('maintainRotateCheckBox')
+        self.maintainRotateCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.maintainRotateCheckBox.setFixedHeight(24)
+
         self.maintainScaleCheckBox = QtWidgets.QCheckBox('Scale')
+        self.maintainScaleCheckBox.setObjectName('maintainScaleCheckBox')
+        self.maintainScaleCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.maintainScaleCheckBox.setFixedHeight(24)
 
         self.maintainOffsetLayout = QtWidgets.QHBoxLayout()
+        self.maintainOffsetLayout.setObjectName('maintainOffsetLayout')
         self.maintainOffsetLayout.addWidget(self.maintainOffsetLabel)
         self.maintainOffsetLayout.addWidget(self.maintainTranslateCheckBox)
         self.maintainOffsetLayout.addWidget(self.maintainRotateCheckBox)
@@ -521,7 +560,7 @@ class QAlignRollout(qrollout.QRollout):
     # endregion
 
     # region Slots
-    def button_clicked(self, checked=False):
+    def pushButton_clicked(self, checked=False):
         """
         Clicked slot method responsible for updating the source name.
 
@@ -541,7 +580,7 @@ class QAlignRollout(qrollout.QRollout):
             self.sender().setText(fnTransform.name())
             self.invalidate()
 
-    def switchButton_clicked(self, checked=False):
+    def switchPushButton_clicked(self, checked=False):
         """
         Clicked slot method responsible for switch the parent and child nodes.
 
