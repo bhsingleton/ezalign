@@ -1,5 +1,5 @@
 from PySide2 import QtCore, QtWidgets, QtGui
-from dcc.ui import quicwindow, qmatrixedit, qvectoredit
+from dcc.ui import quicwindow, qdropdownbutton
 from ezalign.tabs import qaligntab, qaimtab, qmatrixtab, qtimetab
 
 import logging
@@ -22,6 +22,11 @@ class QEzAlign(quicwindow.QUicWindow):
         :key flags: QtCore.Qt.WindowFlags
         :rtype: None
         """
+
+        # Declare private variables
+        #
+        self._freezeTransform = False
+        self._preserveChildren = False
 
         # Call parent method
         #
@@ -86,6 +91,7 @@ class QEzAlign(quicwindow.QUicWindow):
         customWidgets['QAimTab'] = qaimtab.QAimTab
         customWidgets['QMatrixTab'] = qmatrixtab.QMatrixTab
         customWidgets['QTimeTab'] = qtimetab.QTimeTab
+        customWidgets['QDropDownButton'] = qdropdownbutton.QDropDownButton
 
         return customWidgets
 
@@ -100,15 +106,14 @@ class QEzAlign(quicwindow.QUicWindow):
         #
         self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children')
         self.preserveChildrenAction.setCheckable(True)
-        self.preserveChildrenAction.triggered.connect(self.preserveChildrenAction_triggered)
+        self.preserveChildrenAction.triggered.connect(self.on_preserveChildrenAction_triggered)
 
         self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform')
         self.freezeTransformAction.setCheckable(True)
-        self.freezeTransformAction.triggered.connect(self.freezeTransformAction_triggered)
+        self.freezeTransformAction.triggered.connect(self.on_freezeTransformAction_triggered)
 
-        self.applyMenu = QtWidgets.QMenu(self.applyToolButton)
+        self.applyMenu = QtWidgets.QMenu(parent=self.applyDropDownButton)
         self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
-        self.applyToolButton.setMenu(self.applyMenu)
 
     def loadSettings(self):
         """
@@ -184,11 +189,11 @@ class QEzAlign(quicwindow.QUicWindow):
     # endregion
 
     # region Slots
-    def applyButton_clicked(self, checked=False):
+    @QtCore.Slot()
+    def on_applyDropDownButton_clicked(self):
         """
         Clicked slot method responsible for applying the selected operation.
 
-        :type checked: bool
         :rtype: None
         """
 
@@ -198,7 +203,8 @@ class QEzAlign(quicwindow.QUicWindow):
 
             currentTab.apply(preserveChildren=self.preserveChildren, freezeTransform=self.freezeTransform)
 
-    def okayButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_okayPushButton_clicked(self, checked=False):
         """
         Clicked slot method responsible for applying the selected operation the closing the user interface.
 
@@ -209,7 +215,8 @@ class QEzAlign(quicwindow.QUicWindow):
         self.applyButton.click()
         self.close()
 
-    def cancelButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_cancelPushButton_clicked(self, checked=False):
         """
         Clicked slot method responsible for closing the user interface.
 
@@ -219,7 +226,8 @@ class QEzAlign(quicwindow.QUicWindow):
 
         self.close()
 
-    def preserveChildrenAction_triggered(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_preserveChildrenAction_triggered(self, checked=False):
         """
         Triggered slot method responsible for updating the preserve children flag.
 
@@ -229,7 +237,8 @@ class QEzAlign(quicwindow.QUicWindow):
 
         self._preserveChildren = self.sender().isChecked()
 
-    def freezeTransformAction_triggered(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_freezeTransformAction_triggered(self, checked=False):
         """
         Triggered slot method responsible for updating the freeze transform flag.
 
