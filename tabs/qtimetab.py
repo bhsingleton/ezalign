@@ -33,9 +33,6 @@ class QAlignRollout(qrollout.QRollout):
         # Assign vertical layout
         #
         self.centralLayout = QtWidgets.QVBoxLayout()
-        self.centralLayout.setObjectName('centralLayout')
-        self.centralLayout.setSpacing(4)
-
         self.setLayout(self.centralLayout)
 
         # Create node widgets
@@ -149,6 +146,7 @@ class QAlignRollout(qrollout.QRollout):
 
         self.matchLayout = QtWidgets.QHBoxLayout()
         self.matchLayout.setObjectName('matchLayout')
+        self.matchLayout.setContentsMargins(0, 0, 0, 0)
         self.matchLayout.addWidget(self.matchTranslateWidget)
         self.matchLayout.addWidget(self.matchRotateWidget)
         self.matchLayout.addWidget(self.matchScaleWidget)
@@ -158,10 +156,10 @@ class QAlignRollout(qrollout.QRollout):
 
         # Create maintain offset widgets
         #
-        self.maintainOffsetLabel = QtWidgets.QLabel('Maintain Offset:')
-        self.maintainOffsetLabel.setObjectName('maintainOffsetLabel')
-        self.maintainOffsetLabel.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.maintainOffsetLabel.setFixedHeight(24)
+        self.maintainLabel = QtWidgets.QLabel('Maintain:')
+        self.maintainLabel.setObjectName('maintainOffsetLabel')
+        self.maintainLabel.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.maintainLabel.setFixedHeight(24)
 
         self.maintainTranslateCheckBox = QtWidgets.QCheckBox('Position')
         self.maintainTranslateCheckBox.setObjectName('maintainTranslateCheckBox')
@@ -178,14 +176,14 @@ class QAlignRollout(qrollout.QRollout):
         self.maintainScaleCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.maintainScaleCheckBox.setFixedHeight(24)
 
-        self.maintainOffsetLayout = QtWidgets.QHBoxLayout()
-        self.maintainOffsetLayout.setObjectName('maintainOffsetLayout')
-        self.maintainOffsetLayout.addWidget(self.maintainOffsetLabel)
-        self.maintainOffsetLayout.addWidget(self.maintainTranslateCheckBox)
-        self.maintainOffsetLayout.addWidget(self.maintainRotateCheckBox)
-        self.maintainOffsetLayout.addWidget(self.maintainScaleCheckBox)
+        self.maintainLayout = QtWidgets.QHBoxLayout()
+        self.maintainLayout.setObjectName('maintainLayout')
+        self.maintainLayout.addWidget(self.maintainLabel)
+        self.maintainLayout.addWidget(self.maintainTranslateCheckBox)
+        self.maintainLayout.addWidget(self.maintainRotateCheckBox)
+        self.maintainLayout.addWidget(self.maintainScaleCheckBox)
 
-        self.centralLayout.addLayout(self.maintainOffsetLayout)
+        self.centralLayout.addLayout(self.maintainLayout)
 
         # Insert additional menu actions
         #
@@ -256,7 +254,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: str
         """
 
-        return self.sourceButton.text()
+        return self.sourcePushButton.text()
 
     @sourceName.setter
     def sourceName(self, sourceName):
@@ -267,7 +265,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: None
         """
 
-        self.sourceButton.setText(sourceName)
+        self.sourcePushButton.setText(sourceName)
         self.invalidate()
 
     @property
@@ -278,7 +276,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: str
         """
 
-        return self.targetButton.text()
+        return self.targetPushButton.text()
 
     @targetName.setter
     def targetName(self, targetName):
@@ -289,7 +287,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: None
         """
 
-        self.targetButton.setText(targetName)
+        self.targetPushButton.setText(targetName)
         self.invalidate()
 
     @property
@@ -653,6 +651,7 @@ class QTimeTab(qabstracttab.QAbstractTab):
         layout = QtWidgets.QVBoxLayout()
         layout.setAlignment(QtCore.Qt.AlignTop)
         layout.setSpacing(4)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         self.scrollAreaContents.setLayout(layout)
 
