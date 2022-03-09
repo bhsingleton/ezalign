@@ -160,6 +160,7 @@ class QAlignRollout(qrollout.QRollout):
         self.maintainLabel.setObjectName('maintainOffsetLabel')
         self.maintainLabel.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.maintainLabel.setFixedHeight(24)
+        self.maintainLabel.setAlignment(QtCore.Qt.AlignCenter)
 
         self.maintainTranslateCheckBox = QtWidgets.QCheckBox('Position')
         self.maintainTranslateCheckBox.setObjectName('maintainTranslateCheckBox')
@@ -187,15 +188,17 @@ class QAlignRollout(qrollout.QRollout):
 
         # Insert additional menu actions
         #
-        self.addAlignmentAction = QtWidgets.QAction('Add Alignment', parent=self.customContextMenu)
-        self.removeAlignmentAction = QtWidgets.QAction('Remove Alignment', parent=self.customContextMenu)
+        menu = self.menu()
 
-        self.customContextMenu.insertActions(
-            self.expandAction,
+        self.addAlignmentAction = QtWidgets.QAction('Add Alignment', parent=menu)
+        self.removeAlignmentAction = QtWidgets.QAction('Remove Alignment', parent=menu)
+
+        menu.insertActions(
+            menu.actions()[0],
             [
                 self.addAlignmentAction,
                 self.removeAlignmentAction,
-                qseparator.QSeparator('', parent=self.customContextMenu)
+                qseparator.QSeparator('', parent=menu)
             ]
         )
 
@@ -208,7 +211,7 @@ class QAlignRollout(qrollout.QRollout):
 
         return {
             'isChecked': self.isChecked(),
-            'expanded': self.expanded(),
+            'isExpanded': self.isExpanded(),
             'sourceName': self.sourceName,
             'targetName': self.targetName,
             'startTime': self.startTime,
@@ -755,8 +758,7 @@ class QTimeTab(qabstracttab.QAbstractTab):
 
         rollout = QAlignRollout('')
         rollout.setCheckable(True)
-        rollout.showCheckBox()
-        rollout.showGripper()
+        rollout.setGrippable(True)
         rollout.addAlignmentAction.triggered.connect(self.on_addAlignmentAction_triggered)
         rollout.removeAlignmentAction.triggered.connect(self.on_removeAlignmentAction_triggered)
 
