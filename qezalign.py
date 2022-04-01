@@ -83,7 +83,7 @@ class QEzAlign(quicwindow.QUicWindow):
         """
         Returns a dictionary of custom widgets used by this class.
 
-        :rtype: dict[str:type]
+        :rtype: Dict[str, type]
         """
 
         customWidgets = super(QEzAlign, cls).customWidgets()
@@ -104,15 +104,17 @@ class QEzAlign(quicwindow.QUicWindow):
 
         # Assign tool button menu
         #
-        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children')
-        self.preserveChildrenAction.setCheckable(True)
-        self.preserveChildrenAction.triggered.connect(self.on_preserveChildrenAction_triggered)
-
-        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform')
-        self.freezeTransformAction.setCheckable(True)
-        self.freezeTransformAction.triggered.connect(self.on_freezeTransformAction_triggered)
-
         self.applyMenu = QtWidgets.QMenu(parent=self.applyDropDownButton)
+        self.applyMenu.setObjectName('applyMenu')
+
+        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children', parent=self.applyMenu)
+        self.preserveChildrenAction.setObjectName('preserveChildrenAction')
+        self.preserveChildrenAction.setCheckable(True)
+
+        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform', parent=self.applyMenu)
+        self.freezeTransformAction.setObjectName('freezeTransformAction')
+        self.freezeTransformAction.setCheckable(True)
+
         self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
 
     def loadSettings(self):

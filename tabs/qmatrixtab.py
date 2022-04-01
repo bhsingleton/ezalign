@@ -259,8 +259,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         return matrixmath.breakMatrix(worldMatrix, normalize=True)[axis]
 
-    @staticmethod
-    def getCenterPosition():
+    def getCenterPosition(self):
         """
         Returns the center position of the active selection.
         Support for shapes is currently limited to meshes at this time.
@@ -270,9 +269,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Evaluate active selection
         #
-        fnNode = fnnode.FnNode()
-
-        selection = fnNode.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         center = numpy.array([0.0, 0.0, 0.0])
@@ -284,6 +281,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Iterate through selection
         #
+        fnNode = fnnode.FnNode()
         fnTransform = fntransform.FnTransform()
         fnMesh = fnmesh.FnMesh()
 
@@ -316,8 +314,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         return center
 
-    @staticmethod
-    def getAveragedNormal():
+    def getAveragedNormal(self):
         """
         Returns the averaged normal vector from the active selection.
 
@@ -326,9 +323,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Evaluate active selection
         #
-        fnMesh = fnmesh.FnMesh()
-
-        selection = fnMesh.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         normal = numpy.array([1.0, 0.0, 0.0])
@@ -340,6 +335,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Iterate through component selection
         #
+        fnMesh = fnmesh.FnMesh()
         success = fnMesh.trySetObject(selection[0])
 
         if success:
@@ -364,9 +360,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Get active selection
         #
-        fnTransform = fntransform.FnTransform()
-
-        selection = fnTransform.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if selectionCount != 1:
@@ -376,6 +370,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Get exclusive matrix
         #
+        fnTransform = fntransform.FnTransform()
         success = fnTransform.trySetObject(selection[0])
 
         if success:
@@ -463,7 +458,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Check if anything is selected
         #
-        selection = fntransform.FnTransform.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if selectionCount > 0:
@@ -499,7 +494,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Check if anything is selected
         #
-        selection = fntransform.FnTransform.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if selectionCount:

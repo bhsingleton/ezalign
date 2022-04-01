@@ -210,9 +210,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         # Get selection list
         #
-        fnTransform = fntransform.FnTransform()
-
-        selection = fnTransform.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if selectionCount != 2:
@@ -222,6 +220,8 @@ class QAlignTab(qabstracttab.QAbstractTab):
         # Attach source object to function set
         #
         source = selection[0]
+
+        fnTransform = fntransform.FnTransform()
         success = fnTransform.trySetObject(source)
 
         if not success:
@@ -279,9 +279,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         # Get selection list
         #
-        fnTransform = fntransform.FnTransform()
-
-        selection = fnTransform.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if selectionCount != 2:
@@ -291,6 +289,8 @@ class QAlignTab(qabstracttab.QAbstractTab):
         # Attach source object to function set
         #
         target = selection[1]
+
+        fnTransform = fntransform.FnTransform()
         success = fnTransform.trySetObject(target)
 
         if not success:

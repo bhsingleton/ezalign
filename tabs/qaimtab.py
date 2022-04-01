@@ -468,7 +468,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         # Get active selection
         #
-        selection = fntransform.FnTransform.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if not selectionCount >= 2:
@@ -568,7 +568,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         # Get active selection
         #
-        selection = self.worldUpObject.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         worldUpVector = numpy.array([0.0, 0.0, 0.0])
@@ -611,7 +611,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         # Inspect active selection
         #
-        selection = self.worldUpObject.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if selectionCount != 1:

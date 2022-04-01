@@ -569,14 +569,12 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: None
         """
 
-        fnTransform = fntransform.FnTransform()
-
-        selection = fnTransform.getActiveSelection()
+        selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
         if selectionCount > 0:
 
-            fnTransform.setObject(selection[0])
+            fnTransform = fntransform.FnTransform(selection[0])
 
             self.sender().setText(fnTransform.name())
             self.invalidate()

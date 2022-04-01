@@ -1,5 +1,6 @@
 from PySide2 import QtCore, QtWidgets, QtGui
 from abc import abstractmethod
+from dcc import fnscene
 from dcc.ui import quicinterface, qmatrixedit, qvectoredit
 
 import logging
@@ -27,11 +28,28 @@ class QAbstractTab(quicinterface.QUicInterface, QtWidgets.QWidget):
         #
         super(QAbstractTab, self).__init__(*args, **kwargs)
 
+        # Declare private variables
+        #
+        self._scene = fnscene.FnScene()
+
         # Load user interface
         #
         self.preLoad()
         self.__load__(*args, **kwargs)
         self.postLoad()
+        self.connectSlots()
+    # endregion
+
+    # region Properties
+    @property
+    def scene(self):
+        """
+        Getter method that returns the scene function set.
+
+        :rtype: fnscene.FnScene
+        """
+
+        return self._scene
     # endregion
 
     # region Methods
@@ -41,7 +59,7 @@ class QAbstractTab(quicinterface.QUicInterface, QtWidgets.QWidget):
         Returns a dictionary of custom widgets used by this class.
         Overload this method to extend this dictionary!
 
-        :rtype: dict[str:type]
+        :rtype: Dict[str, type]
         """
 
         customWidgets = super(QAbstractTab, cls).customWidgets()
