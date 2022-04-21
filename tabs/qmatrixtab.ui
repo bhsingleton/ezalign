@@ -268,7 +268,7 @@
   <customwidget>
    <class>QMatrixEdit</class>
    <extends>QWidget</extends>
-   <header>qmatrixedit.h</header>
+   <header>dcc/ui/qmatrixedit.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

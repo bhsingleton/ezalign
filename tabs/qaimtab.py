@@ -75,7 +75,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Getter method that returns the forward axis sign.
 
-        :rtype: int
+        :rtype: float
         """
 
         return self.__sign__[self.forwardAxisSignComboBox.currentIndex()]
@@ -85,7 +85,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Setter method that updates the forward axis sign.
 
-        :type forwardAxisSign: int
+        :type forwardAxisSign: float
         :rtype: None
         """
 
@@ -120,7 +120,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Getter method that returns the up axis sign.
 
-        :rtype: int
+        :rtype: float
         """
 
         return self.__sign__[self.upAxisSignComboBox.currentIndex()]
@@ -130,7 +130,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Setter method that updates the forward axis sign.
 
-        :type upAxisSign: int
+        :type upAxisSign: float
         :rtype: None
         """
 
@@ -213,14 +213,14 @@ class QAimTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.forwardAxis = settings.value('tabs/aim/forwardAxis', defaultValue=0, type=int)
-        self.forwardAxisSign = settings.value('tabs/aim/forwardAxisSign', defaultValue=0, type=int)
+        self.forwardAxis = settings.value('tabs/aim/forwardAxis', defaultValue=0)
+        self.forwardAxisSign = float(settings.value('tabs/aim/forwardAxisSign', defaultValue='1.0'))
 
-        self.upAxis = settings.value('tabs/aim/upAxis', defaultValue=1, type=int)
-        self.upAxisSign = settings.value('tabs/aim/upAxisSign', defaultValue=0, type=int)
+        self.upAxis = settings.value('tabs/aim/upAxis', defaultValue=1)
+        self.upAxisSign = float(settings.value('tabs/aim/upAxisSign', defaultValue='1.0'))
 
-        self.worldUpType = settings.value('tabs/aim/worldUpType', defaultValue=0, type=int)
-        self.worldUpVector = json.loads(settings.value('tabs/aim/worldUpVector', defaultValue='[0.0, 0.0, 1.0]', type=str))
+        self.worldUpType = settings.value('tabs/aim/worldUpType', defaultValue=0)
+        self.worldUpVector = json.loads(settings.value('tabs/aim/worldUpVector', defaultValue='[0.0, 0.0, 1.0]'))
 
     def saveSettings(self, settings):
         """
@@ -298,7 +298,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         else:
 
-            raise RuntimeError('Unknown world up type detected!')
+            raise RuntimeError('upVector() expects a valid world up type (%s given)!' % self.worldUpType)
 
     def perpendicularVector(self, nodes):
         """

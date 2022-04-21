@@ -415,7 +415,7 @@
   <customwidget>
    <class>QVectorEdit</class>
    <extends>QWidget</extends>
-   <header>qvectoredit.h</header>
+   <header>dcc/ui/qvectoredit.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

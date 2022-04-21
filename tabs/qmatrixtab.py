@@ -187,13 +187,13 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.origin = json.loads(settings.value('tabs/matrix/origin', defaultValue='[0.0, 0.0, 0.0]', type=str))
+        self.origin = json.loads(settings.value('tabs/matrix/origin', defaultValue='[0.0, 0.0, 0.0]'))
 
-        self.forwardAxis = settings.value('tabs/matrix/forwardAxis', defaultValue=0, type=int)
-        self.forwardVector = json.loads(settings.value('tabs/matrix/forwardVector', defaultValue='[1.0, 0.0, 0.0]', type=str))
+        self.forwardAxis = settings.value('tabs/matrix/forwardAxis', defaultValue=0)
+        self.forwardVector = json.loads(settings.value('tabs/matrix/forwardVector', defaultValue='[1.0, 0.0, 0.0]'))
 
-        self.upAxis = settings.value('tabs/matrix/upAxis', defaultValue=1, type=int)
-        self.upVector = json.loads(settings.value('tabs/matrix/upVector', defaultValue='[0.0, 1.0, 0.0]', type=str))
+        self.upAxis = settings.value('tabs/matrix/upAxis', defaultValue=1)
+        self.upVector = json.loads(settings.value('tabs/matrix/upVector', defaultValue='[0.0, 1.0, 0.0]'))
         
     def saveSettings(self, settings):
         """

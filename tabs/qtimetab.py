@@ -1,6 +1,6 @@
 import json
 
-from PySide2 import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui
 from dcc import fnscene, fntransform
 from dcc.ui import qrollout, qiconlibrary, qdivider, qtimespinbox, qxyzwidget, qseparator
 from ezalign.abstract import qabstracttab
@@ -190,8 +190,8 @@ class QAlignRollout(qrollout.QRollout):
         #
         menu = self.menu()
 
-        self.addAlignmentAction = QtWidgets.QAction('Add Alignment', parent=menu)
-        self.removeAlignmentAction = QtWidgets.QAction('Remove Alignment', parent=menu)
+        self.addAlignmentAction = QtWidgets.QAction('Add Alignment', menu)
+        self.removeAlignmentAction = QtWidgets.QAction('Remove Alignment', menu)
 
         menu.insertActions(
             menu.actions()[0],
@@ -671,7 +671,7 @@ class QTimeTab(qabstracttab.QAbstractTab):
         # Load object states
         # If there aren't any then create a default alignment
         #
-        states = json.loads(settings.value('tabs/time/alignments', defaultValue='[]', type=str))
+        states = json.loads(settings.value('tabs/time/alignments', defaultValue='[]'))
         numStates = len(states)
 
         if numStates > 0:

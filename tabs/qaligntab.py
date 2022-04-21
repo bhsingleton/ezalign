@@ -115,12 +115,12 @@ class QAlignTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.sourceType = settings.value('tabs/align/sourceType', defaultValue=2, type=int)
-        self.targetType = settings.value('tabs/align/targetType', defaultValue=2, type=int)
+        self.sourceType = settings.value('tabs/align/sourceType', defaultValue=2)
+        self.targetType = settings.value('tabs/align/targetType', defaultValue=2)
 
-        self.setMatchTranslate(json.loads(settings.value('tabs/align/matchTranslate', defaultValue='[true, true, true]', type=str)))
-        self.setMatchRotate(json.loads(settings.value('tabs/align/matchRotate', defaultValue='[true, true, true]', type=str)))
-        self.setMatchScale(json.loads(settings.value('tabs/align/matchScale', defaultValue='[false, false, false]', type=str)))
+        self.setMatchTranslate(json.loads(settings.value('tabs/align/matchTranslate', defaultValue='[true, true, true]')))
+        self.setMatchRotate(json.loads(settings.value('tabs/align/matchRotate', defaultValue='[true, true, true]')))
+        self.setMatchScale(json.loads(settings.value('tabs/align/matchScale', defaultValue='[false, false, false]')))
 
     def saveSettings(self, settings):
         """

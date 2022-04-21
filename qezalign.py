@@ -1,6 +1,5 @@
 from PySide2 import QtCore, QtWidgets, QtGui
-from dcc.ui import quicwindow, qdropdownbutton
-from ezalign.tabs import qaligntab, qaimtab, qmatrixtab, qtimetab
+from dcc.ui import quicwindow
 
 import logging
 logging.basicConfig()
@@ -78,23 +77,6 @@ class QEzAlign(quicwindow.QUicWindow):
     # endregion
 
     # region Methods
-    @classmethod
-    def customWidgets(cls):
-        """
-        Returns a dictionary of custom widgets used by this class.
-
-        :rtype: Dict[str, type]
-        """
-
-        customWidgets = super(QEzAlign, cls).customWidgets()
-        customWidgets['QAlignTab'] = qaligntab.QAlignTab
-        customWidgets['QAimTab'] = qaimtab.QAimTab
-        customWidgets['QMatrixTab'] = qmatrixtab.QMatrixTab
-        customWidgets['QTimeTab'] = qtimetab.QTimeTab
-        customWidgets['QDropDownButton'] = qdropdownbutton.QDropDownButton
-
-        return customWidgets
-
     def postLoad(self):
         """
         Called after the user interface has been loaded.
@@ -107,11 +89,11 @@ class QEzAlign(quicwindow.QUicWindow):
         self.applyMenu = QtWidgets.QMenu(parent=self.applyDropDownButton)
         self.applyMenu.setObjectName('applyMenu')
 
-        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children', parent=self.applyMenu)
+        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children', self.applyMenu)
         self.preserveChildrenAction.setObjectName('preserveChildrenAction')
         self.preserveChildrenAction.setCheckable(True)
 
-        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform', parent=self.applyMenu)
+        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform', self.applyMenu)
         self.freezeTransformAction.setObjectName('freezeTransformAction')
         self.freezeTransformAction.setCheckable(True)
 
@@ -130,9 +112,9 @@ class QEzAlign(quicwindow.QUicWindow):
 
         # Load user preferences
         #
-        self.tabControl.setCurrentIndex(self.settings.value('editor/currentTabIndex', defaultValue=0, type=int))
-        self.preserveChildren = self.settings.value('editor/preserveChildren', defaultValue=False, type=bool)
-        self.freezeTransform = self.settings.value('editor/freezeTransform', defaultValue=False, type=bool)
+        self.tabControl.setCurrentIndex(self.settings.value('editor/currentTabIndex', defaultValue=0))
+        self.preserveChildren = bool(self.settings.value('editor/preserveChildren', defaultValue=0))
+        self.freezeTransform = bool(self.settings.value('editor/freezeTransform', defaultValue=0))
 
         for tab in self.iterTabs():
 
@@ -152,8 +134,8 @@ class QEzAlign(quicwindow.QUicWindow):
         # Save user preferences
         #
         self.settings.setValue('editor/currentTabIndex', self.currentTabIndex())
-        self.settings.setValue('editor/preserveChildren', self.preserveChildren)
-        self.settings.setValue('editor/freezeTransform', self.freezeTransform)
+        self.settings.setValue('editor/preserveChildren', int(self.preserveChildren))
+        self.settings.setValue('editor/freezeTransform', int(self.freezeTransform))
 
         for tab in self.iterTabs():
 

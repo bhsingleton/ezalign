@@ -137,30 +137,30 @@
   <customwidget>
    <class>QDropDownButton</class>
    <extends>QPushButton</extends>
-   <header>qdropdownbutton.h</header>
+   <header>dcc/ui/qdropdownbutton.h</header>
   </customwidget>
   <customwidget>
    <class>QAlignTab</class>
    <extends>QWidget</extends>
-   <header>qaligntab.h</header>
+   <header>ezalign/tabs/qaligntab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QAimTab</class>
    <extends>QWidget</extends>
-   <header>qaimtab.h</header>
+   <header>ezalign/tabs/qaimtab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QMatrixTab</class>
    <extends>QWidget</extends>
-   <header>qmatrixtab.h</header>
+   <header>ezalign/tabs/qmatrixtab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QTimeTab</class>
    <extends>QWidget</extends>
-   <header>qtimetab.h</header>
+   <header>ezalign/tabs/qtimetab.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

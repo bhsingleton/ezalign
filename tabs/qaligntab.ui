@@ -474,13 +474,17 @@
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="sourceRadioButtonGroup"/>
   <buttongroup name="targetRadioButtonGroup"/>
+  <buttongroup name="scaleCheckBoxGroup">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
   <buttongroup name="rotateCheckBoxGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="scaleCheckBoxGroup"/>
-  <buttongroup name="sourceRadioButtonGroup"/>
  </buttongroups>
 </ui>

@@ -1,7 +1,7 @@
 from PySide2 import QtCore, QtWidgets, QtGui
 from abc import abstractmethod
 from dcc import fnscene
-from dcc.ui import quicinterface, qmatrixedit, qvectoredit
+from dcc.ui import quicmixin
 
 import logging
 logging.basicConfig()
@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class QAbstractTab(quicinterface.QUicInterface, QtWidgets.QWidget):
+class QAbstractTab(quicmixin.QUicMixin, QtWidgets.QWidget):
     """
     Overload of QWidget used to outline the structure for alignment tabs.
     """
@@ -53,21 +53,6 @@ class QAbstractTab(quicinterface.QUicInterface, QtWidgets.QWidget):
     # endregion
 
     # region Methods
-    @classmethod
-    def customWidgets(cls):
-        """
-        Returns a dictionary of custom widgets used by this class.
-        Overload this method to extend this dictionary!
-
-        :rtype: Dict[str, type]
-        """
-
-        customWidgets = super(QAbstractTab, cls).customWidgets()
-        customWidgets['QMatrixEdit'] = qmatrixedit.QMatrixEdit
-        customWidgets['QVectorEdit'] = qvectoredit.QVectorEdit
-
-        return customWidgets
-
     def loadSettings(self, settings):
         """
         Loads the user settings.
