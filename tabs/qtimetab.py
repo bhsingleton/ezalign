@@ -30,6 +30,10 @@ class QAlignRollout(qrollout.QRollout):
         #
         super(QAlignRollout, self).__init__(title, **kwargs)
 
+        # Declare private variables
+        #
+        self._scene = fnscene.FnScene()
+
         # Assign vertical layout
         #
         self.centralLayout = QtWidgets.QVBoxLayout()
@@ -249,6 +253,16 @@ class QAlignRollout(qrollout.QRollout):
     # endregion
 
     # region Properties
+    @property
+    def scene(self):
+        """
+        Getter method that returns the scene function set.
+
+        :rtype: fnscene.FnScene
+        """
+
+        return self._scene
+
     @property
     def sourceName(self):
         """
