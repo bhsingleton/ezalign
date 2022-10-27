@@ -37,7 +37,6 @@ class QAbstractTab(quicmixin.QUicMixin, QtWidgets.QWidget):
         self.preLoad()
         self.__load__(*args, **kwargs)
         self.postLoad()
-        self.connectSlots()
     # endregion
 
     # region Properties
