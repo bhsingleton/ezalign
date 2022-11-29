@@ -1,10 +1,8 @@
-import numpy
 import json
 
-from PySide2 import QtCore, QtWidgets, QtGui
-from copy import deepcopy
-from dcc import fntransform, fnscene
-from dcc.math import vectormath, matrixmath
+from Qt import QtCore, QtWidgets, QtGui
+from dcc import fntransform
+from dcc.dataclasses import vector, transformationmatrix
 from ezalign.abstract import qabstracttab
 
 import logging
@@ -21,9 +19,9 @@ class QAimTab(qabstracttab.QAbstractTab):
     # region Dunderscores
     __sign__ = (1.0, -1.0)
     __decimals__ = 3
-    __origin__ = deepcopy(vectormath.ORIGIN)
-    __axis__ = 'xyz'
-    __vectors__ = vectormath.X_AXIS_VECTOR, vectormath.Y_AXIS_VECTOR, vectormath.Z_AXIS_VECTOR
+    __origin__ = vector.Vector.zero
+    __axes__ = 'xyz'
+    __axis_vectors__ = vector.Vector.xAxis, vector.Vector.yAxis, vector.Vector.zAxis
 
     def __init__(self, *args, **kwargs):
         """
@@ -162,7 +160,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Getter method that returns the world up vector.
 
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         return self.worldUpVectorEdit.vector()
@@ -172,7 +170,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Setter method that updates the world up vector.
 
-        :type worldUpVector: numpy.array
+        :type worldUpVector: vector.Vector
         :rtype: None
         """
 
@@ -237,7 +235,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         settings.setValue('tabs/aim/upAxisSign', self.upAxisSign)
 
         settings.setValue('tabs/aim/worldUpType', self.worldUpType)
-        settings.setValue('tabs/aim/worldUpVector', json.dumps(self.worldUpVector.tolist()))
+        settings.setValue('tabs/aim/worldUpVector', json.dumps(self.worldUpVector.toList()))
 
     def forwardVector(self, start, end, normalize=False):
         """
@@ -246,23 +244,23 @@ class QAimTab(qabstracttab.QAbstractTab):
         :type start: Any
         :type end: Any
         :type normalize: bool
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         # Get forward vector between nodes
         #
-        fnStart = fntransform.FnTransform(start)
-        fnEnd = fntransform.FnTransform(end)
+        startNode = fntransform.FnTransform(start)
+        endNode = fntransform.FnTransform(end)
 
-        startPoint = numpy.array(fnStart.translation(worldSpace=True))
-        endPoint = numpy.array(fnEnd.translation(worldSpace=True))
+        startPoint = startNode.translation(worldSpace=True)
+        endPoint = endNode.translation(worldSpace=True)
         forwardVector = endPoint - startPoint
 
         # Check if vector should be normalized
         #
         if normalize:
 
-            return vectormath.normalizeVector(forwardVector)
+            return forwardVector.normalize()
 
         else:
 
@@ -275,7 +273,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         :type start: Any
         :type end: Any
         :type normalize: bool
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         # Inspect world up type
@@ -294,7 +292,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         elif self.worldUpType == 3:  # Vector
 
-            return vectormath.normalizeVector(self.worldUpVector)
+            return self.worldUpVector.normal()
 
         else:
 
@@ -305,8 +303,8 @@ class QAimTab(qabstracttab.QAbstractTab):
         Returns the perpendicular vector from the supplied nodes.
         This function is intended to be used with limbs in order to derive a pole vector.
 
-        :type nodes: list[om.MObject]
-        :rtype: om.MVector
+        :type nodes: List[Any]
+        :rtype: vector.Vector
         """
 
         # Verify there are enough nodes
@@ -320,21 +318,21 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         # Iterate through nodes
         #
-        fnStart = fntransform.FnTransform(nodes[0])
-        fnEnd = fntransform.FnTransform()
+        startNode = fntransform.FnTransform(nodes[0])
+        endNode = fntransform.FnTransform()
 
-        origin = fnStart.translation(worldSpace=True)
+        origin = startNode.translation(worldSpace=True)
         vectors = []
 
         for i in range(1, numNodes, 2):
 
-            fnStart.setObject(nodes[i])
-            fnEnd.setObject(nodes[i+1])
+            startNode.setObject(nodes[i])
+            endNode.setObject(nodes[i+1])
 
-            startPoint = numpy.array(fnStart.translation(worldSpace=True))
-            endPoint = numpy.array(fnEnd.translation(worldSpace=True))
+            startPoint = startNode.translation(worldSpace=True)
+            endPoint = endNode.translation(worldSpace=True)
 
-            cross = numpy.cross(vectormath.normalizeVector(startPoint - origin), vectormath.normalizeVector(endPoint - origin))
+            cross = (startPoint - origin).normalize() ^ (endPoint - origin).normalize()
             vectors.append(cross)
 
         return self.averageVectors(vectors, normalize=True)
@@ -343,18 +341,18 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Returns the averaged vector from a list of vectors.
 
-        :type vectors: list[numpy.array]
+        :type vectors: List[vector.Vector]
         :type normalize: bool
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
-        vector = sum(vectors) / len(vectors)
+        vec = sum(vectors) / len(vectors)
 
         if normalize:
 
-            vectormath.normalizeVector(vector)
+            vec.normalize()
 
-        return vector
+        return vec
 
     def remainingAxis(self):
         """
@@ -369,14 +367,13 @@ class QAimTab(qabstracttab.QAbstractTab):
         """
         Returns the current scene up vector.
 
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
-        fnScene = fnscene.FnScene()
-        upAxis = fnScene.getUpAxis()
+        upAxis = self.scene.getUpAxis()
         index = self.__axes__.index(upAxis.lower())
 
-        return deepcopy(self.__vectors__[index])
+        return self.__axis_vectors__[index].copy()
 
     def worldUpObjectVector(self, start, normalize=False):
         """
@@ -384,18 +381,18 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         :type start: Any
         :type normalize: bool
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         # Check if world up object is valid
         #
-        worldUpObjectVector = deepcopy(self.worldUpVector)
+        worldUpObjectVector = self.worldUpVector.copy()
 
         if self.worldUpObject.isValid():
 
-            fnStart = fntransform.FnTransform(start)
-            startPoint = numpy.array(fnStart.translation(worldSpace=True))
-            endPoint = numpy.array(self.worldUpObject.translation(worldSpace=True))
+            startNode = fntransform.FnTransform(start)
+            startPoint = startNode.translation(worldSpace=True)
+            endPoint = self.worldUpObject.translation(worldSpace=True)
 
             worldUpObjectVector = (endPoint - startPoint)
 
@@ -407,7 +404,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         #
         if normalize:
 
-            return vectormath.normalizeVector(worldUpObjectVector)
+            return worldUpObjectVector.normalize()
 
         else:
 
@@ -418,32 +415,26 @@ class QAimTab(qabstracttab.QAbstractTab):
         Returns the world up rotation vector from the world up object.
         If the world up object is invalid then the world up vector is returned instead.
 
-        :rtype: numpy.matrix
+        :rtype: vector.Vector
         """
 
         if self.worldUpObject.isValid():
 
             worldMatrix = self.worldUpObjectMatrix()
-            x, y, z, p = matrixmath.breakMatrix(worldMatrix, normalize=True)
+            xAxis, yAxis, zAxis, position = worldMatrix.decompose(normalize=True)
 
-            return numpy.array(
-                [
-                    x * self.worldUpVector[0],
-                    y * self.worldUpVector[1],
-                    z * self.worldUpVector[2]
-                ]
-            )
+            return ((xAxis * self.worldUpVector.x) + (yAxis * self.worldUpVector.y) + (zAxis * self.worldUpVector.z)).normalize()
 
         else:
 
-            return deepcopy(self.worldUpVector)
+            return self.worldUpVector.normal()
 
     def worldUpObjectMatrix(self):
         """
         Returns the world up matrix from the world up object.
         If the world up object is invalid then an identity matrix is returned instead.
 
-        :rtype: numpy.matrix
+        :rtype: transformationmatrix.TransformationMatrix
         """
 
         # Check if world up object is alive
@@ -454,12 +445,12 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         else:
 
-            return deepcopy(matrixmath.IDENTITY_MATRIX)
+            return transformationmatrix.TransformationMatrix()
 
     def apply(self, preserveChildren=False, freezeTransform=False):
         """
         Aims the active selection to each subsequent node in the selection.
-        By default this operation will always preserve children!
+        By default, this operation will always preserve children!
 
         :type preserveChildren: bool
         :type freezeTransform: bool
@@ -478,55 +469,54 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         # Iterate through selection
         #
-        fnTransform = fntransform.FnTransform()
+        startNode = fntransform.FnTransform()
 
         for i in range(selectionCount - 1):  # Make sure to skip the last item!
 
             # Get dag paths to nodes
             #
             start, end = selection[i], selection[i+1]
-            fnTransform.setObject(start)
+            startNode.setObject(start)
 
-            origin = numpy.array(fnTransform.translation(worldSpace=True))
+            origin = startNode.translation(worldSpace=True)
             forwardVector = self.forwardVector(start, end, normalize=True)
             upVector = self.upVector(start, end, normalize=True)
 
             # Compose aim matrix in parent space
             #
-            matrix = matrixmath.createAimMatrix(
-                self.forwardAxis, forwardVector,
-                self.upAxis, upVector,
-                origin=origin,
-                forwardAxisSign=self.forwardAxisSign,
-                upAxisSign=self.upAxisSign
+            matrix = transformationmatrix.TransformationMatrix(row4=origin)
+            matrix.lookAt(
+                forwardVector=forwardVector, forwardAxis=self.forwardAxis, forwardAxisSign=self.forwardAxisSign,
+                upVector=upVector, upAxis=self.upAxis, upAxisSign=self.upAxisSign,
             )
 
-            matrix *= fnTransform.parentInverseMatrix()
+            matrix *= startNode.parentInverseMatrix()
 
             # Apply matrix to start node
             # Best to skip scale since we could accidentally zero it out
             #
-            log.info('Applying aim matrix to: %s' % fnTransform.name())
+            log.info('Applying aim matrix to: %s' % startNode.name())
 
-            fnTransform.snapshot()
-            fnTransform.setMatrix(matrix, skipTranslate=True, skipScale=True)
+            startNode.snapshot()
+            startNode.setMatrix(matrix, skipTranslate=True, skipScale=True)
 
             if freezeTransform:
 
-                fnTransform.freezeTransform()
+                startNode.freezeTransform()
 
             # Check if children should be preserved
             #
             if preserveChildren:
 
-                fnTransform.assumeSnapshot()
+                startNode.assumeSnapshot()
     # endregion
 
     # region Slots
     @QtCore.Slot(int)
     def on_forwardAxisButtonGroup_idClicked(self, index):
         """
-        Id clicked slot method responsible for updating the forward axis.
+        Slot method for the forwardAxisButtonGroup's `idClicked` signal.
+        This method updates the current forward axis.
 
         :type index: int
         :rtype: None
@@ -543,7 +533,8 @@ class QAimTab(qabstracttab.QAbstractTab):
     @QtCore.Slot(int)
     def on_upAxisButtonGroup_idClicked(self, index):
         """
-        Id clicked slot method responsible for updating the up axis.
+        Slot method for the upAxisButtonGroup's `idClicked` signal.
+        This method updates the current up axis.
 
         :type index: int
         :rtype: None
@@ -558,9 +549,10 @@ class QAimTab(qabstracttab.QAbstractTab):
             self.sender().buttons()[self.upAxis].setChecked(True)
 
     @QtCore.Slot(bool)
-    def on_worldUpVectorButton_clicked(self, checked=False):
+    def on_worldUpVectorPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the world up vector.
+        Slot method for the worldUpVectorButton's `clicked` signal.
+        The method updates the current world-up vector.
 
         :type checked: bool
         :rtype: None
@@ -571,11 +563,11 @@ class QAimTab(qabstracttab.QAbstractTab):
         selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
-        worldUpVector = numpy.array([0.0, 0.0, 0.0])
+        worldUpVector = vector.Vector()
 
         if selectionCount == 0:
 
-            log.warning('worldUpVectorButton_clicked() expects at least one selected node (%s given)!' % selectionCount)
+            QtWidgets.QMessageBox.warning(self, 'Ez Align', 'No nodes selected!')
             return
 
         elif selectionCount == 1:
@@ -601,9 +593,10 @@ class QAimTab(qabstracttab.QAbstractTab):
         self.worldUpVectorZLineEdit.setText(str(worldUpVector[2]))
 
     @QtCore.Slot(bool)
-    def on_worldUpObjectButton_clicked(self, checked=False):
+    def on_worldUpObjectPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the world up object.
+        Slot method for the worldUpObjectButton's `clicked` signal.
+        This method updates the current world-up object.
 
         :type checked: bool
         :rtype: None
@@ -616,7 +609,7 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         if selectionCount != 1:
 
-            log.warning('worldUpObjectButton_clicked() expects one selected node (%s given)!' % selectionCount)
+            QtWidgets.QMessageBox.warning(self, 'Ez Align', 'Only 1 selected node required!')
             return
 
         # Store object handle

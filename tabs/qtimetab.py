@@ -2,7 +2,7 @@ import json
 
 from Qt import QtCore, QtWidgets, QtGui
 from dcc import fnscene, fntransform
-from dcc.ui import qrollout, qiconlibrary, qdivider, qtimespinbox, qxyzwidget, qseparator
+from dcc.ui import qrollout, qdivider, qtimespinbox, qxyzwidget, qseparator
 from ezalign.abstract import qabstracttab
 
 import logging
@@ -47,21 +47,21 @@ class QAlignRollout(qrollout.QRollout):
         self.sourcePushButton.setFixedHeight(24)
         self.sourcePushButton.setMinimumWidth(48)
         self.sourcePushButton.setToolTip('Picks the node to align to.')
-        self.sourcePushButton.clicked.connect(self.pushButton_clicked)
+        self.sourcePushButton.clicked.connect(self.on_sourcePushButton_clicked)
 
-        self.switchPushButton = QtWidgets.QPushButton(qiconlibrary.getIconByName('switch'), '')
-        self.switchPushButton.setObjectName('switchButton')
+        self.switchPushButton = QtWidgets.QPushButton(QtGui.QIcon(':dcc/icons/switch'), '')
+        self.switchPushButton.setObjectName('switchPushButton')
         self.switchPushButton.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.switchPushButton.setFixedSize(QtCore.QSize(24, 24))
-        self.switchPushButton.clicked.connect(self.switchPushButton_clicked)
+        self.switchPushButton.clicked.connect(self.on_switchPushButton_clicked)
 
         self.targetPushButton = QtWidgets.QPushButton('Child')
-        self.targetPushButton.setObjectName('targetButton')
+        self.targetPushButton.setObjectName('targetPushButton')
         self.targetPushButton.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         self.targetPushButton.setFixedHeight(24)
         self.targetPushButton.setMinimumWidth(48)
         self.targetPushButton.setToolTip('Picks the node to be aligned.')
-        self.targetPushButton.clicked.connect(self.pushButton_clicked)
+        self.targetPushButton.clicked.connect(self.on_targetPushButton_clicked)
 
         self.buttonLayout = QtWidgets.QHBoxLayout()
         self.buttonLayout.setObjectName('buttonLayout')
@@ -74,49 +74,47 @@ class QAlignRollout(qrollout.QRollout):
 
         # Create time range widgets
         #
-        self.startCheckBox = QtWidgets.QCheckBox('Start:')
+        self.startCheckBox = QtWidgets.QCheckBox('')
         self.startCheckBox.setObjectName('startCheckBox')
-        self.startCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.startCheckBox.setFixedSize(QtCore.QSize(48, 24))
+        self.startCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        self.startCheckBox.setFixedHeight(24)
         self.startCheckBox.setChecked(True)
-        self.startCheckBox.stateChanged.connect(self.startCheckBox_stateChanged)
+        self.startCheckBox.stateChanged.connect(self.on_startCheckBox_stateChanged)
 
         self.startSpinBox = qtimespinbox.QTimeSpinBox()
         self.startSpinBox.setObjectName('startSpinBox')
-        self.startSpinBox.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        self.startSpinBox.setPrefix('Start: ')
+        self.startSpinBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.startSpinBox.setFixedHeight(24)
         self.startSpinBox.setMinimumWidth(24)
         self.startSpinBox.setDefaultType(qtimespinbox.DefaultType.StartTime)
+        self.startSpinBox.setRange(-9999, 9999)
         self.startSpinBox.setValue(0)
 
-        self.endCheckBox = QtWidgets.QCheckBox('End:')
+        self.endCheckBox = QtWidgets.QCheckBox('')
         self.endCheckBox.setObjectName('endCheckBox')
-        self.endCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.endCheckBox.setFixedSize(QtCore.QSize(48, 24))
+        self.endCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        self.endCheckBox.setFixedHeight(24)
         self.endCheckBox.setChecked(True)
-        self.endCheckBox.stateChanged.connect(self.endCheckBox_stateChanged)
+        self.endCheckBox.stateChanged.connect(self.on_endCheckBox_stateChanged)
 
         self.endSpinBox = qtimespinbox.QTimeSpinBox()
         self.endSpinBox.setObjectName('endSpinBox')
-        self.endSpinBox.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        self.endSpinBox.setPrefix('End: ')
+        self.endSpinBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.endSpinBox.setFixedHeight(24)
         self.endSpinBox.setMinimumWidth(24)
         self.endSpinBox.setDefaultType(qtimespinbox.DefaultType.EndTime)
+        self.endSpinBox.setRange(-9999, 9999)
         self.endSpinBox.setValue(1)
-
-        self.stepCheckBox = QtWidgets.QCheckBox('Step:')
-        self.stepCheckBox.setObjectName('stepCheckBox')
-        self.stepCheckBox.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.stepCheckBox.setFixedSize(QtCore.QSize(48, 24))
-        self.stepCheckBox.setChecked(True)
-        self.stepCheckBox.stateChanged.connect(self.stepCheckBox_stateChanged)
 
         self.stepSpinBox = QtWidgets.QSpinBox()
         self.stepSpinBox.setObjectName('stepSpinBox')
-        self.stepSpinBox.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        self.stepSpinBox.setPrefix('Step: ')
+        self.stepSpinBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.stepSpinBox.setFixedHeight(24)
         self.stepSpinBox.setMinimumWidth(24)
-        self.stepSpinBox.setMinimum(1)
+        self.stepSpinBox.setRange(1, 100)
         self.stepSpinBox.setValue(1)
 
         self.timeRangeLayout = QtWidgets.QHBoxLayout()
@@ -125,7 +123,7 @@ class QAlignRollout(qrollout.QRollout):
         self.timeRangeLayout.addWidget(self.startSpinBox)
         self.timeRangeLayout.addWidget(self.endCheckBox)
         self.timeRangeLayout.addWidget(self.endSpinBox)
-        self.timeRangeLayout.addWidget(self.stepCheckBox)
+        self.timeRangeLayout.addWidget(qdivider.QDivider(QtCore.Qt.Vertical))
         self.timeRangeLayout.addWidget(self.stepSpinBox)
 
         self.centralLayout.addLayout(self.timeRangeLayout)
@@ -137,16 +135,22 @@ class QAlignRollout(qrollout.QRollout):
         self.matchTranslateWidget.setObjectName('matchTranslateWidget')
         self.matchTranslateWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.matchTranslateWidget.setFixedHeight(24)
+        self.matchTranslateWidget.setToolTip('Specify which translate axes should be aligned.')
+        self.matchTranslateWidget.setMatches([True, True, True])
 
         self.matchRotateWidget = qxyzwidget.QXyzWidget('Rot')
         self.matchRotateWidget.setObjectName('matchRotateWidget')
         self.matchRotateWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.matchRotateWidget.setFixedHeight(24)
+        self.matchRotateWidget.setToolTip('Specify which rotate axes should be aligned.')
+        self.matchRotateWidget.setMatches([True, True, True])
 
         self.matchScaleWidget = qxyzwidget.QXyzWidget('Scale')
         self.matchScaleWidget.setObjectName('matchScaleWidget')
         self.matchScaleWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.matchScaleWidget.setFixedHeight(24)
+        self.matchScaleWidget.setToolTip('Specify which scale axes should be aligned.')
+        self.matchScaleWidget.setMatches([False, False, False])
 
         self.matchLayout = QtWidgets.QHBoxLayout()
         self.matchLayout.setObjectName('matchLayout')
@@ -321,7 +325,7 @@ class QAlignRollout(qrollout.QRollout):
 
         else:
 
-            return fnscene.FnScene().getStartTime()
+            return self.scene.getStartTime()
 
     @startTime.setter
     def startTime(self, startTime):
@@ -348,7 +352,7 @@ class QAlignRollout(qrollout.QRollout):
 
         else:
 
-            return fnscene.FnScene().getEndTime()
+            return self.scene.getEndTime()
 
     @endTime.setter
     def endTime(self, endTime):
@@ -387,7 +391,7 @@ class QAlignRollout(qrollout.QRollout):
         """
         Getter method that returns the match translate flag.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         return self.matchTranslateWidget.matches()
@@ -397,7 +401,7 @@ class QAlignRollout(qrollout.QRollout):
         """
         Setter method that updates the match translate flag.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         self.matchTranslateWidget.setMatches(matchTranslate)
@@ -407,7 +411,7 @@ class QAlignRollout(qrollout.QRollout):
         """
         Getter method that returns the match rotate flag.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         return self.matchRotateWidget.matches()
@@ -417,7 +421,7 @@ class QAlignRollout(qrollout.QRollout):
         """
         Setter method that updates the match rotate flag.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         self.matchRotateWidget.setMatches(matchRotate)
@@ -427,7 +431,7 @@ class QAlignRollout(qrollout.QRollout):
         """
         Getter method that returns the match scale flag.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         return self.matchScaleWidget.matches()
@@ -437,7 +441,7 @@ class QAlignRollout(qrollout.QRollout):
         """
         Setter method that updates the match scale flag.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         self.matchScaleWidget.setMatches(matchScale)
@@ -445,7 +449,7 @@ class QAlignRollout(qrollout.QRollout):
     @property
     def maintainTranslate(self):
         """
-        Getter method that returns the maintain translate flag.
+        Getter method that returns the `maintainTranslate` flag.
         
         :rtype: bool
         """
@@ -455,7 +459,7 @@ class QAlignRollout(qrollout.QRollout):
     @maintainTranslate.setter
     def maintainTranslate(self, maintainTranslate):
         """
-        Setter method that updates the maintain translate flag.
+        Setter method that updates the `maintainTranslate` flag.
 
         :rtype: bool
         """
@@ -465,7 +469,7 @@ class QAlignRollout(qrollout.QRollout):
     @property
     def maintainRotate(self):
         """
-        Getter method that returns the maintain rotate flag.
+        Getter method that returns the `maintainRotate` flag.
 
         :rtype: bool
         """
@@ -475,7 +479,7 @@ class QAlignRollout(qrollout.QRollout):
     @maintainRotate.setter
     def maintainRotate(self, maintainRotate):
         """
-        Setter method that updates the maintain rotate flag.
+        Setter method that updates the `maintainRotate` flag.
 
         :rtype: bool
         """
@@ -485,7 +489,7 @@ class QAlignRollout(qrollout.QRollout):
     @property
     def maintainScale(self):
         """
-        Getter method that returns the maintain scale flag.
+        Getter method that returns the `maintainScale` flag.
 
         :rtype: bool
         """
@@ -495,7 +499,7 @@ class QAlignRollout(qrollout.QRollout):
     @maintainScale.setter
     def maintainScale(self, maintainScale):
         """
-        Setter method that updates the maintain scale flag.
+        Setter method that updates the `maintainScale` flag.
 
         :rtype: bool
         """
@@ -511,7 +515,7 @@ class QAlignRollout(qrollout.QRollout):
         :rtype: None
         """
 
-        self.setTitle('Align %s to %s' % (self.targetName, self.sourceName))
+        self.setTitle('Align "%s" to "%s"' % (self.targetName, self.sourceName))
 
     def apply(self):
         """
@@ -522,8 +526,8 @@ class QAlignRollout(qrollout.QRollout):
 
         # Initialize source interface
         #
-        fnSource = fntransform.FnTransform()
-        isSourceValid = fnSource.trySetObject(self.sourceName)
+        sourceNode = fntransform.FnTransform()
+        isSourceValid = sourceNode.trySetObject(self.sourceName)
 
         if not isSourceValid:
 
@@ -532,8 +536,8 @@ class QAlignRollout(qrollout.QRollout):
 
         # Initialize target interface
         #
-        fnTarget = fntransform.FnTransform()
-        isTargetValid = fnTarget.trySetObject(self.targetName)
+        targetNode = fntransform.FnTransform()
+        isTargetValid = targetNode.trySetObject(self.targetName)
 
         if not isTargetValid:
 
@@ -548,8 +552,8 @@ class QAlignRollout(qrollout.QRollout):
 
         # Calculate offset matrix
         #
-        offsetMatrix = fnTarget.offsetMatrix(
-            fnSource.object(),
+        offsetMatrix = targetNode.offsetMatrix(
+            sourceNode.object(),
             maintainTranslate=self.maintainTranslate,
             maintainRotate=self.maintainRotate,
             maintainScale=self.maintainScale
@@ -557,27 +561,29 @@ class QAlignRollout(qrollout.QRollout):
 
         # Iterate through time range
         #
-        fnScene = fnscene.FnScene()
-        fnScene.enableAutoKey()
+        self.scene.enableAutoKey()
 
         for i in range(self.startTime, self.endTime, self.step):
 
-            fnScene.setTime(i)
-            fnTarget.copyTransform(
-                fnSource.object(),
+            self.scene.setTime(i)
+
+            targetNode.copyTransform(
+                sourceNode.object(),
                 offsetMatrix=offsetMatrix,
                 skipTranslateX=skipTranslateX, skipTranslateY=skipTranslateY, skipTranslateZ=skipTranslateZ,
                 skipRotateX=skipRotateX, skipRotateY=skipRotateY, skipRotateZ=skipRotateZ,
                 skipScaleX=skipScaleX, skipScaleY=skipScaleY, skipScaleZ=skipScaleZ
             )
 
-        fnScene.disableAutoKey()
+        self.scene.disableAutoKey()
     # endregion
 
     # region Slots
-    def pushButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_sourcePushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the source name.
+        Slot method for the sourcePushButton's `clicked` signal.
+        This method updates the source name.
 
         :type checked: bool
         :rtype: None
@@ -588,14 +594,17 @@ class QAlignRollout(qrollout.QRollout):
 
         if selectionCount > 0:
 
-            fnTransform = fntransform.FnTransform(selection[0])
+            node = fntransform.FnTransform(selection[0])
+            text = '[P] {name}'.format(name=node.name())
 
-            self.sender().setText(fnTransform.name())
+            self.sourcePushButton.setText(text)
             self.invalidate()
 
-    def switchPushButton_clicked(self, checked=False):
+    @QtCore.Slot(bool)
+    def on_switchPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for switch the parent and child nodes.
+        Slot method for the switchPushButton's `clicked` signal.
+        This method switches the parent and child nodes.
 
         :type checked: bool
         :rtype: None
@@ -603,35 +612,50 @@ class QAlignRollout(qrollout.QRollout):
 
         self.sourceName, self.targetName = self.targetName, self.sourceName
 
-    def startCheckBox_stateChanged(self, state):
+    @QtCore.Slot(bool)
+    def on_targetPushButton_clicked(self, checked=False):
         """
-        State changed slot method responsible for enabling the associated spin box.
+        Slot method for the targetPushButton's `clicked` signal.
+        This method updates the source name.
+
+        :type checked: bool
+        :rtype: None
+        """
+
+        selection = self.scene.getActiveSelection()
+        selectionCount = len(selection)
+
+        if selectionCount > 0:
+
+            node = fntransform.FnTransform(selection[0])
+            text = '[C] {name}'.format(name=node.name())
+
+            self.targetPushButton.setText(text)
+            self.invalidate()
+
+    @QtCore.Slot(bool)
+    def on_startCheckBox_stateChanged(self, state):
+        """
+        Slot method for the startCheckBox's `stateChanged` signal.
+        This method updates the enabled state for the associated spin box.
 
         :type state: bool
-        :rtype:
+        :rtype: None
         """
 
         self.startSpinBox.setEnabled(state)
 
-    def endCheckBox_stateChanged(self, state):
+    @QtCore.Slot(bool)
+    def on_endCheckBox_stateChanged(self, state):
         """
-        State changed slot method responsible for enabling the associated spin box.
+        Slot method for the endCheckBox's `stateChanged` signal.
+        This method updates the enabled state for the associated spin box.
 
         :type state: bool
-        :rtype:
+        :rtype: None
         """
 
         self.endSpinBox.setEnabled(state)
-
-    def stepCheckBox_stateChanged(self, state):
-        """
-        State changed slot method responsible for enabling the associated spin box.
-
-        :type state: bool
-        :rtype:
-        """
-
-        self.stepSpinBox.setEnabled(state)
     # endregion
 
 
@@ -780,7 +804,7 @@ class QTimeTab(qabstracttab.QAbstractTab):
 
     def clearAlignments(self):
         """
-        Removes all of the current alignments.
+        Removes all the current alignments.
 
         :rtype: None
         """

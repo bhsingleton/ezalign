@@ -1,9 +1,8 @@
-import numpy
 import json
 
-from PySide2 import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui
 from dcc import fnnode, fntransform, fnmesh
-from dcc.math import matrixmath, vectormath
+from dcc.dataclasses import vector, transformationmatrix
 from ezalign.abstract import qabstracttab
 
 import logging
@@ -19,7 +18,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
     # region Dunderscores
     __decimals__ = 3
-    __axis__ = vectormath.X_AXIS_VECTOR, vectormath.Y_AXIS_VECTOR, vectormath.Z_AXIS_VECTOR
+    __axis__ = vector.Vector.xAxis, vector.Vector.yAxis, vector.Vector.zAxis
 
     def __init__(self, *args, **kwargs):
         """
@@ -36,11 +35,11 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Declare class variables
         #
-        self._origin = numpy.array([0.0, 0.0, 0.0])
+        self._origin = vector.Vector.zero
         self._forwardAxis = 0
-        self._forwardVector = numpy.array([1.0, 0.0, 0.0])
+        self._forwardVector = vector.Vector.xAxis
         self._upAxis = 1
-        self._upVector = numpy.array([0.0, 1.0, 0.0])
+        self._upVector = vector.Vector.yAxis
     # endregion
 
     # region Properties
@@ -49,7 +48,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
         Getter method that returns the origin.
 
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         return self._origin
@@ -59,11 +58,11 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
         Setter method that updates the origin.
 
-        :type point: numpy.array
+        :type point: vector.Vector
         :rtype: None
         """
 
-        self._origin = numpy.copy(point)
+        self._origin = vector.Vector(*point)
         self.invalidate()
         
     @property
@@ -97,7 +96,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
         Getter method that returns the forward vector.
 
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         return self._forwardVector
@@ -107,11 +106,11 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
         Setter method that updates the forward vector.
 
-        :type forwardVector: numpy.array
+        :type forwardVector: vector.Vector
         :rtype: None
         """
 
-        self._forwardVector = numpy.copy(forwardVector)
+        self._forwardVector = vector.Vector(*forwardVector)
         self.invalidate()
 
     @property
@@ -145,7 +144,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
         Getter method that returns the up vector.
 
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         return self._upVector
@@ -155,11 +154,11 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         """
         Setter method that updates the forward vector.
 
-        :type upVector: numpy.array
+        :type upVector: vector.Vector
         :rtype: None
         """
 
-        self._upVector = numpy.copy(upVector)
+        self._upVector = vector.Vector(*upVector)
         self.invalidate()
     # endregion
 
@@ -203,13 +202,13 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        settings.setValue('tabs/matrix/origin', json.dumps(self.origin.tolist()))
+        settings.setValue('tabs/matrix/origin', json.dumps(self.origin.toList()))
 
         settings.setValue('tabs/matrix/forwardAxis', self.forwardAxis)
-        settings.setValue('tabs/matrix/forwardVector', json.dumps(self.forwardVector.tolist()))
+        settings.setValue('tabs/matrix/forwardVector', json.dumps(self.forwardVector.toList()))
 
         settings.setValue('tabs/matrix/upAxis', self.upAxis)
-        settings.setValue('tabs/matrix/upVector', json.dumps(self.upVector.tolist()))
+        settings.setValue('tabs/matrix/upVector', json.dumps(self.upVector.toList()))
 
     def remainingAxis(self):
         """
@@ -233,11 +232,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         log.debug('Forward Axis: %s, Forward Vector: %s' % (self.forwardAxis, self.forwardVector))
         log.debug('Up Axis: %s, Up Vector: %s' % (self.upAxis, self.upVector))
 
-        matrix = matrixmath.createAimMatrix(
-            self.forwardAxis, self.forwardVector,
-            self.upAxis, self.upVector,
-            origin=self.origin
-        )
+        matrix = transformationmatrix.TransformationMatrix(row4=self.origin)
+        matrix.lookAt(forwardVector=self.forwardVector, forwardAxis=self.forwardAxis, upVector=self.upVector, upAxis=self.upAxis)
 
         # Update matrix widget
         #
@@ -251,20 +247,20 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         :type node: Any
         :type axis: int
-        :rtype: numpy.matrix
+        :rtype: transformationmatrix.TransformationMatrix
         """
 
         fnTransform = fntransform.FnTransform(node)
         worldMatrix = fnTransform.worldMatrix()
 
-        return matrixmath.breakMatrix(worldMatrix, normalize=True)[axis]
+        return vector.Vector(*worldMatrix[axis]).normalize()
 
     def getCenterPosition(self):
         """
         Returns the center position of the active selection.
         Support for shapes is currently limited to meshes at this time.
 
-        :rtype: numpy.array
+        :rtype: vector.Vector
         """
 
         # Evaluate active selection
@@ -272,7 +268,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
-        center = numpy.array([0.0, 0.0, 0.0])
+        center = vector.Vector()
 
         if selectionCount == 0:
 
@@ -281,9 +277,9 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Iterate through selection
         #
-        fnNode = fnnode.FnNode()
-        fnTransform = fntransform.FnTransform()
-        fnMesh = fnmesh.FnMesh()
+        node = fnnode.FnNode()
+        transform = fntransform.FnTransform()
+        mesh = fnmesh.FnMesh()
 
         weight = 1.0 / selectionCount
 
@@ -291,20 +287,23 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             # Check if selection contains a component
             #
-            fnNode.setObject(obj)
+            node.setObject(obj)
 
-            if fnNode.isMesh():
+            if node.isMesh():
 
-                fnMesh.setObject(obj)
-                vertexIndices = fnMesh.selectedVertices()
-                centerPoint = sum([numpy.array(x) for x in fnMesh.iterVertices(*vertexIndices)]) / len(vertexIndices)
+                transform.setObject(obj)
+                worldMatrix = transform.worldMatrix()
+
+                mesh.setObject(obj)
+                vertexIndices = mesh.selectedVertices()
+                centerPoint = (sum(list(mesh.iterVertices(*vertexIndices))) / len(vertexIndices)) * worldMatrix
 
                 center += centerPoint * weight
 
-            elif fnNode.isTransform():
+            elif transform.isTransform():
 
-                fnTransform.setObject(obj)
-                translation = numpy.array(fnTransform.translation(worldSpace=True))
+                transform.setObject(obj)
+                translation = transform.translation(worldSpace=True)
 
                 center += translation * weight
 
@@ -326,7 +325,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
-        normal = numpy.array([1.0, 0.0, 0.0])
+        normal = vector.Vector(1.0, 0.0, 0.0)
 
         if selectionCount != 1:
 
@@ -341,9 +340,9 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         if success:
 
             vertexIndices = fnMesh.selectedVertices()
-            normals = [numpy.array(x) for x in fnMesh.iterVertexNormals(*vertexIndices)]
+            normals = list(fnMesh.iterVertexNormals(*vertexIndices))
 
-            return vectormath.normalizeVector(sum(normals) / len(normals))
+            return (sum(normals) / len(normals)).normalize()
 
         else:
 
@@ -370,38 +369,39 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Get exclusive matrix
         #
-        fnTransform = fntransform.FnTransform()
-        success = fnTransform.trySetObject(selection[0])
+        node = fntransform.FnTransform()
+        success = node.trySetObject(selection[0])
 
         if success:
 
             # Compose matrix in parent space
             #
-            parentInverseMatrix = fnTransform.parentInverseMatrix()
+            parentInverseMatrix = node.parentInverseMatrix()
             worldMatrix = self.matrixEdit.matrix()
             matrix = worldMatrix * parentInverseMatrix
 
-            fnTransform.snapshot()
-            fnTransform.setMatrix(matrix, preserveChildren=preserveChildren)
+            node.snapshot()
+            node.setMatrix(matrix, preserveChildren=preserveChildren)
 
             # Check if transform should be frozen
             #
             if freezeTransform:
 
-                fnTransform.freezeTransform()
+                node.freezeTransform()
 
             # Check if children should be preserved
             #
             if preserveChildren:
 
-                fnTransform.assumeSnapshot()
+                node.assumeSnapshot()
     # endregion
 
     # region Slots
     @QtCore.Slot(int)
     def on_forwardAxisButtonGroup_idClicked(self, forwardAxis):
         """
-        ID clicked slot method responsible for updating the forward axis flag.
+        Slot method for the forwardAxisButtonGroup's `idClicked` signal.
+        This method updates the current forward axis.
 
         :type forwardAxis: int
         :rtype: None
@@ -412,6 +412,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         if forwardAxis != self.upAxis:
 
             self._forwardAxis = forwardAxis
+            self.invalidate()
 
         else:
 
@@ -420,7 +421,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
     @QtCore.Slot(int)
     def on_upAxisButtonGroup_idClicked(self, upAxis):
         """
-        ID clicked slot method responsible for updating the up axis flag.
+        Slot method for the upAxisButtonGroup's `idClicked` signal.
+        This method updates the current up axis.
 
         :type upAxis: int
         :rtype: None
@@ -431,6 +433,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         if upAxis != self.forwardAxis:
 
             self._upAxis = upAxis
+            self.invalidate()
 
         else:
 
@@ -439,7 +442,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
     @QtCore.Slot(bool)
     def on_originPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the internal point of origin.
+        Slot method for the originPushButton's `clicked` signal.
+        This method updates the current point of origin.
 
         :type checked: bool
         :rtype: None
@@ -450,7 +454,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
     @QtCore.Slot(bool)
     def on_forwardAxisPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the internal forward vector.
+        Slot method for the forwardAxisPushButton's `clicked` signal.
+        This method updates the internal forward vector.
 
         :type checked: bool
         :rtype: None
@@ -477,7 +482,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             else:
 
-                self.forwardVector = vectormath.normalizeVector(self.getCenterPosition() - self.origin)
+                self.forwardVector = (self.getCenterPosition() - self.origin).normalize()
 
         else:
 
@@ -486,7 +491,8 @@ class QMatrixTab(qabstracttab.QAbstractTab):
     @QtCore.Slot(bool)
     def on_upAxisPushButton_clicked(self, checked=False):
         """
-        Clicked slot method responsible for updating the internal up vector.
+        Slot method for the upAxisPushButton's `clicked` signal.
+        This method updates the internal up vector.
 
         :type checked: bool
         :rtype: None
@@ -513,7 +519,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             else:
 
-                self.upVector = vectormath.normalizeVector(self.getCenterPosition() - self.origin)
+                self.upVector = (self.getCenterPosition() - self.origin).normalize()
 
         else:
 

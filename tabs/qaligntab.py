@@ -1,10 +1,8 @@
-import numpy
 import json
 
-from PySide2 import QtCore, QtWidgets, QtGui
-from copy import deepcopy
+from Qt import QtCore, QtWidgets, QtGui
 from dcc import fntransform
-from dcc.math import matrixmath
+from dcc.dataclasses import transformationmatrix
 from ezalign.abstract import qabstracttab
 
 import logging
@@ -139,18 +137,18 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
     def matchTranslate(self):
         """
-        Returns the match translation flags.
+        Returns the `matchTranslate` flags.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         return [x.isChecked() for x in self.translateCheckBoxGroup.buttons()]
 
     def setMatchTranslate(self, matchTranslate):
         """
-        Updates the match translation flags.
+        Updates the `matchTranslate` flags.
 
-        :type matchTranslate: list[bool, bool, bool]
+        :type matchTranslate: List[bool, bool, bool]
         :rtype: None
         """
 
@@ -160,18 +158,18 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
     def matchRotate(self):
         """
-        Returns the match rotation flags.
+        Returns the `matchRotate` flags.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         return [x.isChecked() for x in self.rotateCheckBoxGroup.buttons()]
 
     def setMatchRotate(self, matchRotate):
         """
-        Updates the match rotation flags.
+        Updates the `matchRotate` flags.
 
-        :type matchRotate: list[bool, bool, bool]
+        :type matchRotate: List[bool, bool, bool]
         :rtype: None
         """
 
@@ -181,18 +179,18 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
     def matchScale(self):
         """
-        Returns the match scale flags.
+        Returns the `matchScale` flags.
 
-        :rtype: list[bool, bool, bool]
+        :rtype: List[bool, bool, bool]
         """
 
         return [x.isChecked() for x in self.scaleCheckBoxGroup.buttons()]
 
     def setMatchScale(self, matchScale):
         """
-        Updates the match scale flags.
+        Updates the `matchScale` flags.
 
-        :type matchScale: list[bool, bool, bool]
+        :type matchScale: List[bool, bool, bool]
         :rtype: None
         """
 
@@ -200,12 +198,12 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
             self.scaleCheckBoxGroup.button(index).setChecked(match)
 
-    def evaluateSource(self):
+    def getSourceInput(self):
         """
         Evaluates the active selection to return the source input.
         Please be aware that bounding boxes are returned in world space!
 
-        :rtype: fntransform.FnTransform, numpy.matrix
+        :rtype: Tuple[fntransform.FnTransform, transformationmatrix.TransformationMatrix]
         """
 
         # Get selection list
@@ -215,39 +213,36 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         if selectionCount != 2:
 
-            raise TypeError('evaluateSource() expects to 2 selected nodes!')
+            raise TypeError('getSourceInput() expects to 2 selected nodes!')
 
         # Attach source object to function set
         #
-        source = selection[0]
-
-        fnTransform = fntransform.FnTransform()
-        success = fnTransform.trySetObject(source)
+        sourceNode = fntransform.FnTransform()
+        success = sourceNode.trySetObject(selection[0])
 
         if not success:
 
-            raise TypeError('evaluateSource() expects a transform node!')
+            raise TypeError('getSourceInput() expects a transform node!')
 
         # Evaluate source type for offset matrix
         #
-        worldMatrix = fnTransform.worldMatrix()
-        offsetMatrix = deepcopy(matrixmath.IDENTITY_MATRIX)
+        worldMatrix = sourceNode.worldMatrix()
+        offsetMatrix = transformationmatrix.TransformationMatrix()
 
         if self.sourceType == 0:  # Minimum
 
-            boundingBox = fnTransform.boundingBox()
-            minPoint = numpy.array(boundingBox[0])
-            translateMatrix = matrixmath.createTranslateMatrix(minPoint)
+            boundingBox = sourceNode.boundingBox()
+            translateMatrix = transformationmatrix.TransformationMatrix(row4=boundingBox.min)
 
-            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
+            offsetMatrix = (translateMatrix * worldMatrix.inverse()).translationPart()
 
         elif self.sourceType == 1:  # Center
 
-            boundingBox = fnTransform.boundingBox()
-            centerPoint = (numpy.array(boundingBox[0]) * 0.5) + (numpy.array(boundingBox[1]) * 0.5)
-            translateMatrix = matrixmath.createTranslateMatrix(centerPoint)
+            boundingBox = sourceNode.boundingBox()
+            centerPoint = (boundingBox.min * 0.5) + (boundingBox.max * 0.5)
+            translateMatrix = transformationmatrix.TransformationMatrix(row4=centerPoint)
 
-            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
+            offsetMatrix = (translateMatrix * worldMatrix.inverse()).translationPart()
 
         elif self.sourceType == 2:  # Pivot Point
 
@@ -255,11 +250,10 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         elif self.sourceType == 3:  # Maximum
 
-            boundingBox = fnTransform.boundingBox()
-            maxPoint = numpy.array(boundingBox[1])
-            translateMatrix = matrixmath.createTranslateMatrix(maxPoint)
+            boundingBox = sourceNode.boundingBox()
+            translateMatrix = transformationmatrix.TransformationMatrix(row4=boundingBox.max)
 
-            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
+            offsetMatrix = (translateMatrix * worldMatrix.inverse()).translationPart()
 
         else:
 
@@ -267,14 +261,14 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         # Return results
         #
-        return fnTransform, offsetMatrix
+        return sourceNode, offsetMatrix
 
-    def evaluateTarget(self):
+    def getTargetInput(self):
         """
         Evaluates the active selection to return the target input.
         Please be aware that bounding boxes are returned in world space!
 
-        :rtype: fntransform.FnTransform, numpy.matrix
+        :rtype: Tuple[fntransform.FnTransform, transformationmatrix.TransformationMatrix]
         """
 
         # Get selection list
@@ -284,39 +278,36 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         if selectionCount != 2:
 
-            raise TypeError('evaluateTarget() expects to 2 selected nodes!')
+            raise TypeError('getTargetInput() expects to 2 selected nodes!')
 
         # Attach source object to function set
         #
-        target = selection[1]
-
-        fnTransform = fntransform.FnTransform()
-        success = fnTransform.trySetObject(target)
+        targetNode = fntransform.FnTransform()
+        success = targetNode.trySetObject(selection[1])
 
         if not success:
 
-            raise TypeError('evaluateTarget() expects a transform node!')
+            raise TypeError('getTargetInput() expects a transform node!')
 
         # Evaluate source type for offset matrix
         #
-        worldMatrix = fnTransform.worldMatrix()
-        offsetMatrix = deepcopy(matrixmath.IDENTITY_MATRIX)
+        worldMatrix = targetNode.worldMatrix()
+        offsetMatrix = transformationmatrix.TransformationMatrix()
 
         if self.targetType == 0:  # Minimum
 
-            boundingBox = fnTransform.boundingBox()
-            minPoint = numpy.array(boundingBox[0])
-            translateMatrix = matrixmath.createTranslateMatrix(minPoint)
+            boundingBox = targetNode.boundingBox()
+            translateMatrix = transformationmatrix.TransformationMatrix(row4=boundingBox.min)
 
-            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
+            offsetMatrix = (translateMatrix * worldMatrix.inverse()).translationPart()
 
         elif self.targetType == 1:  # Center
 
-            boundingBox = fnTransform.boundingBox()
-            centerPoint = (numpy.array(boundingBox[0]) * 0.5) + (numpy.array(boundingBox[1]) * 0.5)
-            translateMatrix = matrixmath.createTranslateMatrix(centerPoint)
+            boundingBox = targetNode.boundingBox()
+            centerPoint = (boundingBox.min * 0.5) + (boundingBox.max * 0.5)
+            translateMatrix = transformationmatrix.TransformationMatrix(row4=centerPoint)
 
-            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
+            offsetMatrix = (translateMatrix * worldMatrix.inverse()).translationPart()
 
         elif self.targetType == 2:  # Pivot Point
 
@@ -324,11 +315,10 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         elif self.targetType == 3:  # Maximum
 
-            boundingBox = fnTransform.boundingBox()
-            maxPoint = numpy.array(boundingBox[1])
-            translateMatrix = matrixmath.createTranslateMatrix(maxPoint)
+            boundingBox = targetNode.boundingBox()
+            translateMatrix = transformationmatrix.TransformationMatrix(row4=boundingBox.max)
 
-            offsetMatrix = matrixmath.decomposeMatrix((translateMatrix * worldMatrix.I))[0]
+            offsetMatrix = (translateMatrix * worldMatrix.inverse()).translationPart()
 
         else:
 
@@ -336,7 +326,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
         # Return results
         #
-        return fnTransform, offsetMatrix
+        return targetNode, offsetMatrix
 
     def apply(self, preserveChildren=False, freezeTransform=False):
         """
@@ -354,18 +344,18 @@ class QAlignTab(qabstracttab.QAbstractTab):
 
             # Get source and target objects
             #
-            fnSource, sourceOffsetMatrix = self.evaluateSource()
-            fnTarget, targetOffsetMatrix = self.evaluateTarget()
+            sourceNode, sourceOffsetMatrix = self.getSourceInput()
+            targetNode, targetOffsetMatrix = self.getTargetInput()
 
-            log.info('Copying from: %s, pasting to %s' % (fnSource.name(), fnTarget.name()))
+            log.info('Copying from: %s, pasting to %s' % (sourceNode.name(), targetNode.name()))
 
             # Calculate source transform in target parent space
             # Don't forget to include the offset matrices!
             #
-            sourceWorldMatrix = fnSource.worldMatrix()
-            targetParentInverseMatrix = fnTarget.parentInverseMatrix()
+            sourceWorldMatrix = sourceNode.worldMatrix()
+            targetParentInverseMatrix = targetNode.parentInverseMatrix()
 
-            targetMatrix = targetOffsetMatrix * ((sourceOffsetMatrix * sourceWorldMatrix) * targetParentInverseMatrix)
+            targetMatrix = (targetOffsetMatrix * (sourceOffsetMatrix * sourceWorldMatrix) * targetParentInverseMatrix)
 
             # Copy transform matrix
             #
@@ -373,8 +363,8 @@ class QAlignTab(qabstracttab.QAbstractTab):
             skipRotateX, skipRotateY, skipRotateZ = (not x for x in self.matchRotate())
             skipScaleX, skipScaleY, skipScaleZ = (not x for x in self.matchScale())
 
-            fnTarget.snapshot()
-            fnTarget.setMatrix(
+            targetNode.snapshot()
+            targetNode.setMatrix(
                 targetMatrix,
                 skipTranslateX=skipTranslateX, skipTranslateY=skipTranslateY, skipTranslateZ=skipTranslateZ,
                 skipRotateX=skipRotateX, skipRotateY=skipRotateY, skipRotateZ=skipRotateZ,
@@ -385,13 +375,13 @@ class QAlignTab(qabstracttab.QAbstractTab):
             #
             if freezeTransform:
 
-                fnTarget.freezeTransform()
+                targetNode.freezeTransform()
 
             # Check if children should be preserved
             #
             if preserveChildren:
 
-                fnTarget.assumeSnapshot()
+                targetNode.assumeSnapshot()
 
         except TypeError as exception:
 
