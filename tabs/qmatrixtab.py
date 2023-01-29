@@ -291,12 +291,9 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
             if node.isMesh():
 
-                transform.setObject(obj)
-                worldMatrix = transform.worldMatrix()
-
                 mesh.setObject(obj)
                 vertexIndices = mesh.selectedVertices()
-                centerPoint = (sum(list(mesh.iterVertices(*vertexIndices))) / len(vertexIndices)) * worldMatrix
+                centerPoint = (sum(list(mesh.iterVertices(*vertexIndices, worldSpace=True))) / len(vertexIndices))
 
                 center += centerPoint * weight
 
