@@ -24,7 +24,7 @@
     <item>
      <widget class="QTabWidget" name="tabControl">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QAlignTab" name="alignTab">
        <attribute name="title">
@@ -41,17 +41,12 @@
         <string>Matrix</string>
        </attribute>
       </widget>
-      <widget class="QTimeTab" name="timeTab">
-       <attribute name="title">
-        <string>Time</string>
-       </attribute>
-      </widget>
      </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="buttonLayout">
       <item>
-       <widget class="QDropDownButton" name="applyDropDownButton">
+       <widget class="QDropDownButton" name="applyPushButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -61,13 +56,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>24</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>24</height>
+          <height>20</height>
          </size>
         </property>
         <property name="mouseTracking">
@@ -75,6 +70,15 @@
         </property>
         <property name="text">
          <string>Apply</string>
+        </property>
+        <property name="popupMode">
+         <enum>QToolButton::MenuButtonPopup</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextOnly</enum>
+        </property>
+        <property name="arrowType">
+         <enum>Qt::DownArrow</enum>
         </property>
        </widget>
       </item>
@@ -89,13 +93,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>24</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>24</height>
+          <height>20</height>
          </size>
         </property>
         <property name="text">
@@ -114,13 +118,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>24</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>24</height>
+          <height>20</height>
          </size>
         </property>
         <property name="text">
@@ -136,31 +140,25 @@
  <customwidgets>
   <customwidget>
    <class>QDropDownButton</class>
-   <extends>QPushButton</extends>
+   <extends>QToolButton</extends>
    <header>dcc/ui/qdropdownbutton.h</header>
   </customwidget>
   <customwidget>
    <class>QAlignTab</class>
    <extends>QWidget</extends>
-   <header>ezalign/tabs/qaligntab.h</header>
+   <header>ezalign/ui/tabs/qaligntab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QAimTab</class>
    <extends>QWidget</extends>
-   <header>ezalign/tabs/qaimtab.h</header>
+   <header>ezalign/ui/tabs/qaimtab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QMatrixTab</class>
    <extends>QWidget</extends>
-   <header>ezalign/tabs/qmatrixtab.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QTimeTab</class>
-   <extends>QWidget</extends>
-   <header>ezalign/tabs/qtimetab.h</header>
+   <header>ezalign/ui/tabs/qmatrixtab.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

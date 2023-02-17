@@ -1,7 +1,7 @@
 from PySide2 import QtCore, QtWidgets, QtGui
 from abc import abstractmethod
 from dcc import fnscene
-from dcc.ui import quicmixin
+from dcc.ui import quicwidget
 
 import logging
 logging.basicConfig()
@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class QAbstractTab(quicmixin.QUicMixin, QtWidgets.QWidget):
+class QAbstractTab(quicwidget.QUicWidget):
     """
     Overload of QWidget used to outline the structure for alignment tabs.
     """
@@ -31,12 +31,6 @@ class QAbstractTab(quicmixin.QUicMixin, QtWidgets.QWidget):
         # Declare private variables
         #
         self._scene = fnscene.FnScene()
-
-        # Load user interface
-        #
-        self.preLoad()
-        self.__load__(*args, **kwargs)
-        self.postLoad()
     # endregion
 
     # region Properties

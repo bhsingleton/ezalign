@@ -22,14 +22,20 @@ class QEzAlign(quicwindow.QUicWindow):
         :rtype: None
         """
 
+        # Call parent method
+        #
+        super(QEzAlign, self).__init__(*args, **kwargs)
+
         # Declare private variables
         #
         self._freezeTransform = False
         self._preserveChildren = False
 
-        # Call parent method
+        # Declare public variables
         #
-        super(QEzAlign, self).__init__(*args, **kwargs)
+        self.applyMenu = None
+        self.preserveChildrenAction = None
+        self.freezeTransformAction = None
     # endregion
 
     # region Properties
@@ -77,7 +83,7 @@ class QEzAlign(quicwindow.QUicWindow):
     # endregion
 
     # region Methods
-    def postLoad(self):
+    def postLoad(self, *args, **kwargs):
         """
         Called after the user interface has been loaded.
 
@@ -86,7 +92,7 @@ class QEzAlign(quicwindow.QUicWindow):
 
         # Assign tool button menu
         #
-        self.applyMenu = QtWidgets.QMenu(parent=self.applyDropDownButton)
+        self.applyMenu = QtWidgets.QMenu(parent=self.applyPushButton)
         self.applyMenu.setObjectName('applyMenu')
 
         self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children', self.applyMenu)
@@ -98,6 +104,7 @@ class QEzAlign(quicwindow.QUicWindow):
         self.freezeTransformAction.setCheckable(True)
 
         self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
+        self.applyPushButton.setMenu(self.applyMenu)
 
     def loadSettings(self):
         """
@@ -116,6 +123,8 @@ class QEzAlign(quicwindow.QUicWindow):
         self.preserveChildren = bool(self.settings.value('editor/preserveChildren', defaultValue=0))
         self.freezeTransform = bool(self.settings.value('editor/freezeTransform', defaultValue=0))
 
+        # Load tab settings
+        #
         for tab in self.iterTabs():
 
             tab.loadSettings(self.settings)
@@ -137,6 +146,8 @@ class QEzAlign(quicwindow.QUicWindow):
         self.settings.setValue('editor/preserveChildren', int(self.preserveChildren))
         self.settings.setValue('editor/freezeTransform', int(self.freezeTransform))
 
+        # Save tab settings
+        #
         for tab in self.iterTabs():
 
             tab.saveSettings(self.settings)
@@ -169,12 +180,11 @@ class QEzAlign(quicwindow.QUicWindow):
         for i in range(self.tabControl.count()):
 
             yield self.tabControl.widget(i)
-
     # endregion
 
     # region Slots
     @QtCore.Slot()
-    def on_applyDropDownButton_clicked(self):
+    def on_applyPushButton_clicked(self):
         """
         Clicked slot method responsible for applying the selected operation.
 

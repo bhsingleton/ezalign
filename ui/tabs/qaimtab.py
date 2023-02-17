@@ -3,7 +3,7 @@ import json
 from Qt import QtCore, QtWidgets, QtGui
 from dcc import fntransform
 from dcc.dataclasses import vector, transformationmatrix
-from ezalign.abstract import qabstracttab
+from . import qabstracttab
 
 import logging
 logging.basicConfig()
@@ -188,7 +188,7 @@ class QAimTab(qabstracttab.QAbstractTab):
     # endregion
 
     # region Methods
-    def postLoad(self):
+    def postLoad(self, *args, **kwargs):
         """
         Called after the user interface has been loaded.
 
