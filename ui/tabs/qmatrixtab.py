@@ -33,13 +33,37 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         #
         super(QMatrixTab, self).__init__(*args, **kwargs)
 
-        # Declare class variables
+        # Declare private variables
         #
         self._origin = vector.Vector.zero
         self._forwardAxis = 0
         self._forwardVector = vector.Vector.xAxis
         self._upAxis = 1
         self._upVector = vector.Vector.yAxis
+
+        # Declare public variables
+        #
+        self.matrixGroupBox = None
+        self.axisWidget = None
+        self.xAxisLabel = None
+        self.yAxisLabel = None
+        self.zAxisLabel = None
+        self.originPushButton = None
+        self.matrixEdit = None
+        
+        self.forwardAxisGroupBox = None
+        self.forwardAxisPushButton = None
+        self.forwardXRadioButton = None
+        self.forwardYRadioButton = None
+        self.forwardZRadioButton = None
+        self.forwardAxisButtonGroup = None
+        
+        self.upAxisGroupBox = None
+        self.upAxisPushButton = None
+        self.upXRadioButton = None
+        self.upYRadioButton = None
+        self.upZRadioButton = None
+        self.upAxisButtonGroup = None
     # endregion
 
     # region Properties
@@ -170,13 +194,21 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.forwardAxisButtonGroup.setId(self.forwardXRadioButton, 0)
-        self.forwardAxisButtonGroup.setId(self.forwardYRadioButton, 1)
-        self.forwardAxisButtonGroup.setId(self.forwardZRadioButton, 2)
+        self.forwardAxisButtonGroup = QtWidgets.QButtonGroup(parent=self.forwardAxisGroupBox)
+        self.forwardAxisButtonGroup.setObjectName('forwardAxisButtonGroup')
+        self.forwardAxisButtonGroup.setExclusive(True)
+        self.forwardAxisButtonGroup.addButton(self.forwardXRadioButton, id=0)
+        self.forwardAxisButtonGroup.addButton(self.forwardYRadioButton, id=1)
+        self.forwardAxisButtonGroup.addButton(self.forwardZRadioButton, id=2)
+        self.forwardAxisButtonGroup.idClicked.connect(self.on_forwardAxisButtonGroup_idClicked)
 
-        self.upAxisButtonGroup.setId(self.upXRadioButton, 0)
-        self.upAxisButtonGroup.setId(self.upYRadioButton, 1)
-        self.upAxisButtonGroup.setId(self.upZRadioButton, 2)
+        self.upAxisButtonGroup = QtWidgets.QButtonGroup(parent=self.upAxisGroupBox)
+        self.upAxisButtonGroup.setObjectName('upAxisButtonGroup')
+        self.upAxisButtonGroup.setExclusive(True)
+        self.upAxisButtonGroup.addButton(self.upXRadioButton, id=0)
+        self.upAxisButtonGroup.addButton(self.upYRadioButton, id=1)
+        self.upAxisButtonGroup.addButton(self.upZRadioButton, id=2)
+        self.upAxisButtonGroup.idClicked.connect(self.on_upAxisButtonGroup_idClicked)
 
     def loadSettings(self, settings):
         """

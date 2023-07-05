@@ -33,6 +33,16 @@ class QEzAlign(quicwindow.QUicWindow):
 
         # Declare public variables
         #
+        self.tabControl = None
+        self.alignTab = None
+        self.aimTab = None
+        self.matrixTab = None
+
+        self.buttonsWidget = None
+        self.applyPushButton = None
+        self.okayPushButton = None
+        self.cancelPushButton = None
+
         self.applyMenu = None
         self.preserveChildrenAction = None
         self.freezeTransformAction = None
@@ -106,51 +116,53 @@ class QEzAlign(quicwindow.QUicWindow):
         self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
         self.applyPushButton.setMenu(self.applyMenu)
 
-    def loadSettings(self):
+    def loadSettings(self, settings):
         """
         Loads the user settings.
 
+        :type settings: QtCore.QSettings
         :rtype: None
         """
 
         # Call parent method
         #
-        super(QEzAlign, self).loadSettings()
+        super(QEzAlign, self).loadSettings(settings)
 
         # Load user preferences
         #
-        self.tabControl.setCurrentIndex(self.settings.value('editor/currentTabIndex', defaultValue=0))
-        self.preserveChildren = bool(self.settings.value('editor/preserveChildren', defaultValue=0))
-        self.freezeTransform = bool(self.settings.value('editor/freezeTransform', defaultValue=0))
+        self.tabControl.setCurrentIndex(settings.value('editor/currentTabIndex', defaultValue=0))
+        self.preserveChildren = bool(settings.value('editor/preserveChildren', defaultValue=0))
+        self.freezeTransform = bool(settings.value('editor/freezeTransform', defaultValue=0))
 
         # Load tab settings
         #
         for tab in self.iterTabs():
 
-            tab.loadSettings(self.settings)
+            tab.loadSettings(settings)
 
-    def saveSettings(self):
+    def saveSettings(self, settings):
         """
         Saves the user settings.
 
+        :type settings: QtCore.QSettings
         :rtype: None
         """
 
         # Call parent method
         #
-        super(QEzAlign, self).saveSettings()
+        super(QEzAlign, self).saveSettings(settings)
 
         # Save user preferences
         #
-        self.settings.setValue('editor/currentTabIndex', self.currentTabIndex())
-        self.settings.setValue('editor/preserveChildren', int(self.preserveChildren))
-        self.settings.setValue('editor/freezeTransform', int(self.freezeTransform))
+        settings.setValue('editor/currentTabIndex', self.currentTabIndex())
+        settings.setValue('editor/preserveChildren', int(self.preserveChildren))
+        settings.setValue('editor/freezeTransform', int(self.freezeTransform))
 
         # Save tab settings
         #
         for tab in self.iterTabs():
 
-            tab.saveSettings(self.settings)
+            tab.saveSettings(settings)
 
     def currentTab(self):
         """

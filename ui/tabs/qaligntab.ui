@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>alignTab</class>
- <widget class="QWidget" name="alignTab">
+ <class>QAlignTab</class>
+ <widget class="QWidget" name="QAlignTab">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -25,7 +25,7 @@
      <property name="title">
       <string>Align Translation:</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="translationLayout">
       <item>
        <widget class="QCheckBox" name="translateXCheckBox">
         <property name="text">
@@ -34,9 +34,6 @@
         <property name="checked">
          <bool>true</bool>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">translateCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
       <item>
@@ -47,9 +44,6 @@
         <property name="checked">
          <bool>true</bool>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">translateCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
       <item>
@@ -60,310 +54,297 @@
         <property name="checked">
          <bool>true</bool>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">translateCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="objectLayout">
-     <item>
-      <widget class="QGroupBox" name="sourceGroupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Source Object:</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QRadioButton" name="sourceMinRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Minimum</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">sourceRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="sourceCenterRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the center of the object's bounding box with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Center</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">sourceRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="sourcePivotRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the object's pivot point with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Pivot</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">sourceRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="sourceMaxRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Maximum</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">sourceRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="targetGroupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Target Object:</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QRadioButton" name="targetMinRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Minimum</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">targetRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="targetCenterRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the center of the object's bounding box with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Center</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">targetRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="targetPivotRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the object's pivot point with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Pivot</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">targetRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="targetMaxRadioButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.</string>
-          </property>
-          <property name="text">
-           <string>Maximum</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">targetRadioButtonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QWidget" name="objectWidget" native="true">
+     <layout class="QHBoxLayout" name="objectLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QGroupBox" name="sourceGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Source Object:</string>
+        </property>
+        <layout class="QVBoxLayout" name="sourceLayout">
+         <item>
+          <widget class="QRadioButton" name="sourceMinRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Minimum</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="sourceCenterRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the center of the object's bounding box with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Center</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="sourcePivotRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the object's pivot point with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Pivot</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="sourceMaxRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Maximum</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="targetGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Target Object:</string>
+        </property>
+        <layout class="QVBoxLayout" name="targetLayout">
+         <item>
+          <widget class="QRadioButton" name="targetMinRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Minimum</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="targetCenterRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the center of the object's bounding box with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Center</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="targetPivotRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the object's pivot point with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Pivot</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="targetMaxRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.</string>
+           </property>
+           <property name="text">
+            <string>Maximum</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <widget class="QGroupBox" name="rotateGroupBox">
@@ -376,7 +357,7 @@
      <property name="title">
       <string>Align Rotation:</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <layout class="QHBoxLayout" name="rotationLayout">
       <item>
        <widget class="QCheckBox" name="rotateXCheckBox">
         <property name="text">
@@ -385,9 +366,6 @@
         <property name="checked">
          <bool>true</bool>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">rotateCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
       <item>
@@ -398,9 +376,6 @@
         <property name="checked">
          <bool>true</bool>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">rotateCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
       <item>
@@ -411,9 +386,6 @@
         <property name="checked">
          <bool>true</bool>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">rotateCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
      </layout>
@@ -430,15 +402,12 @@
      <property name="title">
       <string>Align Scale:</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <layout class="QHBoxLayout" name="scaleLayout">
       <item>
        <widget class="QCheckBox" name="scaleXCheckBox">
         <property name="text">
          <string>X-Axis</string>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">scaleCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
       <item>
@@ -446,9 +415,6 @@
         <property name="text">
          <string>Y-Axis</string>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">scaleCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
       <item>
@@ -456,9 +422,6 @@
         <property name="text">
          <string>Z-Axis</string>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">scaleCheckBoxGroup</string>
-        </attribute>
        </widget>
       </item>
      </layout>
@@ -468,23 +431,4 @@
  </widget>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="translateCheckBoxGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="sourceRadioButtonGroup"/>
-  <buttongroup name="targetRadioButtonGroup"/>
-  <buttongroup name="scaleCheckBoxGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="rotateCheckBoxGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
- </buttongroups>
 </ui>

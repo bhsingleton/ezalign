@@ -29,6 +29,40 @@ class QAlignTab(qabstracttab.QAbstractTab):
         # Call parent method
         #
         super(QAlignTab, self).__init__(*args, **kwargs)
+        
+        # Declare public variables
+        #
+        self.translationGroupBox = None
+        self.translateXCheckBox = None
+        self.translateYCheckBox = None
+        self.translateZCheckBox = None
+        self.translateCheckBoxGroup = None
+        
+        self.objectWidget = None
+        self.sourceGroupBox = None
+        self.sourceCenterRadioButton = None
+        self.sourceMaxRadioButton = None
+        self.sourceMinRadioButton = None
+        self.sourcePivotRadioButton = None
+        self.sourceRadioButtonGroup = None
+        self.targetGroupBox = None
+        self.targetCenterRadioButton = None
+        self.targetMaxRadioButton = None
+        self.targetMinRadioButton = None
+        self.targetPivotRadioButton = None
+        self.targetRadioButtonGroup = None
+
+        self.rotationGroupBox = None
+        self.rotateXCheckBox = None
+        self.rotateYCheckBox = None
+        self.rotateZCheckBox = None
+        self.rotateCheckBoxGroup = None
+        
+        self.scaleGroupBox = None
+        self.scaleXCheckBox = None
+        self.scaleYCheckBox = None
+        self.scaleZCheckBox = None
+        self.scaleCheckBoxGroup = None
     # endregion
 
     # region Properties
@@ -83,27 +117,42 @@ class QAlignTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.translateCheckBoxGroup.setId(self.translateXCheckBox, 0)
-        self.translateCheckBoxGroup.setId(self.translateYCheckBox, 1)
-        self.translateCheckBoxGroup.setId(self.translateZCheckBox, 2)
+        self.translateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self.translationGroupBox)
+        self.translateCheckBoxGroup.setObjectName('translateCheckBoxGroup')
+        self.translateCheckBoxGroup.setExclusive(False)
+        self.translateCheckBoxGroup.addButton(self.translateXCheckBox, id=0)
+        self.translateCheckBoxGroup.addButton(self.translateYCheckBox, id=1)
+        self.translateCheckBoxGroup.addButton(self.translateZCheckBox, id=2)
 
-        self.sourceRadioButtonGroup.setId(self.sourceMinRadioButton, 0)
-        self.sourceRadioButtonGroup.setId(self.sourceCenterRadioButton, 1)
-        self.sourceRadioButtonGroup.setId(self.sourcePivotRadioButton, 2)
-        self.sourceRadioButtonGroup.setId(self.sourceMaxRadioButton, 3)
+        self.sourceRadioButtonGroup = QtWidgets.QButtonGroup(parent=self.sourceGroupBox)
+        self.sourceRadioButtonGroup.setObjectName('sourceRadioButtonGroup')
+        self.sourceRadioButtonGroup.setExclusive(True)
+        self.sourceRadioButtonGroup.addButton(self.sourceMinRadioButton, id=0)
+        self.sourceRadioButtonGroup.addButton(self.sourceCenterRadioButton, id=1)
+        self.sourceRadioButtonGroup.addButton(self.sourcePivotRadioButton, id=2)
+        self.sourceRadioButtonGroup.addButton(self.sourceMaxRadioButton, id=3)
 
-        self.targetRadioButtonGroup.setId(self.targetMinRadioButton, 0)
-        self.targetRadioButtonGroup.setId(self.targetCenterRadioButton, 1)
-        self.targetRadioButtonGroup.setId(self.targetPivotRadioButton, 2)
-        self.targetRadioButtonGroup.setId(self.targetMaxRadioButton, 3)
+        self.targetRadioButtonGroup = QtWidgets.QButtonGroup(parent=self.targetGroupBox)
+        self.targetRadioButtonGroup.setObjectName('targetRadioButtonGroup')
+        self.targetRadioButtonGroup.setExclusive(True)
+        self.targetRadioButtonGroup.addButton(self.targetMinRadioButton, id=0)
+        self.targetRadioButtonGroup.addButton(self.targetCenterRadioButton, id=1)
+        self.targetRadioButtonGroup.addButton(self.targetPivotRadioButton, id=2)
+        self.targetRadioButtonGroup.addButton(self.targetMaxRadioButton, id=3)
 
-        self.rotateCheckBoxGroup.setId(self.rotateXCheckBox, 0)
-        self.rotateCheckBoxGroup.setId(self.rotateYCheckBox, 1)
-        self.rotateCheckBoxGroup.setId(self.rotateZCheckBox, 2)
+        self.rotateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self.rotationGroupBox)
+        self.rotateCheckBoxGroup.setObjectName('rotateCheckBoxGroup')
+        self.rotateCheckBoxGroup.setExclusive(False)
+        self.rotateCheckBoxGroup.addButton(self.rotateXCheckBox, id=0)
+        self.rotateCheckBoxGroup.addButton(self.rotateYCheckBox, id=1)
+        self.rotateCheckBoxGroup.addButton(self.rotateZCheckBox, id=2)
 
-        self.scaleCheckBoxGroup.setId(self.scaleXCheckBox, 0)
-        self.scaleCheckBoxGroup.setId(self.scaleYCheckBox, 1)
-        self.scaleCheckBoxGroup.setId(self.scaleZCheckBox, 2)
+        self.scaleCheckBoxGroup = QtWidgets.QButtonGroup(parent=self.scaleGroupBox)
+        self.scaleCheckBoxGroup.setObjectName('scaleCheckBoxGroup')
+        self.scaleCheckBoxGroup.setExclusive(False)
+        self.scaleCheckBoxGroup.addButton(self.scaleXCheckBox, id=0)
+        self.scaleCheckBoxGroup.addButton(self.scaleYCheckBox, id=1)
+        self.scaleCheckBoxGroup.addButton(self.scaleZCheckBox, id=2)
 
     def loadSettings(self, settings):
         """
