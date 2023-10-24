@@ -396,7 +396,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
             sourceNode, sourceOffsetMatrix = self.getSourceInput()
             targetNode, targetOffsetMatrix = self.getTargetInput()
 
-            log.info('Copying from: %s, pasting to %s' % (sourceNode.name(), targetNode.name()))
+            log.info(f'Copying from: {sourceNode.name()}, pasting to {targetNode.name()}')
 
             # Calculate source transform in target parent space
             # Don't forget to include the offset matrices!
