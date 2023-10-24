@@ -2,7 +2,7 @@ import json
 
 from Qt import QtCore, QtWidgets, QtGui
 from dcc import fnnode, fntransform, fnmesh
-from dcc.dataclasses import vector, transformationmatrix
+from dcc.dataclasses import vector, boundingbox, transformationmatrix
 from . import qabstracttab
 
 import logging
@@ -260,16 +260,16 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         # Compose aim matrix
         #
-        log.debug('Origin: %s' % self.origin)
-        log.debug('Forward Axis: %s, Forward Vector: %s' % (self.forwardAxis, self.forwardVector))
-        log.debug('Up Axis: %s, Up Vector: %s' % (self.upAxis, self.upVector))
+        log.debug(f'Origin: {self.origin}')
+        log.debug(f'Forward Axis: {self.forwardAxis}, Forward Vector: {self.forwardVector}')
+        log.debug(f'Up Axis: {self.upAxis}, Up Vector: {self.upVector}')
 
         matrix = transformationmatrix.TransformationMatrix(row4=self.origin)
         matrix.lookAt(forwardVector=self.forwardVector, forwardAxis=self.forwardAxis, upVector=self.upVector, upAxis=self.upAxis)
 
         # Update matrix widget
         #
-        log.debug('Matrix = %s' % matrix)
+        log.debug(f'Matrix = {matrix}')
         self.matrixEdit.setMatrix(matrix)
 
     @staticmethod
@@ -300,20 +300,18 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         selection = self.scene.getActiveSelection()
         selectionCount = len(selection)
 
-        center = vector.Vector()
-
         if selectionCount == 0:
 
             log.warning('No transform nodes found in active selection!')
-            return center
+            return vector.Vector.zero
 
-        # Iterate through selection
+        # Iterate through selection and expand bounding box
         #
         node = fnnode.FnNode()
         transform = fntransform.FnTransform()
         mesh = fnmesh.FnMesh()
 
-        weight = 1.0 / selectionCount
+        boundingBox = boundingbox.BoundingBox()
 
         for (index, obj) in enumerate(selection):
 
@@ -325,22 +323,24 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
                 mesh.setObject(obj)
                 vertexIndices = mesh.selectedVertices()
-                centerPoint = (sum(list(mesh.iterVertices(*vertexIndices, worldSpace=True))) / len(vertexIndices))
+                vertexPoints = mesh.getVertices(*vertexIndices, worldSpace=True)
 
-                center += centerPoint * weight
+                boundingBox.expand(*vertexPoints)
 
-            elif transform.isTransform():
+            elif node.isTransform():
 
                 transform.setObject(obj)
                 translation = transform.translation(worldSpace=True)
 
-                center += translation * weight
+                boundingBox.expand(translation)
 
             else:
 
                 continue
 
-        return center
+        # Return bounding box center
+        #
+        return boundingBox.center()
 
     def getAveragedNormal(self):
         """
