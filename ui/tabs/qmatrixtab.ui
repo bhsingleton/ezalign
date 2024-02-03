@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="whatsThis">
+   <string>Select the node to paste the transformation matrix onto.</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QGroupBox" name="matrixGroupBox">
@@ -145,6 +148,12 @@
              <height>24</height>
             </size>
            </property>
+           <property name="toolTip">
+            <string>Averages the position of the selected nodes or mesh components</string>
+           </property>
+           <property name="whatsThis">
+            <string/>
+           </property>
            <property name="text">
             <string>Origin</string>
            </property>
@@ -180,6 +189,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="forwardAxisPushButton">
+        <property name="toolTip">
+         <string>Calculates the forward vector from the active selection relative to the origin</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Pick</string>
         </property>
@@ -229,6 +244,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="upAxisPushButton">
+        <property name="toolTip">
+         <string>Calculates the up vector from the active selection relative to the origin</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Pick</string>
         </property>

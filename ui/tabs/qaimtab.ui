@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="whatsThis">
+   <string>Select the node to aim then the node to target node.</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QGroupBox" name="forwardAxisGroupBox">
@@ -69,6 +72,9 @@
           <width>60</width>
           <height>24</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Flips the direction of the selected axis vector</string>
         </property>
         <property name="maxCount">
          <number>2</number>
@@ -143,6 +149,9 @@
           <width>60</width>
           <height>24</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Flips the direction of the selected axis vector</string>
         </property>
         <property name="maxCount">
          <number>2</number>
@@ -230,6 +239,9 @@
              <width>16777215</width>
              <height>24</height>
             </size>
+           </property>
+           <property name="toolTip">
+            <string>Changes the logic used to derive the world-up vector.</string>
            </property>
            <item>
             <property name="text">
@@ -335,6 +347,12 @@
              <height>24</height>
             </size>
            </property>
+           <property name="toolTip">
+            <string>Copies the axis vector from the active selection.</string>
+           </property>
+           <property name="whatsThis">
+            <string/>
+           </property>
            <property name="text">
             <string>Pick</string>
            </property>
@@ -430,6 +448,9 @@
              <width>60</width>
              <height>24</height>
             </size>
+           </property>
+           <property name="toolTip">
+            <string>Stores a reference to the selected node as a world-up object.</string>
            </property>
            <property name="text">
             <string>Pick</string>

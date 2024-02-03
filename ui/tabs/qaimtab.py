@@ -240,6 +240,11 @@ class QAimTab(qabstracttab.QAbstractTab):
         self.upAxisButtonGroup.addButton(self.upZRadioButton, id=2)
         self.upAxisButtonGroup.idClicked.connect(self.on_upAxisButtonGroup_idClicked)
 
+        self.worldUpTypeComboBox.setItemData(0, 'Copies the up-vector from the scene-up axis.', role=QtCore.Qt.ToolTipRole)
+        self.worldUpTypeComboBox.setItemData(1, 'Calculates the up-vector from the forward vector between the origin and world-up object.', role=QtCore.Qt.ToolTipRole)
+        self.worldUpTypeComboBox.setItemData(2, "Copies the up-vector from the world-up object's axis vectors.", role=QtCore.Qt.ToolTipRole)
+        self.worldUpTypeComboBox.setItemData(3, 'Copies the up-vector from the custom vector widget.', role=QtCore.Qt.ToolTipRole)
+
     def loadSettings(self, settings):
         """
         Loads the user settings.

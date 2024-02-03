@@ -195,6 +195,23 @@ class QEzAlign(quicwindow.QUicWindow):
     # endregion
 
     # region Slots
+    @QtCore.Slot(int)
+    def on_tabControl_currentChanged(self, index):
+        """
+        Adds the tooltip to apply and okay buttons.
+
+        :type index: int
+        :rtype: None
+        """
+
+        tab = self.sender().widget(index)
+
+        if tab is not None:
+
+            toolTip = tab.whatsThis()
+            self.applyPushButton.setToolTip(toolTip)
+            self.okayPushButton.setToolTip(toolTip)
+
     @QtCore.Slot()
     def on_applyPushButton_clicked(self):
         """

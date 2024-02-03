@@ -267,7 +267,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
         # Attach source object to function set
         #
         sourceNode = fntransform.FnTransform()
-        success = sourceNode.trySetObject(selection[0])
+        success = sourceNode.trySetObject(selection[1])
 
         if not success:
 
@@ -332,7 +332,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
         # Attach source object to function set
         #
         targetNode = fntransform.FnTransform()
-        success = targetNode.trySetObject(selection[1])
+        success = targetNode.trySetObject(selection[0])
 
         if not success:
 
