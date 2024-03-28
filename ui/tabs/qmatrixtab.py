@@ -284,8 +284,9 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         fnTransform = fntransform.FnTransform(node)
         worldMatrix = fnTransform.worldMatrix()
+        row = worldMatrix[axis]
 
-        return vector.Vector(*worldMatrix[axis]).normalize()
+        return vector.Vector(row[0], row[1], row[2]).normalize()
 
     def getCenterPosition(self):
         """
