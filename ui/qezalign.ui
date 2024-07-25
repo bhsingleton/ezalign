@@ -24,23 +24,8 @@
     <item>
      <widget class="QTabWidget" name="tabControl">
       <property name="currentIndex">
-       <number>0</number>
+       <number>-1</number>
       </property>
-      <widget class="QAlignTab" name="alignTab">
-       <attribute name="title">
-        <string>Align</string>
-       </attribute>
-      </widget>
-      <widget class="QAimTab" name="aimTab">
-       <attribute name="title">
-        <string>Aim</string>
-       </attribute>
-      </widget>
-      <widget class="QMatrixTab" name="matrixTab">
-       <attribute name="title">
-        <string>Matrix</string>
-       </attribute>
-      </widget>
      </widget>
     </item>
     <item>
@@ -90,6 +75,15 @@
          <property name="text">
           <string>Apply</string>
          </property>
+         <property name="popupMode">
+          <enum>QToolButton::ToolButtonPopupMode::MenuButtonPopup</enum>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonStyle::ToolButtonTextOnly</enum>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::ArrowType::DownArrow</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -126,27 +120,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QAlignTab</class>
-   <extends>QWidget</extends>
-   <header>ezalign/ui/tabs/qaligntab.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>QDropDownButton</class>
-   <extends>QPushButton</extends>
+   <extends>QToolButton</extends>
    <header>dcc/ui/qdropdownbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>QAimTab</class>
-   <extends>QWidget</extends>
-   <header>ezalign/ui/tabs/qaimtab.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QMatrixTab</class>
-   <extends>QWidget</extends>
-   <header>ezalign/ui/tabs/qmatrixtab.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

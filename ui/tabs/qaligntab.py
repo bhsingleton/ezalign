@@ -13,7 +13,7 @@ log.setLevel(logging.INFO)
 
 class QAlignTab(qabstracttab.QAbstractTab):
     """
-    Overload of QAbstractTab used to align two transforms.
+    Overload of `QAbstractTab` that implements copy transform logic.
     """
 
     # region Dunderscores
@@ -29,40 +29,232 @@ class QAlignTab(qabstracttab.QAbstractTab):
         # Call parent method
         #
         super(QAlignTab, self).__init__(*args, **kwargs)
-        
-        # Declare public variables
-        #
-        self.translationGroupBox = None
-        self.translateXCheckBox = None
-        self.translateYCheckBox = None
-        self.translateZCheckBox = None
-        self.translateCheckBoxGroup = None
-        
-        self.objectWidget = None
-        self.sourceGroupBox = None
-        self.sourceCenterRadioButton = None
-        self.sourceMaxRadioButton = None
-        self.sourceMinRadioButton = None
-        self.sourcePivotRadioButton = None
-        self.sourceRadioButtonGroup = None
-        self.targetGroupBox = None
-        self.targetCenterRadioButton = None
-        self.targetMaxRadioButton = None
-        self.targetMinRadioButton = None
-        self.targetPivotRadioButton = None
-        self.targetRadioButtonGroup = None
 
-        self.rotationGroupBox = None
-        self.rotateXCheckBox = None
-        self.rotateYCheckBox = None
-        self.rotateZCheckBox = None
-        self.rotateCheckBoxGroup = None
-        
-        self.scaleGroupBox = None
-        self.scaleXCheckBox = None
-        self.scaleYCheckBox = None
-        self.scaleZCheckBox = None
-        self.scaleCheckBoxGroup = None
+        # Initialize central layout
+        #
+        centralLayout = QtWidgets.QVBoxLayout()
+        self.setLayout(centralLayout)
+
+        # Initialize translation group-box
+        #
+        self.translationLayout = QtWidgets.QHBoxLayout()
+        self.translationLayout.setObjectName('translationLayout')
+
+        self.translationGroupBox = QtWidgets.QGroupBox('Align Translation:')
+        self.translationGroupBox.setObjectName('translationGroupBox')
+        self.translationGroupBox.setLayout(self.translationLayout)
+        self.translationGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+
+        self.translateXCheckBox = QtWidgets.QCheckBox('X-Axis')
+        self.translateXCheckBox.setObjectName('translationGroupBox')
+        self.translateXCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.translateXCheckBox.setFixedHeight(24)
+        self.translateXCheckBox.setChecked(True)
+
+        self.translateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
+        self.translateYCheckBox.setObjectName('translateYCheckBox')
+        self.translateYCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.translateYCheckBox.setFixedHeight(24)
+        self.translateYCheckBox.setChecked(True)
+
+        self.translateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
+        self.translateZCheckBox.setObjectName('translateZCheckBox')
+        self.translateZCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.translateZCheckBox.setFixedHeight(24)
+        self.translateZCheckBox.setChecked(True)
+
+        self.translateCheckBoxGroup = QtWidgets.QButtonGroup(self.translationGroupBox)
+        self.translateCheckBoxGroup.setExclusive(False)
+        self.translateCheckBoxGroup.addButton(self.translateXCheckBox, id=0)
+        self.translateCheckBoxGroup.addButton(self.translateYCheckBox, id=1)
+        self.translateCheckBoxGroup.addButton(self.translateZCheckBox, id=2)
+
+        self.translationLayout.addWidget(self.translateXCheckBox)
+        self.translationLayout.addWidget(self.translateYCheckBox)
+        self.translationLayout.addWidget(self.translateZCheckBox)
+
+        centralLayout.addWidget(self.translationGroupBox)
+
+        # Initialize source object group-box
+        #
+        self.sourceLayout = QtWidgets.QVBoxLayout()
+        self.sourceLayout.setObjectName('sourceLayout')
+
+        self.sourceGroupBox = QtWidgets.QGroupBox('Source Object:')
+        self.sourceGroupBox.setObjectName('sourceGroupBox')
+        self.sourceGroupBox.setLayout(self.sourceLayout)
+        self.sourceGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+        self.sourceMinRadioButton = QtWidgets.QRadioButton('Minimum')
+        self.sourceMinRadioButton.setObjectName('sourceMinRadioButton')
+        self.sourceMinRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.sourceMinRadioButton.setFixedHeight(24)
+
+        self.sourceCenterRadioButton = QtWidgets.QRadioButton('Center')
+        self.sourceCenterRadioButton.setObjectName('sourceCenterRadioButton')
+        self.sourceCenterRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.sourceCenterRadioButton.setFixedHeight(24)
+
+        self.sourcePivotRadioButton = QtWidgets.QRadioButton('Pivot')
+        self.sourcePivotRadioButton.setObjectName('sourcePivotRadioButton')
+        self.sourcePivotRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.sourcePivotRadioButton.setFixedHeight(24)
+        self.sourcePivotRadioButton.setChecked(True)
+
+        self.sourceMaxRadioButton = QtWidgets.QRadioButton('Maximum')
+        self.sourceMaxRadioButton.setObjectName('sourceMaxRadioButton')
+        self.sourceMaxRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.sourceMaxRadioButton.setFixedHeight(24)
+
+        self.sourceRadioButtonGroup = QtWidgets.QButtonGroup(self.sourceGroupBox)
+        self.sourceRadioButtonGroup.setObjectName('sourceRadioButtonGroup')
+        self.sourceRadioButtonGroup.setExclusive(True)
+        self.sourceRadioButtonGroup.addButton(self.sourceMinRadioButton, id=0)
+        self.sourceRadioButtonGroup.addButton(self.sourceCenterRadioButton, id=1)
+        self.sourceRadioButtonGroup.addButton(self.sourcePivotRadioButton, id=2)
+        self.sourceRadioButtonGroup.addButton(self.sourceMaxRadioButton, id=3)
+
+        self.sourceLayout.addWidget(self.sourceMinRadioButton)
+        self.sourceLayout.addWidget(self.sourceCenterRadioButton)
+        self.sourceLayout.addWidget(self.sourcePivotRadioButton)
+        self.sourceLayout.addWidget(self.sourceMaxRadioButton)
+
+        # Initialize target object group-box
+        #
+        self.targetLayout = QtWidgets.QVBoxLayout()
+        self.targetLayout.setObjectName('targetLayout')
+
+        self.targetGroupBox = QtWidgets.QGroupBox('target Object:')
+        self.targetGroupBox.setObjectName('targetGroupBox')
+        self.targetGroupBox.setLayout(self.targetLayout)
+        self.targetGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+        self.targetMinRadioButton = QtWidgets.QRadioButton('Minimum')
+        self.targetMinRadioButton.setObjectName('targetMinRadioButton')
+        self.targetMinRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.targetMinRadioButton.setFixedHeight(24)
+
+        self.targetCenterRadioButton = QtWidgets.QRadioButton('Center')
+        self.targetCenterRadioButton.setObjectName('targetCenterRadioButton')
+        self.targetCenterRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.targetCenterRadioButton.setFixedHeight(24)
+
+        self.targetPivotRadioButton = QtWidgets.QRadioButton('Pivot')
+        self.targetPivotRadioButton.setObjectName('targetPivotRadioButton')
+        self.targetPivotRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.targetPivotRadioButton.setFixedHeight(24)
+        self.targetPivotRadioButton.setChecked(True)
+
+        self.targetMaxRadioButton = QtWidgets.QRadioButton('Maximum')
+        self.targetMaxRadioButton.setObjectName('targetMaxRadioButton')
+        self.targetMaxRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.targetMaxRadioButton.setFixedHeight(24)
+
+        self.targetRadioButtonGroup = QtWidgets.QButtonGroup(self.targetGroupBox)
+        self.targetRadioButtonGroup.setObjectName('targetRadioButtonGroup')
+        self.targetRadioButtonGroup.setExclusive(True)
+        self.targetRadioButtonGroup.addButton(self.targetMinRadioButton, id=0)
+        self.targetRadioButtonGroup.addButton(self.targetCenterRadioButton, id=1)
+        self.targetRadioButtonGroup.addButton(self.targetPivotRadioButton, id=2)
+        self.targetRadioButtonGroup.addButton(self.targetMaxRadioButton, id=3)
+
+        self.targetLayout.addWidget(self.targetMinRadioButton)
+        self.targetLayout.addWidget(self.targetCenterRadioButton)
+        self.targetLayout.addWidget(self.targetPivotRadioButton)
+        self.targetLayout.addWidget(self.targetMaxRadioButton)
+
+        # Initialize object widget
+        #
+        self.objectLayout = QtWidgets.QHBoxLayout()
+        self.objectLayout.setObjectName('objectLayout')
+        self.objectLayout.setContentsMargins(0, 0, 0, 0)
+
+        self.objectWidget = QtWidgets.QWidget()
+        self.objectWidget.setObjectName('objectWidget')
+        self.objectWidget.setLayout(self.objectLayout)
+        self.objectWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+        self.objectLayout.addWidget(self.sourceGroupBox)
+        self.objectLayout.addWidget(self.targetGroupBox)
+
+        centralLayout.addWidget(self.objectWidget)
+
+        # Initialize rotation group-box
+        #
+        self.rotationLayout = QtWidgets.QHBoxLayout()
+        self.rotationLayout.setObjectName('rotationLayout')
+
+        self.rotationGroupBox = QtWidgets.QGroupBox('Align Rotation:')
+        self.rotationGroupBox.setObjectName('rotationGroupBox')
+        self.rotationGroupBox.setLayout(self.rotationLayout)
+        self.rotationGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+
+        self.rotateXCheckBox = QtWidgets.QCheckBox('X-Axis')
+        self.rotateXCheckBox.setObjectName('rotationGroupBox')
+        self.rotateXCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.rotateXCheckBox.setFixedHeight(24)
+        self.rotateXCheckBox.setChecked(True)
+
+        self.rotateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
+        self.rotateYCheckBox.setObjectName('rotateYCheckBox')
+        self.rotateYCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.rotateYCheckBox.setFixedHeight(24)
+        self.rotateYCheckBox.setChecked(True)
+
+        self.rotateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
+        self.rotateZCheckBox.setObjectName('rotateZCheckBox')
+        self.rotateZCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.rotateZCheckBox.setFixedHeight(24)
+        self.rotateZCheckBox.setChecked(True)
+
+        self.rotateCheckBoxGroup = QtWidgets.QButtonGroup(self.rotationGroupBox)
+        self.rotateCheckBoxGroup.setExclusive(False)
+        self.rotateCheckBoxGroup.addButton(self.rotateXCheckBox, id=0)
+        self.rotateCheckBoxGroup.addButton(self.rotateYCheckBox, id=1)
+        self.rotateCheckBoxGroup.addButton(self.rotateZCheckBox, id=2)
+
+        self.rotationLayout.addWidget(self.rotateXCheckBox)
+        self.rotationLayout.addWidget(self.rotateYCheckBox)
+        self.rotationLayout.addWidget(self.rotateZCheckBox)
+
+        centralLayout.addWidget(self.rotationGroupBox)
+
+        # Initialize scale group-box
+        #
+        self.scaleLayout = QtWidgets.QHBoxLayout()
+        self.scaleLayout.setObjectName('scaleLayout')
+
+        self.scaleGroupBox = QtWidgets.QGroupBox('Align Scale:')
+        self.scaleGroupBox.setObjectName('scaleGroupBox')
+        self.scaleGroupBox.setLayout(self.scaleLayout)
+        self.scaleGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+
+        self.scaleXCheckBox = QtWidgets.QCheckBox('X-Axis')
+        self.scaleXCheckBox.setObjectName('scaleGroupBox')
+        self.scaleXCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.scaleXCheckBox.setFixedHeight(24)
+
+        self.scaleYCheckBox = QtWidgets.QCheckBox('Y-Axis')
+        self.scaleYCheckBox.setObjectName('scaleYCheckBox')
+        self.scaleYCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.scaleYCheckBox.setFixedHeight(24)
+
+        self.scaleZCheckBox = QtWidgets.QCheckBox('Z-Axis')
+        self.scaleZCheckBox.setObjectName('scaleZCheckBox')
+        self.scaleZCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.scaleZCheckBox.setFixedHeight(24)
+
+        self.scaleCheckBoxGroup = QtWidgets.QButtonGroup(self.scaleGroupBox)
+        self.scaleCheckBoxGroup.setExclusive(False)
+        self.scaleCheckBoxGroup.addButton(self.scaleXCheckBox, id=0)
+        self.scaleCheckBoxGroup.addButton(self.scaleYCheckBox, id=1)
+        self.scaleCheckBoxGroup.addButton(self.scaleZCheckBox, id=2)
+
+        self.scaleLayout.addWidget(self.scaleXCheckBox)
+        self.scaleLayout.addWidget(self.scaleYCheckBox)
+        self.scaleLayout.addWidget(self.scaleZCheckBox)
+
+        centralLayout.addWidget(self.scaleGroupBox)
     # endregion
 
     # region Properties
@@ -85,7 +277,9 @@ class QAlignTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.sourceRadioButtonGroup.buttons()[sourceType].setChecked(True)
+        if isinstance(sourceType, int):
+
+            self.sourceRadioButtonGroup.buttons()[sourceType].setChecked(True)
 
     @property
     def targetType(self):
@@ -106,54 +300,12 @@ class QAlignTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.targetRadioButtonGroup.buttons()[targetType].setChecked(True)
+        if isinstance(targetType, int):
+
+            self.targetRadioButtonGroup.buttons()[targetType].setChecked(True)
     # endregion
 
     # region Methods
-    def postLoad(self, *args, **kwargs):
-        """
-        Called after the user interface has been loaded.
-
-        :rtype: None
-        """
-
-        self.translateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self.translationGroupBox)
-        self.translateCheckBoxGroup.setObjectName('translateCheckBoxGroup')
-        self.translateCheckBoxGroup.setExclusive(False)
-        self.translateCheckBoxGroup.addButton(self.translateXCheckBox, id=0)
-        self.translateCheckBoxGroup.addButton(self.translateYCheckBox, id=1)
-        self.translateCheckBoxGroup.addButton(self.translateZCheckBox, id=2)
-
-        self.sourceRadioButtonGroup = QtWidgets.QButtonGroup(parent=self.sourceGroupBox)
-        self.sourceRadioButtonGroup.setObjectName('sourceRadioButtonGroup')
-        self.sourceRadioButtonGroup.setExclusive(True)
-        self.sourceRadioButtonGroup.addButton(self.sourceMinRadioButton, id=0)
-        self.sourceRadioButtonGroup.addButton(self.sourceCenterRadioButton, id=1)
-        self.sourceRadioButtonGroup.addButton(self.sourcePivotRadioButton, id=2)
-        self.sourceRadioButtonGroup.addButton(self.sourceMaxRadioButton, id=3)
-
-        self.targetRadioButtonGroup = QtWidgets.QButtonGroup(parent=self.targetGroupBox)
-        self.targetRadioButtonGroup.setObjectName('targetRadioButtonGroup')
-        self.targetRadioButtonGroup.setExclusive(True)
-        self.targetRadioButtonGroup.addButton(self.targetMinRadioButton, id=0)
-        self.targetRadioButtonGroup.addButton(self.targetCenterRadioButton, id=1)
-        self.targetRadioButtonGroup.addButton(self.targetPivotRadioButton, id=2)
-        self.targetRadioButtonGroup.addButton(self.targetMaxRadioButton, id=3)
-
-        self.rotateCheckBoxGroup = QtWidgets.QButtonGroup(parent=self.rotationGroupBox)
-        self.rotateCheckBoxGroup.setObjectName('rotateCheckBoxGroup')
-        self.rotateCheckBoxGroup.setExclusive(False)
-        self.rotateCheckBoxGroup.addButton(self.rotateXCheckBox, id=0)
-        self.rotateCheckBoxGroup.addButton(self.rotateYCheckBox, id=1)
-        self.rotateCheckBoxGroup.addButton(self.rotateZCheckBox, id=2)
-
-        self.scaleCheckBoxGroup = QtWidgets.QButtonGroup(parent=self.scaleGroupBox)
-        self.scaleCheckBoxGroup.setObjectName('scaleCheckBoxGroup')
-        self.scaleCheckBoxGroup.setExclusive(False)
-        self.scaleCheckBoxGroup.addButton(self.scaleXCheckBox, id=0)
-        self.scaleCheckBoxGroup.addButton(self.scaleYCheckBox, id=1)
-        self.scaleCheckBoxGroup.addButton(self.scaleZCheckBox, id=2)
-
     def loadSettings(self, settings):
         """
         Loads the user settings.
@@ -162,12 +314,12 @@ class QAlignTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.sourceType = settings.value('tabs/align/sourceType', defaultValue=2)
-        self.targetType = settings.value('tabs/align/targetType', defaultValue=2)
+        self.sourceType = settings.value('tabs/align/sourceType', defaultValue=2, type=int)
+        self.targetType = settings.value('tabs/align/targetType', defaultValue=2, type=int)
 
-        self.setMatchTranslate(json.loads(settings.value('tabs/align/matchTranslate', defaultValue='[true, true, true]')))
-        self.setMatchRotate(json.loads(settings.value('tabs/align/matchRotate', defaultValue='[true, true, true]')))
-        self.setMatchScale(json.loads(settings.value('tabs/align/matchScale', defaultValue='[false, false, false]')))
+        self.setMatchTranslate(json.loads(settings.value('tabs/align/matchTranslate', defaultValue='[true, true, true]', type=str)))
+        self.setMatchRotate(json.loads(settings.value('tabs/align/matchRotate', defaultValue='[true, true, true]', type=str)))
+        self.setMatchScale(json.loads(settings.value('tabs/align/matchScale', defaultValue='[false, false, false]', type=str)))
 
     def saveSettings(self, settings):
         """

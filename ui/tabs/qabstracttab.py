@@ -1,7 +1,6 @@
-from PySide2 import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui
 from abc import abstractmethod
 from dcc import fnscene
-from dcc.ui import quicwidget
 
 import logging
 logging.basicConfig()
@@ -9,9 +8,9 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class QAbstractTab(quicwidget.QUicWidget):
+class QAbstractTab(QtWidgets.QWidget):
     """
-    Overload of QWidget used to outline the structure for alignment tabs.
+    Overload of `QWidget` that outlines alignment tab behavior.
     """
 
     # region Dunderscores

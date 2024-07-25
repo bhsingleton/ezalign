@@ -3,6 +3,7 @@ import json
 from Qt import QtCore, QtWidgets, QtGui
 from dcc import fnnode, fntransform, fnmesh
 from dcc.dataclasses import vector, boundingbox, transformationmatrix
+from dcc.ui import qmatrixedit
 from . import qabstracttab
 
 import logging
@@ -36,34 +37,133 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         # Declare private variables
         #
         self._origin = vector.Vector.zero
-        self._forwardAxis = 0
+        self._forwardAxis = -1
         self._forwardVector = vector.Vector.xAxis
-        self._upAxis = 1
+        self._upAxis = -1
         self._upVector = vector.Vector.yAxis
+
+        # Initialize central layout
+        #
+        centralLayout = QtWidgets.QVBoxLayout()
+        self.setLayout(centralLayout)
 
         # Declare public variables
         #
-        self.matrixGroupBox = None
-        self.axisWidget = None
-        self.xAxisLabel = None
-        self.yAxisLabel = None
-        self.zAxisLabel = None
-        self.originPushButton = None
-        self.matrixEdit = None
+        self.matrixLayout = QtWidgets.QVBoxLayout()
+        self.matrixLayout.setObjectName('matrixLayout')
+
+        self.matrixGroupBox = QtWidgets.QGroupBox('4x4 Matrix:')
+        self.matrixGroupBox.setObjectName('matrixGroupBox')
+        self.matrixGroupBox.setLayout(self.matrixLayout)
+        self.matrixGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+        self.matrixEdit = qmatrixedit.QMatrixEdit()
+        self.matrixEdit.setObjectName('matrixEdit')
+        self.matrixEdit.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.matrixEdit.setRowLabels(['X-Axis:', 'Y-Axis:', 'Z-Axis:', 'Origin:'])
+        self.matrixLayout.addWidget(self.matrixEdit)
+
+        self.originPushButton = QtWidgets.QPushButton('Origin')
+        self.originPushButton.setObjectName('originPushButton')
+        self.originPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.originPushButton.setFixedHeight(24)
+        self.originPushButton.clicked.connect(self.on_originPushButton_clicked)
+
+        self.matrixEdit.replaceLabel(3, self.originPushButton)
+
+        centralLayout.addWidget(self.matrixGroupBox)
+
+        # Initialize forward-axis group-box
+        #
+        self.forwardAxisLayout = QtWidgets.QHBoxLayout()
+        self.forwardAxisLayout.setObjectName('forwardAxisLayout')
         
-        self.forwardAxisGroupBox = None
-        self.forwardAxisPushButton = None
-        self.forwardXRadioButton = None
-        self.forwardYRadioButton = None
-        self.forwardZRadioButton = None
-        self.forwardAxisButtonGroup = None
+        self.forwardAxisGroupBox = QtWidgets.QGroupBox('Forward Axis:')
+        self.forwardAxisGroupBox.setObjectName('forwardAxisGroupBox')
+        self.forwardAxisGroupBox.setLayout(self.forwardAxisLayout)
+        self.forwardAxisGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+        self.forwardAxisPushButton = QtWidgets.QPushButton('Pick')
+        self.forwardAxisPushButton.setObjectName('forwardAxisPushButton')
+        self.forwardAxisPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.forwardAxisPushButton.setFixedHeight(24)
+        self.forwardAxisPushButton.clicked.connect(self.on_forwardAxisPushButton_clicked)
+
+        self.forwardXRadioButton = QtWidgets.QRadioButton('X')
+        self.forwardXRadioButton.setObjectName('forwardXRadioButton')
+        self.forwardXRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.forwardXRadioButton.setFixedHeight(24)
+
+        self.forwardYRadioButton = QtWidgets.QRadioButton('Y')
+        self.forwardYRadioButton.setObjectName('forwardYRadioButton')
+        self.forwardYRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.forwardYRadioButton.setFixedHeight(24)
+
+        self.forwardZRadioButton = QtWidgets.QRadioButton('Z')
+        self.forwardZRadioButton.setObjectName('forwardZRadioButton')
+        self.forwardZRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.forwardZRadioButton.setFixedHeight(24)
+
+        self.forwardAxisButtonGroup = QtWidgets.QButtonGroup(self.forwardAxisGroupBox)
+        self.forwardAxisButtonGroup.setObjectName('forwardAxisButtonGroup')
+        self.forwardAxisButtonGroup.setExclusive(True)
+        self.forwardAxisButtonGroup.addButton(self.forwardXRadioButton, id=0)
+        self.forwardAxisButtonGroup.addButton(self.forwardYRadioButton, id=1)
+        self.forwardAxisButtonGroup.addButton(self.forwardZRadioButton, id=2)
+        self.forwardAxisButtonGroup.idClicked.connect(self.on_forwardAxisButtonGroup_idClicked)
+
+        self.forwardAxisLayout.addWidget(self.forwardAxisPushButton)
+        self.forwardAxisLayout.addWidget(self.forwardXRadioButton)
+        self.forwardAxisLayout.addWidget(self.forwardYRadioButton)
+        self.forwardAxisLayout.addWidget(self.forwardZRadioButton)
         
-        self.upAxisGroupBox = None
-        self.upAxisPushButton = None
-        self.upXRadioButton = None
-        self.upYRadioButton = None
-        self.upZRadioButton = None
-        self.upAxisButtonGroup = None
+        centralLayout.addWidget(self.forwardAxisGroupBox)
+
+        # Initialize up-axis group-box
+        #
+        self.upAxisLayout = QtWidgets.QHBoxLayout()
+        self.upAxisLayout.setObjectName('upAxisLayout')
+
+        self.upAxisGroupBox = QtWidgets.QGroupBox('Up Axis:')
+        self.upAxisGroupBox.setObjectName('upAxisGroupBox')
+        self.upAxisGroupBox.setLayout(self.upAxisLayout)
+        self.upAxisGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+        self.upAxisPushButton = QtWidgets.QPushButton('Pick')
+        self.upAxisPushButton.setObjectName('upAxisPushButton')
+        self.upAxisPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.upAxisPushButton.setFixedHeight(24)
+        self.upAxisPushButton.clicked.connect(self.on_upAxisPushButton_clicked)
+
+        self.upXRadioButton = QtWidgets.QRadioButton('X')
+        self.upXRadioButton.setObjectName('upXRadioButton')
+        self.upXRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.upXRadioButton.setFixedHeight(24)
+
+        self.upYRadioButton = QtWidgets.QRadioButton('Y')
+        self.upYRadioButton.setObjectName('upYRadioButton')
+        self.upYRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.upYRadioButton.setFixedHeight(24)
+
+        self.upZRadioButton = QtWidgets.QRadioButton('Z')
+        self.upZRadioButton.setObjectName('upZRadioButton')
+        self.upZRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.upZRadioButton.setFixedHeight(24)
+
+        self.upAxisButtonGroup = QtWidgets.QButtonGroup(self.upAxisGroupBox)
+        self.upAxisButtonGroup.setObjectName('upAxisButtonGroup')
+        self.upAxisButtonGroup.setExclusive(True)
+        self.upAxisButtonGroup.addButton(self.upXRadioButton, id=0)
+        self.upAxisButtonGroup.addButton(self.upYRadioButton, id=1)
+        self.upAxisButtonGroup.addButton(self.upZRadioButton, id=2)
+        self.upAxisButtonGroup.idClicked.connect(self.on_upAxisButtonGroup_idClicked)
+
+        self.upAxisLayout.addWidget(self.upAxisPushButton)
+        self.upAxisLayout.addWidget(self.upXRadioButton)
+        self.upAxisLayout.addWidget(self.upYRadioButton)
+        self.upAxisLayout.addWidget(self.upZRadioButton)
+
+        centralLayout.addWidget(self.upAxisGroupBox)
     # endregion
 
     # region Properties
@@ -85,9 +185,11 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :type point: vector.Vector
         :rtype: None
         """
+        
+        if isinstance(point, (list, tuple, vector.Vector)):
 
-        self._origin = vector.Vector(*point)
-        self.invalidate()
+            self._origin = vector.Vector(*point)
+            self.invalidate()
         
     @property
     def forwardAxis(self):
@@ -108,7 +210,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        if self._forwardAxis != forwardAxis and self._forwardAxis != self._upAxis:
+        isDifferent = forwardAxis != self._forwardAxis
+        isValid = forwardAxis != self._upAxis
+
+        if (isDifferent and isValid) and isinstance(forwardAxis, int):
 
             self._forwardAxis = forwardAxis
 
@@ -134,8 +239,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self._forwardVector = vector.Vector(*forwardVector)
-        self.invalidate()
+        if isinstance(forwardVector, (list, tuple, vector.Vector)):
+
+            self._forwardVector = vector.Vector(*forwardVector)
+            self.invalidate()
 
     @property
     def upAxis(self):
@@ -156,7 +263,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        if self._upAxis != upAxis and self._upAxis != self._forwardAxis:
+        isDifferent = upAxis != self._upAxis
+        isValid = upAxis != self._forwardAxis
+
+        if (isDifferent and isValid) and isinstance(upAxis, int):
 
             self._upAxis = upAxis
 
@@ -182,34 +292,13 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self._upVector = vector.Vector(*upVector)
-        self.invalidate()
+        if isinstance(upVector, (list, tuple, vector.Vector)):
+
+            self._upVector = vector.Vector(*upVector)
+            self.invalidate()
     # endregion
 
     # region Methods
-    def postLoad(self, *args, **kwargs):
-        """
-        Called after the user interface has been loaded.
-
-        :rtype: None
-        """
-
-        self.forwardAxisButtonGroup = QtWidgets.QButtonGroup(parent=self.forwardAxisGroupBox)
-        self.forwardAxisButtonGroup.setObjectName('forwardAxisButtonGroup')
-        self.forwardAxisButtonGroup.setExclusive(True)
-        self.forwardAxisButtonGroup.addButton(self.forwardXRadioButton, id=0)
-        self.forwardAxisButtonGroup.addButton(self.forwardYRadioButton, id=1)
-        self.forwardAxisButtonGroup.addButton(self.forwardZRadioButton, id=2)
-        self.forwardAxisButtonGroup.idClicked.connect(self.on_forwardAxisButtonGroup_idClicked)
-
-        self.upAxisButtonGroup = QtWidgets.QButtonGroup(parent=self.upAxisGroupBox)
-        self.upAxisButtonGroup.setObjectName('upAxisButtonGroup')
-        self.upAxisButtonGroup.setExclusive(True)
-        self.upAxisButtonGroup.addButton(self.upXRadioButton, id=0)
-        self.upAxisButtonGroup.addButton(self.upYRadioButton, id=1)
-        self.upAxisButtonGroup.addButton(self.upZRadioButton, id=2)
-        self.upAxisButtonGroup.idClicked.connect(self.on_upAxisButtonGroup_idClicked)
-
     def loadSettings(self, settings):
         """
         Loads the user settings.
@@ -218,13 +307,13 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
-        self.origin = json.loads(settings.value('tabs/matrix/origin', defaultValue='[0.0, 0.0, 0.0]'))
+        self.origin = json.loads(settings.value('tabs/matrix/origin', defaultValue='[0.0, 0.0, 0.0]', type=str))
 
-        self.forwardAxis = settings.value('tabs/matrix/forwardAxis', defaultValue=0)
-        self.forwardVector = json.loads(settings.value('tabs/matrix/forwardVector', defaultValue='[1.0, 0.0, 0.0]'))
+        self.forwardAxis = settings.value('tabs/matrix/forwardAxis', defaultValue=0, type=int)
+        self.forwardVector = json.loads(settings.value('tabs/matrix/forwardVector', defaultValue='[1.0, 0.0, 0.0]', type=str))
 
-        self.upAxis = settings.value('tabs/matrix/upAxis', defaultValue=1)
-        self.upVector = json.loads(settings.value('tabs/matrix/upVector', defaultValue='[0.0, 1.0, 0.0]'))
+        self.upAxis = settings.value('tabs/matrix/upAxis', defaultValue=1, type=int)
+        self.upVector = json.loads(settings.value('tabs/matrix/upVector', defaultValue='[0.0, 1.0, 0.0]', type=str))
         
     def saveSettings(self, settings):
         """
@@ -257,6 +346,12 @@ class QMatrixTab(qabstracttab.QAbstractTab):
 
         :rtype: None
         """
+
+        # Redundancy check
+        #
+        if not ((0 <= self.forwardAxis < 3) and (0 <= self.upAxis < 3) and self.forwardAxis != self.upAxis):
+
+            return
 
         # Compose aim matrix
         #

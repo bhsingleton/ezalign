@@ -1,5 +1,6 @@
-from PySide2 import QtCore, QtWidgets, QtGui
-from dcc.ui import quicwindow
+from Qt import QtCore, QtWidgets, QtGui
+from dcc.ui import qsingletonwindow, qdropdownbutton
+from .tabs import qaligntab, qaimtab, qmatrixtab
 
 import logging
 logging.basicConfig()
@@ -7,7 +8,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class QEzAlign(quicwindow.QUicWindow):
+class QEzAlign(qsingletonwindow.QSingletonWindow):
     """
     Overload of QProxyWindow used to align node transforms.
     """
@@ -26,11 +27,6 @@ class QEzAlign(quicwindow.QUicWindow):
         #
         super(QEzAlign, self).__init__(*args, **kwargs)
 
-        # Declare private variables
-        #
-        self._freezeTransform = False
-        self._preserveChildren = False
-
         # Declare public variables
         #
         self.tabControl = None
@@ -39,13 +35,106 @@ class QEzAlign(quicwindow.QUicWindow):
         self.matrixTab = None
 
         self.buttonsWidget = None
+        self.buttonsLayout = None
         self.applyPushButton = None
         self.okayPushButton = None
         self.cancelPushButton = None
-
         self.applyMenu = None
         self.preserveChildrenAction = None
         self.freezeTransformAction = None
+
+    def __setup_ui__(self, *args, **kwargs):
+        """
+        Private method that initializes the user interface.
+
+        :rtype: None
+        """
+
+        # Initialize main window
+        #
+        self.setWindowTitle("|| Ez'Align")
+        self.setMinimumSize(QtCore.QSize(300, 350))
+
+        # Initialize central widget
+        #
+        centralLayout = QtWidgets.QVBoxLayout()
+        centralLayout.setObjectName('centralLayout')
+
+        centralWidget = QtWidgets.QWidget()
+        centralWidget.setObjectName('centralWidget')
+        centralWidget.setLayout(centralLayout)
+
+        self.setCentralWidget(centralWidget)
+
+        # Initialize tab widget
+        #
+        self.tabControl = QtWidgets.QTabWidget()
+        self.tabControl.setObjectName('tabControl')
+        self.tabControl.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+        self.alignTab = qaligntab.QAlignTab()
+        self.aimTab = qaimtab.QAimTab()
+        self.matrixTab = qmatrixtab.QMatrixTab()
+
+        self.tabControl.addTab(self.alignTab, 'Align')
+        self.tabControl.addTab(self.aimTab, 'Aim')
+        self.tabControl.addTab(self.matrixTab, 'Matrix')
+
+        centralLayout.addWidget(self.tabControl)
+
+        # Initialize buttons
+        #
+        self.buttonsLayout = QtWidgets.QHBoxLayout()
+        self.buttonsLayout.setObjectName('buttonsLayout')
+        self.buttonsLayout.setContentsMargins(0, 0, 0, 0)
+
+        self.buttonsWidget = QtWidgets.QWidget()
+        self.buttonsWidget.setObjectName('buttonsWidget')
+        self.buttonsWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.buttonsWidget.setFixedHeight(24)
+        self.buttonsWidget.setLayout(self.buttonsLayout)
+
+        self.applyPushButton = qdropdownbutton.QDropDownButton('Apply')
+        self.applyPushButton.setObjectName('applyPushButton')
+        self.applyPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred))
+        self.applyPushButton.setMouseTracking(True)
+        self.applyPushButton.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
+        self.applyPushButton.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
+        self.applyPushButton.setArrowType(QtCore.Qt.ArrowType.DownArrow)
+        self.applyPushButton.clicked.connect(self.on_applyPushButton_clicked)
+
+        self.okayPushButton = QtWidgets.QPushButton('Okay')
+        self.okayPushButton.setObjectName('okayPushButton')
+        self.okayPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred))
+        self.okayPushButton.clicked.connect(self.on_okayPushButton_clicked)
+
+        self.cancelPushButton = QtWidgets.QPushButton('Cancel')
+        self.cancelPushButton.setObjectName('cancelPushButton')
+        self.cancelPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred))
+        self.cancelPushButton.clicked.connect(self.on_cancelPushButton_clicked)
+
+        self.buttonsLayout.addWidget(self.applyPushButton)
+        self.buttonsLayout.addWidget(self.okayPushButton)
+        self.buttonsLayout.addWidget(self.cancelPushButton)
+
+        centralLayout.addWidget(self.buttonsWidget)
+
+        # Initialize apply menu
+        #
+        self.applyMenu = QtWidgets.QMenu(parent=self.applyPushButton)
+        self.applyMenu.setObjectName('applyMenu')
+
+        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children', self.applyMenu)
+        self.preserveChildrenAction.setObjectName('preserveChildrenAction')
+        self.preserveChildrenAction.setCheckable(True)
+
+        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform', self.applyMenu)
+        self.freezeTransformAction.setObjectName('freezeTransformAction')
+        self.freezeTransformAction.setCheckable(True)
+
+        self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
+
+        self.applyPushButton.setMenu(self.applyMenu)
     # endregion
 
     # region Properties
@@ -68,7 +157,9 @@ class QEzAlign(quicwindow.QUicWindow):
         :rtype: None
         """
 
-        self.preserveChildrenAction.setChecked(preserveChildren)
+        if isinstance(preserveChildren, bool):
+
+            self.preserveChildrenAction.setChecked(preserveChildren)
 
     @property
     def freezeTransform(self):
@@ -89,33 +180,12 @@ class QEzAlign(quicwindow.QUicWindow):
         :rtype: None
         """
 
-        self.freezeTransformAction.setChecked(freezeTransform)
+        if isinstance(freezeTransform, bool):
+
+            self.freezeTransformAction.setChecked(freezeTransform)
     # endregion
 
     # region Methods
-    def postLoad(self, *args, **kwargs):
-        """
-        Called after the user interface has been loaded.
-
-        :rtype: None
-        """
-
-        # Assign tool button menu
-        #
-        self.applyMenu = QtWidgets.QMenu(parent=self.applyPushButton)
-        self.applyMenu.setObjectName('applyMenu')
-
-        self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children', self.applyMenu)
-        self.preserveChildrenAction.setObjectName('preserveChildrenAction')
-        self.preserveChildrenAction.setCheckable(True)
-
-        self.freezeTransformAction = QtWidgets.QAction('&Freeze Transform', self.applyMenu)
-        self.freezeTransformAction.setObjectName('freezeTransformAction')
-        self.freezeTransformAction.setCheckable(True)
-
-        self.applyMenu.addActions([self.preserveChildrenAction, self.freezeTransformAction])
-        self.applyPushButton.setMenu(self.applyMenu)
-
     def loadSettings(self, settings):
         """
         Loads the user settings.
@@ -128,11 +198,11 @@ class QEzAlign(quicwindow.QUicWindow):
         #
         super(QEzAlign, self).loadSettings(settings)
 
-        # Load user preferences
+        # Load user settings
         #
-        self.tabControl.setCurrentIndex(settings.value('editor/currentTabIndex', defaultValue=0))
-        self.preserveChildren = bool(settings.value('editor/preserveChildren', defaultValue=0))
-        self.freezeTransform = bool(settings.value('editor/freezeTransform', defaultValue=0))
+        self.setCurrentTabIndex(settings.value('editor/currentTabIndex', defaultValue=0, type=int))
+        self.preserveChildren = bool(settings.value('editor/preserveChildren', defaultValue=0, type=int))
+        self.freezeTransform = bool(settings.value('editor/freezeTransform', defaultValue=0, type=int))
 
         # Load tab settings
         #
@@ -175,12 +245,24 @@ class QEzAlign(quicwindow.QUicWindow):
 
     def currentTabIndex(self):
         """
-        Returns the tab index that currently open.
+        Returns the active tab index.
 
         :rtype: int
         """
 
         return self.tabControl.currentIndex()
+
+    def setCurrentTabIndex(self, currentIndex):
+        """
+        Updates the active tab index.
+
+        :type currentIndex: int
+        :rtype: None
+        """
+
+        if isinstance(currentIndex, int):
+
+            self.tabControl.setCurrentIndex(currentIndex)
 
     def iterTabs(self):
         """
@@ -248,26 +330,4 @@ class QEzAlign(quicwindow.QUicWindow):
         """
 
         self.close()
-
-    @QtCore.Slot(bool)
-    def on_preserveChildrenAction_triggered(self, checked=False):
-        """
-        Triggered slot method responsible for updating the preserve children flag.
-
-        :type checked: bool
-        :rtype: None
-        """
-
-        self._preserveChildren = self.sender().isChecked()
-
-    @QtCore.Slot(bool)
-    def on_freezeTransformAction_triggered(self, checked=False):
-        """
-        Triggered slot method responsible for updating the freeze transform flag.
-
-        :type checked: bool
-        :rtype: None
-        """
-
-        self._freezeTransform = self.sender().isChecked()
     # endregion
