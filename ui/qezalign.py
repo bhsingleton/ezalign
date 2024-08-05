@@ -1,5 +1,5 @@
 from Qt import QtCore, QtWidgets, QtGui
-from dcc.ui import qsingletonwindow, qdropdownbutton
+from dcc.ui import qsingletonwindow, qdropdownbutton, qpersistentmenu
 from .tabs import qaligntab, qaimtab, qmatrixtab
 
 import logging
@@ -68,13 +68,13 @@ class QEzAlign(qsingletonwindow.QSingletonWindow):
 
         # Initialize tab widget
         #
-        self.tabControl = QtWidgets.QTabWidget()
+        self.tabControl = QtWidgets.QTabWidget(parent=self)
         self.tabControl.setObjectName('tabControl')
         self.tabControl.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
 
-        self.alignTab = qaligntab.QAlignTab()
-        self.aimTab = qaimtab.QAimTab()
-        self.matrixTab = qmatrixtab.QMatrixTab()
+        self.alignTab = qaligntab.QAlignTab(parent=self.tabControl)
+        self.aimTab = qaimtab.QAimTab(parent=self.tabControl)
+        self.matrixTab = qmatrixtab.QMatrixTab(parent=self.tabControl)
 
         self.tabControl.addTab(self.alignTab, 'Align')
         self.tabControl.addTab(self.aimTab, 'Aim')
@@ -121,7 +121,7 @@ class QEzAlign(qsingletonwindow.QSingletonWindow):
 
         # Initialize apply menu
         #
-        self.applyMenu = QtWidgets.QMenu(parent=self.applyPushButton)
+        self.applyMenu = qpersistentmenu.QPersistentMenu(parent=self.applyPushButton)
         self.applyMenu.setObjectName('applyMenu')
 
         self.preserveChildrenAction = QtWidgets.QAction('&Preserve Children', self.applyMenu)

@@ -42,6 +42,13 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self._upAxis = -1
         self._upVector = vector.Vector.yAxis
 
+    def __setup_ui__(self, *args, **kwargs):
+        """
+        Private method that initializes the user interface.
+
+        :rtype: None
+        """
+
         # Initialize central layout
         #
         centralLayout = QtWidgets.QVBoxLayout()

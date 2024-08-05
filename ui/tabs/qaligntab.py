@@ -17,18 +17,12 @@ class QAlignTab(qabstracttab.QAbstractTab):
     """
 
     # region Dunderscores
-    def __init__(self, *args, **kwargs):
+    def __setup_ui__(self, *args, **kwargs):
         """
-        Private method called after a new instance has been created.
+        Private method that initializes the user interface.
 
-        :type parent: QtWidgets.QWidget
-        :type f: QtCore.Qt.WindowFlags
         :rtype: None
         """
-
-        # Call parent method
-        #
-        super(QAlignTab, self).__init__(*args, **kwargs)
 
         # Initialize central layout
         #

@@ -43,6 +43,13 @@ class QAimTab(qabstracttab.QAbstractTab):
         self._upAxis = -1
         self._worldUpObject = fntransform.FnTransform()
 
+    def __setup_ui__(self, *args, **kwargs):
+        """
+        Private method that initializes the user interface.
+
+        :rtype: None
+        """
+
         # Initialize central layout
         #
         centralLayout = QtWidgets.QVBoxLayout()
