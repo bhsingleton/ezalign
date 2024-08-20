@@ -201,8 +201,6 @@ class QEzAlign(qsingletonwindow.QSingletonWindow):
         # Load user settings
         #
         self.setCurrentTabIndex(settings.value('editor/currentTabIndex', defaultValue=0, type=int))
-        self.preserveChildren = bool(settings.value('editor/preserveChildren', defaultValue=0, type=int))
-        self.freezeTransform = bool(settings.value('editor/freezeTransform', defaultValue=0, type=int))
 
         # Load tab settings
         #
@@ -317,7 +315,7 @@ class QEzAlign(qsingletonwindow.QSingletonWindow):
         :rtype: None
         """
 
-        self.applyButton.click()
+        self.applyPushButton.click()
         self.close()
 
     @QtCore.Slot(bool)
