@@ -528,7 +528,7 @@ class QAimTab(qabstracttab.QAbstractTab):
         #
         numNodes = len(nodes)
 
-        if not numNodes >= 3:
+        if not (numNodes >= 3):
 
             log.warning('perpendicularVector() expects at least 3 nodes (%s given)!' % numNodes)
             return
@@ -541,10 +541,10 @@ class QAimTab(qabstracttab.QAbstractTab):
         origin = startNode.translation(worldSpace=True)
         vectors = []
 
-        for i in range(1, numNodes, 2):
+        for (startObj, endObj) in zip(nodes[1:-1], nodes[2:]):
 
-            startNode.setObject(nodes[i])
-            endNode.setObject(nodes[i + 1])
+            startNode.setObject(startObj)
+            endNode.setObject(endObj)
 
             startPoint = startNode.translation(worldSpace=True)
             endPoint = endNode.translation(worldSpace=True)
@@ -695,23 +695,30 @@ class QAimTab(qabstracttab.QAbstractTab):
 
         if not selectionCount >= 2:
 
-            log.warning('apply() expects at least two selected node (%s given)!' % selectionCount)
+            log.warning(f'apply() expects at least two selected node ({selectionCount} given)!')
             return
 
         # Iterate through selection
         #
         startNode = fntransform.FnTransform()
+        endNode = fntransform.FnTransform()
 
-        for i in range(selectionCount - 1):  # Make sure to skip the last item!
+        for (startObj, endObj) in zip(selection[:-1], selection[1:]):  # Make sure to skip the last item!
 
-            # Get dag paths to nodes
+            # Attach selected node pairs to function sets
             #
-            start, end = selection[i], selection[i+1]
-            startNode.setObject(start)
+            isValidStartNode = startNode.trySetObject(startObj)
+            isValidEndNode = endNode.trySetObject(endObj)
 
+            if not (isValidStartNode and isValidEndNode):
+
+                continue
+
+            # Get origin, forward and up vectors
+            #
             origin = startNode.translation(worldSpace=True)
-            forwardVector = self.forwardVector(start, end, normalize=True)
-            upVector = self.upVector(start, end, normalize=True)
+            forwardVector = self.forwardVector(startObj, endObj, normalize=True)
+            upVector = self.upVector(startObj, endObj, normalize=True)
 
             # Compose aim matrix in parent space
             #
