@@ -71,6 +71,7 @@ class QEzAlign(qsingletonwindow.QSingletonWindow):
         self.tabControl = QtWidgets.QTabWidget(parent=self)
         self.tabControl.setObjectName('tabControl')
         self.tabControl.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.tabControl.currentChanged.connect(self.on_tabControl_currentChanged)
 
         self.alignTab = qaligntab.QAlignTab(parent=self.tabControl)
         self.aimTab = qaimtab.QAimTab(parent=self.tabControl)

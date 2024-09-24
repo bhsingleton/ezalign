@@ -49,6 +49,10 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
+        # Initialize widget
+        #
+        self.setWhatsThis('Select the node to paste the transformation matrix onto.')
+
         # Initialize central layout
         #
         centralLayout = QtWidgets.QVBoxLayout()
@@ -63,20 +67,23 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self.matrixGroupBox.setObjectName('matrixGroupBox')
         self.matrixGroupBox.setLayout(self.matrixLayout)
         self.matrixGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-
-        self.matrixEdit = qmatrixedit.QMatrixEdit()
-        self.matrixEdit.setObjectName('matrixEdit')
-        self.matrixEdit.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        self.matrixEdit.setRowLabels(['X-Axis:', 'Y-Axis:', 'Z-Axis:', 'Origin:'])
-        self.matrixLayout.addWidget(self.matrixEdit)
+        self.matrixGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.originPushButton = QtWidgets.QPushButton('Origin')
         self.originPushButton.setObjectName('originPushButton')
         self.originPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.originPushButton.setFixedHeight(24)
+        self.originPushButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.originPushButton.setToolTip('Averages the position of the selected nodes or mesh components.')
         self.originPushButton.clicked.connect(self.on_originPushButton_clicked)
 
+        self.matrixEdit = qmatrixedit.QMatrixEdit()
+        self.matrixEdit.setObjectName('matrixEdit')
+        self.matrixEdit.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.matrixEdit.setRowLabels(['X-Axis:', 'Y-Axis:', 'Z-Axis:', 'Origin:'])
         self.matrixEdit.replaceLabel(3, self.originPushButton)
+
+        self.matrixLayout.addWidget(self.matrixEdit)
 
         centralLayout.addWidget(self.matrixGroupBox)
 
@@ -89,27 +96,33 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self.forwardAxisGroupBox.setObjectName('forwardAxisGroupBox')
         self.forwardAxisGroupBox.setLayout(self.forwardAxisLayout)
         self.forwardAxisGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.forwardAxisGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.forwardAxisPushButton = QtWidgets.QPushButton('Pick')
         self.forwardAxisPushButton.setObjectName('forwardAxisPushButton')
-        self.forwardAxisPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.forwardAxisPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed))
         self.forwardAxisPushButton.setFixedHeight(24)
+        self.forwardAxisPushButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.forwardAxisPushButton.setToolTip('Calculates the forward vector from the active selection relative to the origin.')
         self.forwardAxisPushButton.clicked.connect(self.on_forwardAxisPushButton_clicked)
 
         self.forwardXRadioButton = QtWidgets.QRadioButton('X')
         self.forwardXRadioButton.setObjectName('forwardXRadioButton')
         self.forwardXRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.forwardXRadioButton.setFixedHeight(24)
+        self.forwardXRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.forwardYRadioButton = QtWidgets.QRadioButton('Y')
         self.forwardYRadioButton.setObjectName('forwardYRadioButton')
         self.forwardYRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.forwardYRadioButton.setFixedHeight(24)
+        self.forwardYRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.forwardZRadioButton = QtWidgets.QRadioButton('Z')
         self.forwardZRadioButton.setObjectName('forwardZRadioButton')
         self.forwardZRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.forwardZRadioButton.setFixedHeight(24)
+        self.forwardZRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.forwardAxisButtonGroup = QtWidgets.QButtonGroup(self.forwardAxisGroupBox)
         self.forwardAxisButtonGroup.setObjectName('forwardAxisButtonGroup')
@@ -120,9 +133,9 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self.forwardAxisButtonGroup.idClicked.connect(self.on_forwardAxisButtonGroup_idClicked)
 
         self.forwardAxisLayout.addWidget(self.forwardAxisPushButton)
-        self.forwardAxisLayout.addWidget(self.forwardXRadioButton)
-        self.forwardAxisLayout.addWidget(self.forwardYRadioButton)
-        self.forwardAxisLayout.addWidget(self.forwardZRadioButton)
+        self.forwardAxisLayout.addWidget(self.forwardXRadioButton, alignment=QtCore.Qt.AlignCenter)
+        self.forwardAxisLayout.addWidget(self.forwardYRadioButton, alignment=QtCore.Qt.AlignCenter)
+        self.forwardAxisLayout.addWidget(self.forwardZRadioButton, alignment=QtCore.Qt.AlignCenter)
         
         centralLayout.addWidget(self.forwardAxisGroupBox)
 
@@ -135,27 +148,33 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self.upAxisGroupBox.setObjectName('upAxisGroupBox')
         self.upAxisGroupBox.setLayout(self.upAxisLayout)
         self.upAxisGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.upAxisGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.upAxisPushButton = QtWidgets.QPushButton('Pick')
         self.upAxisPushButton.setObjectName('upAxisPushButton')
-        self.upAxisPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
+        self.upAxisPushButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed))
         self.upAxisPushButton.setFixedHeight(24)
+        self.upAxisPushButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.upAxisPushButton.setToolTip('Calculates the up vector from the active selection relative to the origin.')
         self.upAxisPushButton.clicked.connect(self.on_upAxisPushButton_clicked)
 
         self.upXRadioButton = QtWidgets.QRadioButton('X')
         self.upXRadioButton.setObjectName('upXRadioButton')
         self.upXRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.upXRadioButton.setFixedHeight(24)
+        self.upXRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.upYRadioButton = QtWidgets.QRadioButton('Y')
         self.upYRadioButton.setObjectName('upYRadioButton')
         self.upYRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.upYRadioButton.setFixedHeight(24)
+        self.upYRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.upZRadioButton = QtWidgets.QRadioButton('Z')
         self.upZRadioButton.setObjectName('upZRadioButton')
         self.upZRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.upZRadioButton.setFixedHeight(24)
+        self.upZRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.upAxisButtonGroup = QtWidgets.QButtonGroup(self.upAxisGroupBox)
         self.upAxisButtonGroup.setObjectName('upAxisButtonGroup')
@@ -166,9 +185,9 @@ class QMatrixTab(qabstracttab.QAbstractTab):
         self.upAxisButtonGroup.idClicked.connect(self.on_upAxisButtonGroup_idClicked)
 
         self.upAxisLayout.addWidget(self.upAxisPushButton)
-        self.upAxisLayout.addWidget(self.upXRadioButton)
-        self.upAxisLayout.addWidget(self.upYRadioButton)
-        self.upAxisLayout.addWidget(self.upZRadioButton)
+        self.upAxisLayout.addWidget(self.upXRadioButton, alignment=QtCore.Qt.AlignCenter)
+        self.upAxisLayout.addWidget(self.upYRadioButton, alignment=QtCore.Qt.AlignCenter)
+        self.upAxisLayout.addWidget(self.upZRadioButton, alignment=QtCore.Qt.AlignCenter)
 
         centralLayout.addWidget(self.upAxisGroupBox)
     # endregion

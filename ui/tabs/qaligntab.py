@@ -24,6 +24,10 @@ class QAlignTab(qabstracttab.QAbstractTab):
         :rtype: None
         """
 
+        # Initialize widget
+        #
+        self.setWhatsThis('Select the node to paste onto then the node to copy from.')
+
         # Initialize central layout
         #
         centralLayout = QtWidgets.QVBoxLayout()
@@ -38,24 +42,28 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.translationGroupBox.setObjectName('translationGroupBox')
         self.translationGroupBox.setLayout(self.translationLayout)
         self.translationGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+        self.translationGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.translateXCheckBox = QtWidgets.QCheckBox('X-Axis')
         self.translateXCheckBox.setObjectName('translationGroupBox')
         self.translateXCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.translateXCheckBox.setFixedHeight(24)
         self.translateXCheckBox.setChecked(True)
+        self.translateXCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.translateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
         self.translateYCheckBox.setObjectName('translateYCheckBox')
         self.translateYCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.translateYCheckBox.setFixedHeight(24)
         self.translateYCheckBox.setChecked(True)
+        self.translateYCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.translateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
         self.translateZCheckBox.setObjectName('translateZCheckBox')
         self.translateZCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.translateZCheckBox.setFixedHeight(24)
         self.translateZCheckBox.setChecked(True)
+        self.translateZCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.translateCheckBoxGroup = QtWidgets.QButtonGroup(self.translationGroupBox)
         self.translateCheckBoxGroup.setExclusive(False)
@@ -78,27 +86,36 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.sourceGroupBox.setObjectName('sourceGroupBox')
         self.sourceGroupBox.setLayout(self.sourceLayout)
         self.sourceGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.sourceGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.sourceMinRadioButton = QtWidgets.QRadioButton('Minimum')
         self.sourceMinRadioButton.setObjectName('sourceMinRadioButton')
         self.sourceMinRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.sourceMinRadioButton.setFixedHeight(24)
+        self.sourceMinRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.sourceMinRadioButton.setToolTip("Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.")
 
         self.sourceCenterRadioButton = QtWidgets.QRadioButton('Center')
         self.sourceCenterRadioButton.setObjectName('sourceCenterRadioButton')
         self.sourceCenterRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.sourceCenterRadioButton.setFixedHeight(24)
+        self.sourceCenterRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.sourceCenterRadioButton.setToolTip("Aligns the center of the object's bounding box with the chosen point on the other object.")
 
         self.sourcePivotRadioButton = QtWidgets.QRadioButton('Pivot')
         self.sourcePivotRadioButton.setObjectName('sourcePivotRadioButton')
         self.sourcePivotRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.sourcePivotRadioButton.setFixedHeight(24)
+        self.sourcePivotRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.sourcePivotRadioButton.setChecked(True)
+        self.sourcePivotRadioButton.setToolTip("Aligns the object's pivot point with the chosen point on the other object.")
 
         self.sourceMaxRadioButton = QtWidgets.QRadioButton('Maximum')
         self.sourceMaxRadioButton.setObjectName('sourceMaxRadioButton')
         self.sourceMaxRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.sourceMaxRadioButton.setFixedHeight(24)
+        self.sourceMaxRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.sourceMaxRadioButton.setToolTip("Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.")
 
         self.sourceRadioButtonGroup = QtWidgets.QButtonGroup(self.sourceGroupBox)
         self.sourceRadioButtonGroup.setObjectName('sourceRadioButtonGroup')
@@ -122,27 +139,36 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.targetGroupBox.setObjectName('targetGroupBox')
         self.targetGroupBox.setLayout(self.targetLayout)
         self.targetGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.targetGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.targetMinRadioButton = QtWidgets.QRadioButton('Minimum')
         self.targetMinRadioButton.setObjectName('targetMinRadioButton')
         self.targetMinRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.targetMinRadioButton.setFixedHeight(24)
+        self.targetMinRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.targetMinRadioButton.setToolTip("Aligns the point on the object's bounding box with the lowest X, Y, and Z values with the chosen point on the other object.")
 
         self.targetCenterRadioButton = QtWidgets.QRadioButton('Center')
         self.targetCenterRadioButton.setObjectName('targetCenterRadioButton')
         self.targetCenterRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.targetCenterRadioButton.setFixedHeight(24)
+        self.targetCenterRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.targetCenterRadioButton.setToolTip("Aligns the center of the object's bounding box with the chosen point on the other object.")
 
         self.targetPivotRadioButton = QtWidgets.QRadioButton('Pivot')
         self.targetPivotRadioButton.setObjectName('targetPivotRadioButton')
         self.targetPivotRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.targetPivotRadioButton.setFixedHeight(24)
+        self.targetPivotRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.targetPivotRadioButton.setChecked(True)
+        self.targetPivotRadioButton.setToolTip("Aligns the object's pivot point with the chosen point on the other object.")
 
         self.targetMaxRadioButton = QtWidgets.QRadioButton('Maximum')
         self.targetMaxRadioButton.setObjectName('targetMaxRadioButton')
         self.targetMaxRadioButton.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.targetMaxRadioButton.setFixedHeight(24)
+        self.targetMaxRadioButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.targetMaxRadioButton.setToolTip("Aligns the point on the object's bounding box with the highest X, Y, and Z values with the chosen point on the other object.")
 
         self.targetRadioButtonGroup = QtWidgets.QButtonGroup(self.targetGroupBox)
         self.targetRadioButtonGroup.setObjectName('targetRadioButtonGroup')
@@ -157,21 +183,15 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.targetLayout.addWidget(self.targetPivotRadioButton)
         self.targetLayout.addWidget(self.targetMaxRadioButton)
 
-        # Initialize object widget
+        # Initialize source/target object layout
         #
         self.objectLayout = QtWidgets.QHBoxLayout()
         self.objectLayout.setObjectName('objectLayout')
         self.objectLayout.setContentsMargins(0, 0, 0, 0)
-
-        self.objectWidget = QtWidgets.QWidget()
-        self.objectWidget.setObjectName('objectWidget')
-        self.objectWidget.setLayout(self.objectLayout)
-        self.objectWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-
         self.objectLayout.addWidget(self.sourceGroupBox)
         self.objectLayout.addWidget(self.targetGroupBox)
 
-        centralLayout.addWidget(self.objectWidget)
+        centralLayout.addLayout(self.objectLayout)
 
         # Initialize rotation group-box
         #
@@ -182,23 +202,27 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.rotationGroupBox.setObjectName('rotationGroupBox')
         self.rotationGroupBox.setLayout(self.rotationLayout)
         self.rotationGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+        self.rotationGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.rotateXCheckBox = QtWidgets.QCheckBox('X-Axis')
         self.rotateXCheckBox.setObjectName('rotationGroupBox')
         self.rotateXCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.rotateXCheckBox.setFixedHeight(24)
+        self.rotateXCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.rotateXCheckBox.setChecked(True)
 
         self.rotateYCheckBox = QtWidgets.QCheckBox('Y-Axis')
         self.rotateYCheckBox.setObjectName('rotateYCheckBox')
         self.rotateYCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.rotateYCheckBox.setFixedHeight(24)
+        self.rotateYCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.rotateYCheckBox.setChecked(True)
 
         self.rotateZCheckBox = QtWidgets.QCheckBox('Z-Axis')
         self.rotateZCheckBox.setObjectName('rotateZCheckBox')
         self.rotateZCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.rotateZCheckBox.setFixedHeight(24)
+        self.rotateZCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.rotateZCheckBox.setChecked(True)
 
         self.rotateCheckBoxGroup = QtWidgets.QButtonGroup(self.rotationGroupBox)
@@ -222,21 +246,25 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.scaleGroupBox.setObjectName('scaleGroupBox')
         self.scaleGroupBox.setLayout(self.scaleLayout)
         self.scaleGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+        self.scaleGroupBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.scaleXCheckBox = QtWidgets.QCheckBox('X-Axis')
         self.scaleXCheckBox.setObjectName('scaleGroupBox')
         self.scaleXCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.scaleXCheckBox.setFixedHeight(24)
+        self.scaleXCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.scaleYCheckBox = QtWidgets.QCheckBox('Y-Axis')
         self.scaleYCheckBox.setObjectName('scaleYCheckBox')
         self.scaleYCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.scaleYCheckBox.setFixedHeight(24)
+        self.scaleYCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.scaleZCheckBox = QtWidgets.QCheckBox('Z-Axis')
         self.scaleZCheckBox.setObjectName('scaleZCheckBox')
         self.scaleZCheckBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed))
         self.scaleZCheckBox.setFixedHeight(24)
+        self.scaleZCheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.scaleCheckBoxGroup = QtWidgets.QButtonGroup(self.scaleGroupBox)
         self.scaleCheckBoxGroup.setExclusive(False)
