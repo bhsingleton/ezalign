@@ -532,7 +532,7 @@ class QMatrixTab(qabstracttab.QAbstractTab):
             matrix = worldMatrix * parentInverseMatrix
 
             node.snapshot()
-            node.setMatrix(matrix, preserveChildren=preserveChildren)
+            node.setMatrix(matrix, skipScale=True, preserveChildren=preserveChildren)
 
             # Check if transform should be frozen
             #
