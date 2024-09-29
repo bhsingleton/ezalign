@@ -135,7 +135,7 @@ class QAlignTab(qabstracttab.QAbstractTab):
         self.targetLayout = QtWidgets.QVBoxLayout()
         self.targetLayout.setObjectName('targetLayout')
 
-        self.targetGroupBox = QtWidgets.QGroupBox('target Object:')
+        self.targetGroupBox = QtWidgets.QGroupBox('Target Object:')
         self.targetGroupBox.setObjectName('targetGroupBox')
         self.targetGroupBox.setLayout(self.targetLayout)
         self.targetGroupBox.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
