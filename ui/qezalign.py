@@ -286,8 +286,11 @@ class QEzAlign(qsingletonwindow.QSingletonWindow):
         """
 
         tab = self.sender().widget(index)
+        isValidTab = isinstance(tab, QtWidgets.QWidget)
 
-        if tab is not None:
+        hasButtons = isinstance(self.applyPushButton, QtWidgets.QPushButton) and isinstance(self.okayPushButton, QtWidgets.QPushButton)
+
+        if isValidTab and hasButtons:
 
             toolTip = tab.whatsThis()
             self.applyPushButton.setToolTip(toolTip)
